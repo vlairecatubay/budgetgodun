@@ -93,6 +93,17 @@
     font-weight:600;
     color:#F2D8B0;
   }
+  header .month-total .savings-row{
+    margin-top:5px;
+    padding-top:5px;
+    border-top:1px solid rgba(174,184,212,.2);
+  }
+  header .month-total .savings-amt{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    font-weight:600;
+    color:#9FE8B0;
+  }
   .header-icon-btn{
     background:none;
     border:none;
@@ -654,6 +665,39 @@
   .settings-data-actions .btn{ flex:1; }
   .settings-data-hint{ font-size:11.5px; color:var(--muted); line-height:1.5; }
 
+  /* ---------- Active / Planning status ---------- */
+  .active-toggle{ display:flex; gap:8px; }
+  .active-toggle-btn{
+    flex:1;
+    padding:9px 10px;
+    border-radius:10px;
+    border:1px solid var(--paper-line);
+    background:var(--card);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .active-toggle-btn.selected{ background:var(--accent); border-color:var(--accent); color:var(--white); }
+  .active-toggle-hint{ font-size:11px; color:var(--muted); margin-top:6px; line-height:1.4; }
+  .planning-badge{
+    display:inline-block;
+    font-size:9.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.3px;
+    color:var(--muted);
+    background:var(--paper-dim);
+    border:1px solid var(--paper-line);
+    border-radius:6px;
+    padding:1px 5px;
+    margin-left:6px;
+    font-family:'IBM Plex Mono',monospace;
+    vertical-align:middle;
+  }
+  .record-card.planning{ opacity:.62; }
+
   /* ---------- Credit Sources tab ---------- */
   #pm-scroll{ flex:1; overflow-y:auto; padding:14px 14px 90px; }
   .pm-row{
@@ -663,6 +707,18 @@
     font-size:14.5px; font-weight:600; color:var(--ink);
   }
   .pm-row:active{ transform:scale(.99); }
+  .pm-sort-row{ display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+  .pm-sort-label{ font-size:12px; color:var(--muted); font-family:'Inter',sans-serif; flex-shrink:0; }
+  #pm-sort-select{
+    flex:1;
+    border:1px solid var(--paper-line);
+    background:var(--card);
+    border-radius:10px;
+    padding:8px 10px;
+    font-size:13px;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+  }
   .pm-computed{
     background:var(--paper);
     border:1px solid var(--paper-line);
@@ -692,6 +748,10 @@
       <div class="month-total">
         <div class="label" id="month-label">This month</div>
         <div class="amt" id="month-amt">₱0.00</div>
+        <div class="savings-row">
+          <div class="label">Liquid Savings</div>
+          <div class="savings-amt" id="savings-header-amt">₱0.00</div>
+        </div>
       </div>
       <button class="header-icon-btn" id="btn-open-settings" aria-label="Settings">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -755,6 +815,15 @@ Taobao Bag - 3500</div>
         <button class="btn btn-ghost" id="btn-savings-summary" style="width:100%; margin-bottom:10px;">💰 Savings Summary</button>
         <button class="btn btn-ghost" id="btn-summarize-cc" style="width:100%; margin-bottom:10px;">📊 Summarize Credit Cards</button>
         <button class="btn btn-primary" id="btn-new-pm" style="width:100%; margin-bottom:14px;">+ New Credit Source</button>
+        <div class="pm-sort-row">
+          <label for="pm-sort-select" class="pm-sort-label">Sort by</label>
+          <select id="pm-sort-select">
+            <option value="name">Name (A–Z)</option>
+            <option value="type">Type</option>
+            <option value="balance">Balance / Limit (High to Low)</option>
+            <option value="newest">Recently Added</option>
+          </select>
+        </div>
         <div id="pm-list"></div>
       </div>
     </section>
@@ -797,6 +866,14 @@ Taobao Bag - 3500</div>
         <button type="button" class="calc-link" data-target="f-amount">🧮 Use calculator</button>
       </div>
       <div class="field">
+        <label>Status</label>
+        <div class="active-toggle" id="f-active-toggle">
+          <button type="button" class="active-toggle-btn" data-active="true">✅ Active</button>
+          <button type="button" class="active-toggle-btn" data-active="false">📝 Planning Only</button>
+        </div>
+        <div class="active-toggle-hint">Planning items don't count toward totals, budgets, or credit card spend — use them to sketch out future expenses.</div>
+      </div>
+      <div class="field">
         <label>Category</label>
         <div class="cat-grid" id="f-cat-grid"></div>
       </div>
@@ -808,6 +885,10 @@ Taobao Bag - 3500</div>
         <label>Credit Source</label>
         <select id="f-source-select"></select>
         <input type="text" id="f-source-new" placeholder="Enter new credit source name" style="margin-top:8px; display:none;">
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="f-date">
       </div>
       <div class="field">
         <label>Notes</label>
@@ -1101,10 +1182,11 @@ Taobao Bag - 3500</div>
     }
   };
 
-  var CATEGORIES = ["Groceries","Food","Transport","Shopping","Bills","Personal Care","Health","Entertainment","Uncategorized"];
+  var CATEGORIES = ["Groceries","Food","Transport","Shopping","Bills","Personal Care","Health","Entertainment","Family","Travel","Emergency","Uncategorized"];
   var CATEGORY_ICON = {
     "Groceries":"🥬","Food":"🍜","Transport":"🚕","Shopping":"🛍️","Bills":"🧾",
-    "Personal Care":"💇","Health":"💊","Entertainment":"🎬","Uncategorized":"📌"
+    "Personal Care":"💇","Health":"💊","Entertainment":"🎬","Family":"👨‍👩‍👧‍👦",
+    "Travel":"✈️","Emergency":"🚨","Uncategorized":"📌"
   };
   var CATEGORY_KEYWORDS = [
     [/grocer|landers|supermarket|s&r|puregold|sm market|palengke|market/i,"Groceries"],
@@ -1114,10 +1196,13 @@ Taobao Bag - 3500</div>
     [/bill|electric|meralco|water|wifi|internet|rent|globe|pldt|load/i,"Bills"],
     [/restaurant|food|lunch|dinner|coffee|starbucks|jollibee|mcdo|snack/i,"Food"],
     [/hospital|doctor|pharmacy|medicine|clinic|mercury|dentist/i,"Health"],
-    [/movie|netflix|cinema|game|spotify|concert/i,"Entertainment"]
+    [/movie|netflix|cinema|game|spotify|concert/i,"Entertainment"],
+    [/family|kids|allowance|school|tuition|baon/i,"Family"],
+    [/travel|flight|hotel|airbnb|trip|vacation|resort|booking\.com/i,"Travel"],
+    [/emergency|urgent|hospitalization|calamity/i,"Emergency"]
   ];
 
-  var state = { records: [], chatLog: [], budgets: [], paymentMethods: [], ledgerFilter: "all", activeTab: "chat", pendingBudget: null, pendingAssociation: null, pendingUpdate: null, pendingPmFlow: null };
+  var state = { records: [], chatLog: [], budgets: [], paymentMethods: [], ledgerFilter: "all", pmSort: "name", activeTab: "chat", pendingBudget: null, pendingAssociation: null, pendingUpdate: null, pendingPmFlow: null };
   var editingId = null;
 
   // ---------- Storage ----------
@@ -1602,7 +1687,8 @@ Taobao Bag - 3500</div>
       return {
         item: r.item, amount: r.amount, category: r.category,
         date: r.date, paymentMethod: r.source || null,
-        budget: budgetName, notes: r.notes || null
+        budget: budgetName, notes: r.notes || null,
+        status: (r.active !== false) ? "active" : "planning-only (not counted in totals)"
       };
     });
     var budgetsForContext = state.budgets.map(function(b){
@@ -1650,6 +1736,7 @@ Taobao Bag - 3500</div>
         "Answer the user's question using ONLY the JSON data provided below — do not invent numbers. " +
         "Be concise and conversational, like a quick chat reply, not a report. Use Philippine peso formatting (₱ with commas and two decimals). " +
         "Do not use markdown headers or bullet-heavy formatting; short plain sentences work best since this renders in a small chat bubble. " +
+        "Each expense record has a status of either \"active\" or \"planning-only (not counted in totals)\". All totals, budget spent figures, and credit card expense sums already exclude planning-only items — treat those as tentative/future items the user is sketching out, not real spend, and don't include them when answering questions about how much was actually spent unless the user specifically asks about planning or upcoming items. " +
         "If the data doesn't contain what's needed to answer, say so honestly instead of guessing.\n\nDATA:\n" + buildDataContext();
 
       var response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -1695,6 +1782,7 @@ Taobao Bag - 3500</div>
         budgetId: "",
         source: p.source || "",
         notes: "",
+        active: true,
         date: todayISO(),
         createdAt: Date.now()
       };
@@ -2138,14 +2226,15 @@ Taobao Bag - 3500</div>
     order.forEach(function(dateKey){
       var group = document.createElement("div");
       group.className = "day-group";
-      var dayTotal = groups[dateKey].reduce(function(s,r){return s+r.amount;},0);
+      var dayTotal = groups[dateKey].filter(function(r){ return r.active!==false; }).reduce(function(s,r){return s+r.amount;},0);
       var lbl = document.createElement("div");
       lbl.className = "day-label";
       lbl.innerHTML = "<span>"+dayLabel(dateKey)+"</span><b>"+fmtPHP(dayTotal)+"</b>";
       group.appendChild(lbl);
       groups[dateKey].forEach(function(r){
+        var isPlanning = r.active === false;
         var card = document.createElement("div");
-        card.className = "record-card";
+        card.className = "record-card" + (isPlanning ? " planning" : "");
         var budgetTag = "";
         if(r.budgetId){
           var b = state.budgets.find(function(bb){ return bb.id === r.budgetId; });
@@ -2153,8 +2242,8 @@ Taobao Bag - 3500</div>
         }
         card.innerHTML =
           '<div class="rc-cat-dot">'+(CATEGORY_ICON[r.category]||"📌")+'</div>'+
-          '<div class="rc-main"><div class="rc-item">'+escapeHtml(r.item)+'</div>'+
-          '<div class="rc-meta">'+escapeHtml(r.category)+(r.source ? " · 💳 "+escapeHtml(r.source) : "")+(r.notes ? " · "+escapeHtml(r.notes) : "")+budgetTag+'</div></div>'+
+          '<div class="rc-main"><div class="rc-item">'+escapeHtml(r.item)+(isPlanning ? '<span class="planning-badge">Planning</span>' : '')+'</div>'+
+          '<div class="rc-meta">'+escapeHtml(dayLabel(r.date))+" · "+escapeHtml(r.category)+(r.source ? " · 💳 "+escapeHtml(r.source) : "")+(r.notes ? " · "+escapeHtml(r.notes) : "")+budgetTag+'</div></div>'+
           '<div class="rc-amt">'+fmtPHP(r.amount)+'</div>';
         card.addEventListener("click", function(){ openEditModal(r.id); });
         group.appendChild(card);
@@ -2167,11 +2256,11 @@ Taobao Bag - 3500</div>
   var summaryScroll = document.getElementById("summary-scroll");
 
   function getBudgetExpenseRecords(budget){
-    var direct = state.records.filter(function(r){ return r.budgetId === budget.id; });
+    var direct = state.records.filter(function(r){ return r.budgetId === budget.id && r.active!==false; });
     var nameLower = budget.name.toLowerCase();
     var matchedCats = CATEGORIES.filter(function(c){ return nameLower.indexOf(c.toLowerCase()) !== -1; });
     var fallback = state.records.filter(function(r){
-      return !r.budgetId && matchedCats.indexOf(r.category) !== -1;
+      return !r.budgetId && r.active!==false && matchedCats.indexOf(r.category) !== -1;
     });
     return direct.concat(fallback).sort(function(a,b){ return b.createdAt - a.createdAt; });
   }
@@ -2245,9 +2334,9 @@ Taobao Bag - 3500</div>
     var mKey = now.toISOString().slice(0,7);
     var todayKey = todayISO();
 
-    var monthRecs = state.records.filter(function(r){ return monthKey(r.date)===mKey; });
+    var monthRecs = state.records.filter(function(r){ return monthKey(r.date)===mKey && r.active!==false; });
     var monthTotal = monthRecs.reduce(function(s,r){return s+r.amount;},0);
-    var todayTotal = state.records.filter(function(r){return r.date===todayKey;}).reduce(function(s,r){return s+r.amount;},0);
+    var todayTotal = state.records.filter(function(r){return r.date===todayKey && r.active!==false;}).reduce(function(s,r){return s+r.amount;},0);
 
     var overview = document.createElement("div");
     overview.className = "sum-card";
@@ -2474,7 +2563,7 @@ Taobao Bag - 3500</div>
           card.innerHTML =
             '<div class="rc-cat-dot">'+(CATEGORY_ICON[r.category]||"📌")+'</div>'+
             '<div class="rc-main"><div class="rc-item">'+escapeHtml(r.item)+'</div>'+
-            '<div class="rc-meta">'+escapeHtml(r.category)+(r.source ? " · 💳 "+escapeHtml(r.source) : "")+(r.notes ? " · "+escapeHtml(r.notes) : "")+'</div></div>'+
+            '<div class="rc-meta">'+escapeHtml(dayLabel(r.date))+" · "+escapeHtml(r.category)+(r.source ? " · 💳 "+escapeHtml(r.source) : "")+(r.notes ? " · "+escapeHtml(r.notes) : "")+'</div></div>'+
             '<div class="rc-amt">'+fmtPHP(r.amount)+'</div>';
           card.addEventListener("click", function(){
             closeBudgetExpensesModal();
@@ -2496,8 +2585,13 @@ Taobao Bag - 3500</div>
 
   function renderHeaderTotal(){
     var mKey = new Date().toISOString().slice(0,7);
-    var total = state.records.filter(function(r){return monthKey(r.date)===mKey;}).reduce(function(s,r){return s+r.amount;},0);
+    var total = state.records.filter(function(r){return monthKey(r.date)===mKey && r.active!==false;}).reduce(function(s,r){return s+r.amount;},0);
     document.getElementById("month-amt").textContent = fmtPHP(total);
+
+    var savingsTotal = state.paymentMethods
+      .filter(function(pm){ return (pm.type || "Cash") !== "Credit Card"; })
+      .reduce(function(s,pm){ return s + (pm.remainingBalance!=null && !isNaN(pm.remainingBalance) ? pm.remainingBalance : 0); }, 0);
+    document.getElementById("savings-header-amt").textContent = fmtPHP(savingsTotal);
   }
 
   // ---------- Tabs ----------
@@ -2523,12 +2617,34 @@ Taobao Bag - 3500</div>
     if(!pmName) return 0;
     var nameLower = pmName.trim().toLowerCase();
     return state.records
-      .filter(function(r){ return r.source && r.source.toLowerCase() === nameLower; })
+      .filter(function(r){ return r.source && r.source.toLowerCase() === nameLower && r.active!==false; })
       .reduce(function(s,r){ return s + r.amount; }, 0);
   }
   function getCcAvailable(creditLimit, expensesSum){
     if(creditLimit == null || isNaN(creditLimit)) return null;
     return creditLimit - expensesSum;
+  }
+
+  function pmSortMetric(pm){
+    if((pm.type || "Cash") === "Credit Card") return pm.creditLimit != null ? pm.creditLimit : 0;
+    return pm.remainingBalance != null ? pm.remainingBalance : 0;
+  }
+  function sortPaymentMethodsList(list){
+    var arr = list.slice();
+    if(state.pmSort === "type"){
+      arr.sort(function(a,b){
+        var ta = a.type || "Cash", tb = b.type || "Cash";
+        if(ta !== tb) return ta.localeCompare(tb);
+        return a.name.localeCompare(b.name);
+      });
+    } else if(state.pmSort === "balance"){
+      arr.sort(function(a,b){ return pmSortMetric(b) - pmSortMetric(a); });
+    } else if(state.pmSort === "newest"){
+      arr.sort(function(a,b){ return b.createdAt - a.createdAt; });
+    } else {
+      arr.sort(function(a,b){ return a.name.localeCompare(b.name); });
+    }
+    return arr;
   }
 
   function renderPaymentMethodsList(){
@@ -2538,7 +2654,7 @@ Taobao Bag - 3500</div>
       list.innerHTML = '<div class="empty-ledger">No credit sources yet. Tap "+ New Credit Source" to add one.</div>';
       return;
     }
-    state.paymentMethods.slice().sort(function(a,b){ return a.name.localeCompare(b.name); }).forEach(function(pm){
+    sortPaymentMethodsList(state.paymentMethods).forEach(function(pm){
       var row = document.createElement("div");
       row.className = "pm-row";
       var type = pm.type || "Cash";
@@ -2666,6 +2782,10 @@ Taobao Bag - 3500</div>
     editingPmId = null;
   }
   document.getElementById("btn-new-pm").addEventListener("click", openNewPmModal);
+  document.getElementById("pm-sort-select").addEventListener("change", function(){
+    state.pmSort = this.value;
+    renderPaymentMethodsList();
+  });
   pmModalBackdrop.addEventListener("click", function(e){
     if(e.target === pmModalBackdrop) closePmModal();
   });
@@ -2710,6 +2830,7 @@ Taobao Bag - 3500</div>
     await savePaymentMethods();
     closePmModal();
     renderPaymentMethodsList();
+    renderHeaderTotal();
   });
   btnPmDelete.addEventListener("click", async function(){
     if(!editingPmId) return;
@@ -2717,6 +2838,7 @@ Taobao Bag - 3500</div>
     await savePaymentMethods();
     closePmModal();
     renderPaymentMethodsList();
+    renderHeaderTotal();
   });
 
   // ---------- Add CC Payment / Add Balance entry popup ----------
@@ -2771,7 +2893,7 @@ Taobao Bag - 3500</div>
   }
   function getPaymentMethodExpenseRecords(pm){
     return state.records.filter(function(r){
-      return r.source && r.source.toLowerCase() === pm.name.toLowerCase();
+      return r.source && r.source.toLowerCase() === pm.name.toLowerCase() && r.active!==false;
     }).sort(function(a,b){ return b.createdAt - a.createdAt; });
   }
   function renderExpensesIntoList(listEl, recs){
@@ -2798,7 +2920,7 @@ Taobao Bag - 3500</div>
         card.innerHTML =
           '<div class="rc-cat-dot">'+(CATEGORY_ICON[r.category]||"📌")+'</div>'+
           '<div class="rc-main"><div class="rc-item">'+escapeHtml(r.item)+'</div>'+
-          '<div class="rc-meta">'+escapeHtml(r.category)+(r.notes ? " · "+escapeHtml(r.notes) : "")+'</div></div>'+
+          '<div class="rc-meta">'+escapeHtml(dayLabel(r.date))+" · "+escapeHtml(r.category)+(r.notes ? " · "+escapeHtml(r.notes) : "")+'</div></div>'+
           '<div class="rc-amt">'+fmtPHP(r.amount)+'</div>';
         card.addEventListener("click", function(){
           closePmExpensesModal();
@@ -2921,7 +3043,7 @@ Taobao Bag - 3500</div>
     renderCcEntriesIntoList(document.getElementById("cc-summary-payments-list"), allEntries);
 
     var recs = state.records.filter(function(r){
-      return r.source && ccNamesLower.indexOf(r.source.toLowerCase()) !== -1;
+      return r.source && ccNamesLower.indexOf(r.source.toLowerCase()) !== -1 && r.active!==false;
     }).sort(function(a,b){ return b.createdAt - a.createdAt; });
     var expTotal = recs.reduce(function(s,r){ return s + r.amount; }, 0);
     document.getElementById("cc-summary-expenses-summary").textContent =
@@ -3000,7 +3122,7 @@ Taobao Bag - 3500</div>
     }
 
     var monthKey = todayISO().slice(0,7);
-    var monthRecs = state.records.filter(function(r){ return r.date.slice(0,7) === monthKey; })
+    var monthRecs = state.records.filter(function(r){ return r.date.slice(0,7) === monthKey && r.active!==false; })
       .sort(function(a,b){ return b.createdAt - a.createdAt; });
     var monthTotal = monthRecs.reduce(function(s,r){ return s + r.amount; }, 0);
     document.getElementById("savings-expenses-summary").textContent =
@@ -3026,9 +3148,25 @@ Taobao Bag - 3500</div>
   var fSourceSelect = document.getElementById("f-source-select");
   var fSourceNew = document.getElementById("f-source-new");
   var fNotes = document.getElementById("f-notes");
+  var fDate = document.getElementById("f-date");
   var fCatGrid = document.getElementById("f-cat-grid");
+  var fActiveToggle = document.getElementById("f-active-toggle");
   var selectedCat = null;
+  var selectedActive = true;
   var isNewExpense = false;
+
+  function buildActiveToggle(){
+    fActiveToggle.querySelectorAll(".active-toggle-btn").forEach(function(btn){
+      var val = btn.getAttribute("data-active") === "true";
+      btn.classList.toggle("selected", val === selectedActive);
+    });
+  }
+  fActiveToggle.querySelectorAll(".active-toggle-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      selectedActive = btn.getAttribute("data-active") === "true";
+      buildActiveToggle();
+    });
+  });
 
   function buildCatGrid(){
     fCatGrid.innerHTML = "";
@@ -3112,8 +3250,11 @@ Taobao Bag - 3500</div>
     fAmount.value = rec.amount;
     fAmount.style.borderColor = "";
     fNotes.value = rec.notes || "";
+    fDate.value = rec.date || todayISO();
     selectedCat = rec.category;
+    selectedActive = rec.active !== false;
     buildCatGrid();
+    buildActiveToggle();
     populateBudgetSelect(rec.budgetId || "");
     populateSourceSelect(rec.source || "");
     modalBackdrop.classList.add("open");
@@ -3127,8 +3268,11 @@ Taobao Bag - 3500</div>
     fAmount.value = "";
     fAmount.style.borderColor = "";
     fNotes.value = "";
+    fDate.value = todayISO();
     selectedCat = "Uncategorized";
+    selectedActive = true;
     buildCatGrid();
+    buildActiveToggle();
     populateBudgetSelect("");
     populateSourceSelect("");
     modalBackdrop.classList.add("open");
@@ -3150,6 +3294,7 @@ Taobao Bag - 3500</div>
     }
     fAmount.style.borderColor = "";
     var budgetId = fBudgetSelect.value || "";
+    var chosenDate = fDate.value || todayISO();
 
     var sourceValue = "";
     if(fSourceSelect.value === "__new__"){
@@ -3168,7 +3313,8 @@ Taobao Bag - 3500</div>
         budgetId: budgetId,
         source: sourceValue,
         notes: fNotes.value.trim(),
-        date: todayISO(),
+        active: selectedActive,
+        date: chosenDate,
         createdAt: Date.now()
       };
       state.records.push(newRec);
@@ -3181,6 +3327,8 @@ Taobao Bag - 3500</div>
       rec.budgetId = budgetId;
       rec.source = sourceValue;
       rec.notes = fNotes.value.trim();
+      rec.active = selectedActive;
+      rec.date = chosenDate;
     }
     await saveRecords();
     closeModal();
