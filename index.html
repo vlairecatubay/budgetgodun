@@ -6,26 +6,26 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1F2A44">
+<meta name="theme-color" content="#4F7C5C">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <title>BudgetGodun — Chat Your Spend</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#1F2A44;
-    --accent:#1F2A44;
-    --ink-soft:#374463;
-    --paper:#F0EBDC;
-    --paper-dim:#E7E0CB;
-    --paper-line:#CBBE9E;
-    --card:#FFFDF7;
-    --expense:#A8433D;
-    --green:#3F6B4A;
-    --muted:#7A7360;
-    --white:#FFFDF8;
-    --shadow: 0 1px 2px rgba(31,42,68,.06), 0 8px 24px -12px rgba(31,42,68,.18);
+    --ink:#2C4A3B;
+    --accent:#4F7C5C;
+    --ink-soft:#4B6857;
+    --paper:#EEF2E4;
+    --paper-dim:#E1EAD8;
+    --paper-line:#C6D9BE;
+    --card:#FDFBF4;
+    --expense:#C17A56;
+    --green:#4F7C5C;
+    --muted:#7C8B77;
+    --white:#FEFEF9;
+    --shadow: 0 1px 2px rgba(44,74,59,.07), 0 10px 26px -12px rgba(44,74,59,.22);
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
@@ -33,8 +33,8 @@
   html,body{height:100%;}
   body{
     margin:0;
-    background: #14213A;
-    background: radial-gradient(1200px 800px at 50% -10%, #223255 0%, #14213A 60%);
+    background: #1E3328;
+    background: radial-gradient(1200px 800px at 50% -10%, #35543F 0%, #1E3328 60%);
     font-family:'Inter',sans-serif;
     color:var(--ink);
     display:flex;
@@ -56,26 +56,27 @@
 
   /* ---------- Header ---------- */
   header{
-    padding: calc(14px + var(--safe-top)) 20px 14px;
+    padding: calc(14px + var(--safe-top)) 20px 16px;
     background: var(--accent);
     color: var(--white);
     flex-shrink:0;
     position:relative;
     z-index:5;
+    border-radius: 0 0 22px 22px;
   }
   header .brand{
     display:flex; align-items:baseline; justify-content:space-between;
   }
   header h1{
-    font-family:'Fraunces', serif;
+    font-family:'Fredoka', sans-serif;
     font-weight:700;
-    font-size:22px;
+    font-size:23px;
     margin:0;
     letter-spacing:.2px;
   }
   header .tagline{
     font-size:11px;
-    color:#AEB8D4;
+    color:#BBD1AE;
     margin-top:2px;
     font-family:'IBM Plex Mono', monospace;
     letter-spacing:.4px;
@@ -85,13 +86,13 @@
     text-align:right;
   }
   header .month-total .label{
-    font-size:10px; color:#AEB8D4; text-transform:uppercase; letter-spacing:.6px; font-family:'IBM Plex Mono',monospace;
+    font-size:10px; color:#BBD1AE; text-transform:uppercase; letter-spacing:.6px; font-family:'IBM Plex Mono',monospace;
   }
   header .month-total .amt{
     font-family:'IBM Plex Mono', monospace;
     font-size:17px;
     font-weight:600;
-    color:#F2D8B0;
+    color:#F0D9A8;
   }
   header .month-total .savings-row{
     margin-top:5px;
@@ -107,7 +108,7 @@
   .header-icon-btn{
     background:none;
     border:none;
-    color:#AEB8D4;
+    color:#BBD1AE;
     padding:5px;
     margin-left:8px;
     cursor:pointer;
@@ -116,7 +117,7 @@
     justify-content:center;
     flex-shrink:0;
   }
-  .header-icon-btn svg{ width:20px; height:20px; stroke:#AEB8D4; }
+  .header-icon-btn svg{ width:20px; height:20px; stroke:#BBD1AE; }
   .header-icon-btn:active{ opacity:.6; }
 
   /* ---------- Tabs content area ---------- */
@@ -181,7 +182,7 @@
   }
   .bubble.user{
     background:var(--accent);
-    color:#EDEFF7;
+    color:#F1F5EC;
     border-bottom-right-radius:5px;
   }
   .bubble.system{
@@ -192,7 +193,7 @@
 
   .receipt{
     background:var(--card);
-    border-radius:12px;
+    border-radius:16px;
     box-shadow:var(--shadow);
     border-bottom-right-radius:5px;
     overflow:hidden;
@@ -270,7 +271,7 @@
 
   .budget-card{
     background:var(--card);
-    border-radius:12px;
+    border-radius:16px;
     box-shadow:var(--shadow);
     border-bottom-left-radius:5px;
     overflow:hidden;
@@ -307,7 +308,7 @@
   }
   .picker-option:active{ background:var(--accent); color:var(--white); }
   .picker-option .po-amt{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--muted); flex-shrink:0; }
-  .picker-option:active .po-amt{ color:#CBD3E8; }
+  .picker-option:active .po-amt{ color:#D4E4CC; }
 
   /* ---------- Helper buttons ---------- */
   .helper-bar{
@@ -321,16 +322,17 @@
   }
   .helper-btn{
     flex-shrink:0;
-    font-family:'Inter',sans-serif;
+    font-family:'Fredoka',sans-serif;
     font-size:12.5px;
     font-weight:600;
-    padding:7px 13px;
-    border-radius:16px;
-    border:1px solid var(--accent);
+    padding:8px 15px;
+    border-radius:999px;
+    border:1.5px solid var(--accent);
     background:var(--card);
     color:var(--ink);
     cursor:pointer;
     white-space:nowrap;
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.6), 0 3px 8px -3px rgba(0,0,0,.15);
   }
   .helper-btn:active{ transform:scale(.96); background:var(--accent); color:var(--white); }
   .helper-btn.disabled{ opacity:.4; pointer-events:none; }
@@ -348,31 +350,64 @@
     flex:1;
     resize:none;
     border:1px solid var(--paper-line);
-    background:var(--card);
-    border-radius:18px;
-    padding:10px 14px;
+    background:var(--paper);
+    border-radius:22px;
+    padding:11px 16px;
     font-family:'Inter',sans-serif;
     font-size:15px;
     line-height:1.4;
     max-height:110px;
     color:var(--ink);
     outline:none;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.07), inset 0 -1px 1px rgba(255,255,255,.5);
   }
-  #chat-input:focus{ border-color:var(--ink-soft); }
+  #chat-input:focus{ border-color:var(--accent); }
   #send-btn{
-    width:40px;height:40px;flex-shrink:0;
+    width:42px;height:42px;flex-shrink:0;
     border-radius:50%;
     border:none;
     background:var(--accent);
     color:var(--white);
     display:flex;align-items:center;justify-content:center;
     cursor:pointer;
+    box-shadow: inset 0 2px 2px rgba(255,255,255,.35), inset 0 -3px 6px rgba(0,0,0,.16), 0 6px 14px -5px rgba(44,74,59,.5);
   }
   #send-btn:active{ transform:scale(.94); }
   #send-btn:disabled{ opacity:.4; }
 
   /* ---------- LEDGER VIEW ---------- */
   #ledger-scroll{ flex:1; overflow-y:auto; padding:14px 14px 90px; }
+  .ledger-search-input{
+    width:100%;
+    border:1px solid var(--paper-line);
+    background:var(--card);
+    border-radius:12px;
+    padding:10px 13px;
+    font-size:14px;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    margin-bottom:12px;
+    -webkit-appearance:none;
+  }
+  .ledger-search-input:focus{ outline:none; border-color:var(--ink-soft); }
+  .ledger-search-input::-webkit-search-cancel-button{ -webkit-appearance:none; }
+  .month-group{ margin-bottom:20px; }
+  .month-label{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--ink);
+    margin-bottom:9px;
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--paper-line);
+  }
+  .month-label .month-total-amt{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--expense);
+  }
   .ledger-controls{
     display:flex; gap:8px; margin-bottom:14px; overflow-x:auto; padding-bottom:2px;
   }
@@ -380,13 +415,14 @@
     flex-shrink:0;
     font-family:'IBM Plex Mono', monospace;
     font-size:11.5px;
-    padding:6px 12px;
-    border-radius:20px;
+    padding:7px 13px;
+    border-radius:999px;
     background:var(--card);
     border:1px solid var(--paper-line);
     color:var(--ink-soft);
     cursor:pointer;
     white-space:nowrap;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,.6), 0 2px 6px -3px rgba(0,0,0,.12);
   }
   .chip.active{ background:var(--accent); color:var(--white); border-color:var(--accent); }
 
@@ -399,8 +435,8 @@
   .day-label b{ color:var(--ink-soft); }
   .record-card{
     background:var(--card);
-    border-radius:12px;
-    box-shadow:var(--shadow);
+    border-radius:16px;
+    box-shadow: 4px 5px 0 0 var(--paper-line), 0 10px 22px -12px rgba(44,74,59,.35);
     padding:11px 13px;
     display:flex; align-items:center; gap:10px;
     margin-bottom:8px;
@@ -438,22 +474,32 @@
   nav.tabbar{
     flex-shrink:0;
     display:flex;
-    background:var(--white);
-    border-top:1px solid var(--paper-line);
-    padding: 6px 6px calc(6px + var(--safe-bottom));
+    background:var(--accent);
+    border-radius:999px;
+    margin: 0 14px calc(12px + var(--safe-bottom));
+    padding: 8px 6px;
+    box-shadow: inset 0 2px 2px rgba(255,255,255,.2), inset 0 -4px 10px rgba(0,0,0,.18), 0 12px 26px -10px rgba(44,74,59,.5);
   }
   nav.tabbar button{
     flex:1;
     background:none; border:none;
-    display:flex; flex-direction:column; align-items:center; gap:3px;
-    padding:6px 0 2px;
-    color:var(--muted);
-    font-family:'Inter',sans-serif;
-    font-size:10.5px;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:2px 0;
+    color:rgba(255,255,255,.68);
+    font-family:'Fredoka',sans-serif;
+    font-size:9px;
+    font-weight:500;
     cursor:pointer;
   }
-  nav.tabbar button svg{ width:22px;height:22px; stroke:var(--muted); }
-  nav.tabbar button.active{ color:var(--accent); }
+  .tab-icon-badge{
+    width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:1px;
+    transition: background-color .15s ease;
+  }
+  nav.tabbar button svg{ width:19px;height:19px; stroke:rgba(255,255,255,.68); transition: stroke .15s ease; }
+  nav.tabbar button.active{ color:#fff; }
+  nav.tabbar button.active .tab-icon-badge{ background:#fff; box-shadow: 0 3px 8px -2px rgba(0,0,0,.3); }
   nav.tabbar button.active svg{ stroke:var(--accent); }
 
   /* ---------- Modal ---------- */
@@ -463,33 +509,51 @@
   }
   .modal-backdrop.open{ display:flex; }
   .modal-sheet{
-    background:var(--paper); width:100%; border-radius:20px 20px 0 0;
-    padding:18px 20px calc(18px + var(--safe-bottom));
+    background:var(--paper); width:100%; border-radius:32px 32px 0 0;
+    padding:22px 22px calc(20px + var(--safe-bottom));
     max-height:82%; overflow-y:auto;
+    box-shadow: 0 -8px 30px -10px rgba(0,0,0,.25);
   }
-  .modal-sheet h2{ font-family:'Fraunces',serif; font-size:19px; margin:0 0 14px; }
+  .modal-sheet h2{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:19px; margin:0 0 14px; }
   .field{ margin-bottom:12px; }
   .field label{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin-bottom:5px; font-family:'IBM Plex Mono',monospace;}
   .field input, .field textarea, .field select{
-    width:100%; border:1px solid var(--paper-line); background:var(--card); border-radius:10px;
-    padding:10px 12px; font-size:15px; font-family:'Inter',sans-serif; color:var(--ink); outline:none;
+    width:100%; border:1px solid var(--paper-line); background:var(--paper); border-radius:18px;
+    padding:11px 15px; font-size:15px; font-family:'Inter',sans-serif; color:var(--ink); outline:none;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.07), inset 0 -1px 1px rgba(255,255,255,.5);
   }
-  .field input:focus, .field textarea:focus, .field select:focus{ border-color:var(--ink-soft); }
+  .field input:focus, .field textarea:focus, .field select:focus{ border-color:var(--accent); }
   .cat-grid{ display:flex; flex-wrap:wrap; gap:7px; }
   .cat-pill{
-    padding:7px 12px; border-radius:16px; border:1px solid var(--paper-line); background:var(--card);
+    padding:8px 13px; border-radius:999px; border:1px solid var(--paper-line); background:var(--card);
     font-size:12.5px; color:var(--ink-soft); cursor:pointer;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,.6), 0 2px 6px -3px rgba(0,0,0,.1);
   }
   .cat-pill.selected{ background:var(--accent); border-color:var(--accent); color:var(--white); }
   .modal-actions{ display:flex; gap:10px; margin-top:16px; }
-  .btn{ flex:1; padding:12px; border-radius:12px; border:none; font-size:14.5px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; }
-  .btn-primary{ background:var(--accent); color:var(--white); }
-  .btn-danger{ background:transparent; color:var(--expense); border:1px solid var(--expense); }
-  .btn-ghost{ background:transparent; color:var(--muted); border:1px solid var(--paper-line); }
+  .btn{
+    flex:1; padding:13px; border-radius:999px; border:none;
+    font-size:14.5px; font-weight:600; cursor:pointer;
+    font-family:'Fredoka',sans-serif;
+    transition: transform .08s ease;
+  }
+  .btn:active{ transform: scale(.97); }
+  .btn-primary{
+    background:var(--accent); color:var(--white);
+    box-shadow: inset 0 2px 2px rgba(255,255,255,.35), inset 0 -4px 8px rgba(0,0,0,.16), 0 8px 16px -6px rgba(44,74,59,.45);
+  }
+  .btn-danger{
+    background:var(--card); color:var(--expense); border:1.5px solid var(--expense);
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.6), 0 4px 10px -4px rgba(0,0,0,.15);
+  }
+  .btn-ghost{
+    background:var(--card); color:var(--ink-soft); border:1.5px solid var(--paper-line);
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.6), 0 4px 10px -4px rgba(0,0,0,.12);
+  }
 
   #budgets-scroll{ flex:1; overflow-y:auto; padding:14px 14px 90px; }
   .budget-list-card{
-    background:var(--card); border-radius:12px; box-shadow:var(--shadow); padding:13px 14px; margin-bottom:10px; cursor:pointer;
+    background:var(--card); border-radius:16px; box-shadow: 4px 5px 0 0 var(--paper-line), 0 10px 22px -12px rgba(44,74,59,.35); padding:13px 14px; margin-bottom:10px; cursor:pointer;
   }
   .budget-list-card:active{ transform:scale(.99); }
   .budget-list-card .blc-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
@@ -540,7 +604,7 @@
   }
   .toast{
     background: var(--ink);
-    color:#EDEFF7;
+    color:#F1F5EC;
     border-left:4px solid var(--expense);
     border-radius:10px;
     padding:11px 12px;
@@ -553,8 +617,8 @@
   }
   .toast .toast-icon{ font-size:16px; flex-shrink:0; }
   .toast .toast-body{ flex:1; min-width:0; }
-  .toast .toast-title{ font-weight:700; margin-bottom:2px; font-size:12px; text-transform:uppercase; letter-spacing:.3px; color:#F2D8B0; }
-  .toast .toast-close{ background:none; border:none; color:#AEB8D4; font-size:15px; cursor:pointer; line-height:1; padding:0 0 0 4px; flex-shrink:0; }
+  .toast .toast-title{ font-weight:700; margin-bottom:2px; font-size:12px; text-transform:uppercase; letter-spacing:.3px; color:#F0D9A8; }
+  .toast .toast-close{ background:none; border:none; color:#BBD1AE; font-size:15px; cursor:pointer; line-height:1; padding:0 0 0 4px; flex-shrink:0; }
   @keyframes toastIn{ from{ opacity:0; transform:translateY(-10px); } to{ opacity:1; transform:translateY(0); } }
 
   /* ---------- Calculator ---------- */
@@ -661,6 +725,48 @@
     padding:2px; background:var(--card); cursor:pointer;
   }
   .theme-custom-label{ font-size:13px; color:var(--ink-soft); font-family:'Inter',sans-serif; }
+  .bg-preview-img{
+    width:100%; max-height:130px; object-fit:cover;
+    border-radius:10px; border:1px solid var(--paper-line);
+    margin-bottom:10px; display:block;
+  }
+  .bg-opacity-row{
+    display:flex; align-items:center; gap:10px; margin-top:10px;
+  }
+  .bg-opacity-row input[type="range"]{
+    flex:1; accent-color:var(--accent);
+  }
+  .bg-opacity-value{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); width:38px; text-align:right; flex-shrink:0;
+  }
+
+  /* ---------- iOS-style glass effect ---------- */
+  #app.glass-mode header{
+    background: color-mix(in srgb, var(--accent) 55%, transparent);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+  #app.glass-mode nav.tabbar{
+    background: color-mix(in srgb, var(--accent) 55%, transparent);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+  #app.glass-mode .modal-sheet{
+    background: color-mix(in srgb, var(--paper) 75%, transparent);
+    backdrop-filter: blur(26px) saturate(180%);
+    -webkit-backdrop-filter: blur(26px) saturate(180%);
+  }
+  #app.glass-mode .toast{
+    background: color-mix(in srgb, var(--ink) 68%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+  #app.glass-mode .helper-bar,
+  #app.glass-mode .input-bar{
+    background: color-mix(in srgb, var(--paper-dim) 70%, transparent);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+  }
   .settings-data-actions{ display:flex; gap:10px; margin-bottom:8px; }
   .settings-data-actions .btn{ flex:1; }
   .settings-data-hint{ font-size:11.5px; color:var(--muted); line-height:1.5; }
@@ -669,15 +775,16 @@
   .active-toggle{ display:flex; gap:8px; }
   .active-toggle-btn{
     flex:1;
-    padding:9px 10px;
-    border-radius:10px;
+    padding:10px 10px;
+    border-radius:999px;
     border:1px solid var(--paper-line);
     background:var(--card);
-    font-family:'Inter',sans-serif;
+    font-family:'Fredoka',sans-serif;
     font-size:13px;
     font-weight:600;
     color:var(--ink-soft);
     cursor:pointer;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,.6), 0 2px 6px -3px rgba(0,0,0,.1);
   }
   .active-toggle-btn.selected{ background:var(--accent); border-color:var(--accent); color:var(--white); }
   .active-toggle-hint{ font-size:11px; color:var(--muted); margin-top:6px; line-height:1.4; }
@@ -701,7 +808,7 @@
   /* ---------- Credit Sources tab ---------- */
   #pm-scroll{ flex:1; overflow-y:auto; padding:14px 14px 90px; }
   .pm-row{
-    background:var(--card); border-radius:12px; box-shadow:var(--shadow);
+    background:var(--card); border-radius:16px; box-shadow: 4px 5px 0 0 var(--paper-line), 0 10px 22px -12px rgba(44,74,59,.35);
     padding:13px 14px; margin-bottom:8px; cursor:pointer;
     display:flex; align-items:center; gap:10px;
     font-size:14.5px; font-weight:600; color:var(--ink);
@@ -743,7 +850,7 @@
     <div class="brand">
       <div>
         <h1>BudgetGodun</h1>
-        <div class="tagline">chat your spend</div>
+        <div class="tagline">🌿 chat your spend</div>
       </div>
       <div class="month-total">
         <div class="label" id="month-label">This month</div>
@@ -771,7 +878,7 @@
           <div class="ex">Grocery Landers - 10k
 Haircut - 250
 Taobao Bag - 3500</div>
-          <div style="margin-top:12px;">You can also just ask a question, like "How much did I spend on food this month?"</div>
+          <div style="margin-top:12px;">You can also just ask a question, like "How much did I spend on food this month?" — works offline, no setup needed.</div>
         </div>
       </div>
       <div class="helper-bar" id="helper-bar">
@@ -791,6 +898,7 @@ Taobao Bag - 3500</div>
     <section class="view" id="view-ledger">
       <div id="ledger-scroll">
         <button class="btn btn-primary" id="btn-new-expense" style="width:100%; margin-bottom:14px;">+ New Expense</button>
+        <input type="search" id="ledger-search" class="ledger-search-input" placeholder="🔍 Search expenses...">
         <div class="ledger-controls" id="ledger-filters"></div>
         <div id="ledger-list"></div>
       </div>
@@ -831,23 +939,23 @@ Taobao Bag - 3500</div>
 
   <nav class="tabbar">
     <button data-tab="chat" class="active">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <span class="tab-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></span>
       Chat
     </button>
     <button data-tab="ledger">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      <span class="tab-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
       Ledger
     </button>
     <button data-tab="budgets">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4z"></path></svg>
+      <span class="tab-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4z"></path></svg></span>
       Budgets
     </button>
     <button data-tab="summary">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+      <span class="tab-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg></span>
       Summary
     </button>
     <button data-tab="paymentmethods">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4z"></path></svg>
+      <span class="tab-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4z"></path></svg></span>
       Credit Sources
     </button>
   </nav>
@@ -1109,6 +1217,28 @@ Taobao Bag - 3500</div>
         <button type="button" class="pm-link-btn" id="btn-theme-reset">Reset to default</button>
       </div>
       <div class="field">
+        <label>Background Image</label>
+        <div id="bg-preview-wrap" style="display:none;">
+          <img id="bg-preview" class="bg-preview-img" alt="Background preview">
+        </div>
+        <div class="settings-data-actions">
+          <button type="button" class="btn btn-ghost" id="btn-bg-upload">🖼️ Choose Image</button>
+          <button type="button" class="btn btn-ghost" id="btn-bg-remove">✕ Remove</button>
+        </div>
+        <div class="bg-opacity-row">
+          <label for="f-bg-opacity" class="theme-custom-label">Opacity</label>
+          <input type="range" id="f-bg-opacity" min="0" max="100" value="30">
+          <span class="bg-opacity-value" id="bg-opacity-value">30%</span>
+        </div>
+        <div class="settings-data-hint">Sets a background image behind the app, with an opacity you control. Stored only on this device.</div>
+        <input type="file" id="f-bg-image" accept="image/*" style="display:none;">
+        <div class="active-toggle" id="f-glass-toggle" style="margin-top:12px;">
+          <button type="button" class="active-toggle-btn" data-glass="true">✨ Glass Effect On</button>
+          <button type="button" class="active-toggle-btn" data-glass="false">Off</button>
+        </div>
+        <div class="settings-data-hint">Gives the header, tab bar, and pop-up sheets an iOS-style frosted glass look.</div>
+      </div>
+      <div class="field">
         <label>Data</label>
         <div class="settings-data-actions">
           <button type="button" class="btn btn-ghost" id="btn-export-data">⬇️ Export Data</button>
@@ -1116,6 +1246,16 @@ Taobao Bag - 3500</div>
         </div>
         <div class="settings-data-hint">Export saves everything — expenses, budgets, credit sources, and your last 50 chat messages — as a JSON file. Import replaces current data with a previously exported file.</div>
         <input type="file" id="import-file-input" accept="application/json,.json" style="display:none;">
+      </div>
+      <div class="field">
+        <label>AI Features</label>
+        <input type="password" id="f-ai-api-key" placeholder="sk-ant-...">
+        <div class="settings-data-hint">
+          Needed for the "ask a question" chat feature when running this app outside Claude.ai (e.g. saved to your Home Screen or as an APK).
+          Get a key at <span style="text-decoration:underline;">console.anthropic.com</span> → API Keys.
+          Your key is stored only on this device and sent directly to Anthropic — never through any server of ours. Usage is billed to your own Anthropic account.
+        </div>
+        <button type="button" class="pm-link-btn" id="btn-ai-key-clear">Remove saved key</button>
       </div>
       <div class="modal-actions">
         <button class="btn btn-primary" id="btn-app-settings-close" style="width:100%;">Done</button>
@@ -1202,7 +1342,7 @@ Taobao Bag - 3500</div>
     [/emergency|urgent|hospitalization|calamity/i,"Emergency"]
   ];
 
-  var state = { records: [], chatLog: [], budgets: [], paymentMethods: [], ledgerFilter: "all", pmSort: "name", activeTab: "chat", pendingBudget: null, pendingAssociation: null, pendingUpdate: null, pendingPmFlow: null };
+  var state = { records: [], chatLog: [], budgets: [], paymentMethods: [], ledgerFilter: "all", ledgerSearch: "", pmSort: "name", activeTab: "chat", pendingBudget: null, pendingAssociation: null, pendingUpdate: null, pendingPmFlow: null };
   var editingId = null;
 
   // ---------- Storage ----------
@@ -1675,6 +1815,252 @@ Taobao Bag - 3500</div>
     pushPrompt("Budget saved: " + name + " — " + fmtPHP(amount) + (notes ? " (" + notes + ")" : "") + ". You can associate expense items to it anytime.");
   }
 
+  // ---------- Offline data Q&A engine (no network/API needed) ----------
+  function parseTimeRangeFromText(tl){
+    var today = todayISO();
+    if(/\btoday\b/.test(tl)){
+      return { label:"today", recs: state.records.filter(function(r){ return r.date===today && r.active!==false; }) };
+    }
+    if(/\byesterday\b/.test(tl)){
+      var y = new Date(); y.setDate(y.getDate()-1);
+      var yKey = y.toISOString().slice(0,10);
+      return { label:"yesterday", recs: state.records.filter(function(r){ return r.date===yKey && r.active!==false; }) };
+    }
+    if(/\bthis week\b|\bpast week\b|\blast 7 days\b/.test(tl)){
+      var cutoff = new Date(); cutoff.setDate(cutoff.getDate()-7);
+      return { label:"this week", recs: state.records.filter(function(r){
+        var d = new Date(r.date+"T00:00:00");
+        return d >= cutoff && r.active!==false;
+      }) };
+    }
+    if(/\ball time\b|\boverall\b|\bever\b|\btotal ever\b/.test(tl)){
+      return { label:"overall", recs: state.records.filter(function(r){ return r.active!==false; }) };
+    }
+    var mKey = todayISO().slice(0,7);
+    return { label:"this month", recs: state.records.filter(function(r){ return monthKey(r.date)===mKey && r.active!==false; }) };
+  }
+  function findCategoryInText(tl){
+    var found = CATEGORIES.filter(function(c){ return c!=="Uncategorized"; })
+      .find(function(c){ return tl.indexOf(c.toLowerCase()) !== -1; });
+    return found || null;
+  }
+  function findBudgetInText(tl){
+    return state.budgets.find(function(b){ return tl.indexOf(b.name.toLowerCase()) !== -1; }) || null;
+  }
+  function findSourceInText(tl){
+    return state.paymentMethods.find(function(pm){ return tl.indexOf(pm.name.toLowerCase()) !== -1; }) || null;
+  }
+  function liquidSavingsTotal(){
+    return state.paymentMethods.filter(function(pm){ return (pm.type||"Cash")!=="Credit Card"; })
+      .reduce(function(s,pm){ return s + (pm.remainingBalance!=null ? pm.remainingBalance : 0); }, 0);
+  }
+  function totalCcDebt(){
+    return state.paymentMethods.filter(function(pm){ return pm.type==="Credit Card"; })
+      .reduce(function(s,pm){ return s + getCcExpensesSum(pm.name); }, 0);
+  }
+
+  function tryOfflineAnswer(question){
+    var tl = question.trim().toLowerCase();
+    if(!tl) return null;
+
+    // Net balance / net worth
+    if(/net worth|net balance|net position|how much am i (really )?worth/.test(tl)){
+      var sv = liquidSavingsTotal();
+      var debt = totalCcDebt();
+      var net = sv - debt;
+      return "Net balance: " + fmtPHP(net) + " (" + fmtPHP(sv) + " liquid savings minus " + fmtPHP(debt) + " in credit card debt).";
+    }
+
+    // Total credit card debt across all cards
+    if(/total (credit card )?debt|how much do i owe|total owed|combined credit card/.test(tl)){
+      var ccCount = state.paymentMethods.filter(function(pm){ return pm.type==="Credit Card"; }).length;
+      if(ccCount===0) return "You don't have any credit sources set to \"Credit Card\" type yet.";
+      return "Your total credit card debt across " + ccCount + " card" + (ccCount!==1?"s":"") + " is " + fmtPHP(totalCcDebt()) + ".";
+    }
+
+    // Savings
+    if(/saving|liquid/.test(tl)){
+      return "Your liquid savings total is " + fmtPHP(liquidSavingsTotal()) + " across your Cash, Debit, and Mobile Wallet sources.";
+    }
+
+    // Available credit / credit limit
+    if(/available credit|credit limit|credit card expense|how much credit/.test(tl)){
+      var src = findSourceInText(tl);
+      var ccSources = (src && src.type==="Credit Card") ? [src] : state.paymentMethods.filter(function(pm){ return pm.type==="Credit Card"; });
+      if(ccSources.length===0){
+        return state.paymentMethods.some(function(pm){ return pm.type==="Credit Card"; })
+          ? "I couldn't match that to one of your credit cards by name."
+          : "You don't have any credit sources set to \"Credit Card\" type yet.";
+      }
+      var lines = ccSources.map(function(pm){
+        var used = getCcExpensesSum(pm.name);
+        var avail = getCcAvailable(pm.creditLimit, used);
+        if(avail==null) return pm.name + ": no credit limit set yet.";
+        return pm.name + " — " + fmtPHP(avail) + " available of " + fmtPHP(pm.creditLimit) + " (used " + fmtPHP(used) + ")";
+      });
+      return lines.join(". ") + ".";
+    }
+
+    // Budgets near/over their limit
+    if(/near(ing)? (the )?limit|close to (max|the limit)|over budget|maxing out|which budgets?.*(over|close|near)/.test(tl)){
+      var flagged = state.budgets.map(function(b){
+        var spent = budgetActual(b);
+        var pct = b.amount>0 ? spent/b.amount : 0;
+        return { b:b, spent:spent, pct:pct };
+      }).filter(function(x){ return x.pct >= 0.9; });
+      if(state.budgets.length===0) return "You don't have any budgets set up yet — tap \"Plan Budget\" above to create one.";
+      if(flagged.length===0) return "None of your budgets are near their limit right now — nice!";
+      var flines = flagged.map(function(x){
+        return x.b.name + " (" + Math.round(x.pct*100) + "%, " +
+          (x.spent > x.b.amount ? fmtPHP(x.spent - x.b.amount)+" over" : fmtPHP(x.b.amount - x.spent)+" left") + ")";
+      });
+      return "Budgets close to or over their limit: " + flines.join(", ") + ".";
+    }
+
+    // Budget status (specific budget, or overview of all)
+    if(/budget/.test(tl)){
+      var b = findBudgetInText(tl);
+      if(b){
+        var spent = budgetActual(b);
+        var remaining = b.amount - spent;
+        return '"' + b.name + '" — ' + fmtPHP(spent) + " spent of " + fmtPHP(b.amount) + ", " +
+          (remaining>=0 ? fmtPHP(remaining)+" left." : fmtPHP(Math.abs(remaining))+" over budget.");
+      }
+      if(state.budgets.length===0) return "You don't have any budgets set up yet — tap \"Plan Budget\" above to create one.";
+      var totalRemaining = state.budgets.reduce(function(s,bb){ return s + (bb.amount - budgetActual(bb)); }, 0);
+      var parts = state.budgets.map(function(bb){
+        var sp = budgetActual(bb); var rem = bb.amount - sp;
+        return bb.name + " (" + (rem>=0 ? fmtPHP(rem)+" left" : fmtPHP(Math.abs(rem))+" over") + ")";
+      });
+      return "Total budget remaining: " + fmtPHP(totalRemaining) + ". Here's where each stands: " + parts.join(", ") + ".";
+    }
+
+    // Top spending categories / "where does my money go"
+    if(/where.*money go|spending the most|biggest categor|top categor|category breakdown|spend(ing)? breakdown/.test(tl)){
+      var rangeB = parseTimeRangeFromText(tl);
+      var byCat = {};
+      rangeB.recs.forEach(function(r){ byCat[r.category] = (byCat[r.category]||0) + r.amount; });
+      var catList = Object.keys(byCat).map(function(k){ return { cat:k, amt:byCat[k] }; }).sort(function(a,b){ return b.amt-a.amt; });
+      if(catList.length===0) return "No expenses logged " + rangeB.label + " yet.";
+      var topCats = catList.slice(0,3).map(function(c){ return c.cat + " (" + fmtPHP(c.amt) + ")"; });
+      return "Your top spending " + rangeB.label + ": " + topCats.join(", ") + ".";
+    }
+
+    // Most used payment method
+    if(/most used|use the most|favorite (payment|credit source)|most frequent/.test(tl)){
+      var rangeC = parseTimeRangeFromText(tl);
+      var bySrc = {};
+      rangeC.recs.forEach(function(r){ if(r.source){ bySrc[r.source] = (bySrc[r.source]||0)+1; } });
+      var srcKeys = Object.keys(bySrc);
+      if(srcKeys.length===0) return "I don't see any expenses with a payment method tagged " + rangeC.label + ".";
+      srcKeys.sort(function(a,b){ return bySrc[b]-bySrc[a]; });
+      return "Your most used payment method " + rangeC.label + " is " + srcKeys[0] + " (" + bySrc[srcKeys[0]] + " transaction" + (bySrc[srcKeys[0]]!==1?"s":"") + ").";
+    }
+
+    // Planning-only items summary
+    if(/planning item|plan(ned)? item|what.*i have planned|show.*planning|planning list/.test(tl)){
+      var planningRecs = state.records.filter(function(r){ return r.active===false; });
+      if(planningRecs.length===0) return "You don't have any planning-only items right now.";
+      var planTotal = planningRecs.reduce(function(s,r){ return s+r.amount; }, 0);
+      var planList = planningRecs.slice(0,5).map(function(r){ return r.item + " (" + fmtPHP(r.amount) + ")"; });
+      return "You have " + planningRecs.length + " planning item" + (planningRecs.length!==1?"s":"") + " totaling " + fmtPHP(planTotal) + ": " +
+        planList.join(", ") + (planningRecs.length>5 ? ", and more" : "") + ".";
+    }
+
+    // Top N expenses (list) — must come before the singular "biggest expense" check
+    if(/top \d*\s*expenses|biggest expenses|largest expenses|top expenses/.test(tl)){
+      var rangeD = parseTimeRangeFromText(tl);
+      if(rangeD.recs.length===0) return "No expenses logged " + rangeD.label + ".";
+      var sortedTop = rangeD.recs.slice().sort(function(a,b){ return b.amount-a.amount; }).slice(0,5);
+      var topList = sortedTop.map(function(r){ return r.item + " (" + fmtPHP(r.amount) + ")"; });
+      return "Your top expenses " + rangeD.label + ": " + topList.join(", ") + ".";
+    }
+
+    // Biggest single expense
+    if(/biggest|largest|most expensive|highest expense/.test(tl)){
+      var range = parseTimeRangeFromText(tl);
+      if(range.recs.length===0) return "I don't see any expenses logged for " + range.label + ".";
+      var top = range.recs.slice().sort(function(a,b){ return b.amount-a.amount; })[0];
+      return "Your biggest expense " + range.label + " was \"" + top.item + "\" at " + fmtPHP(top.amount) + " (" + top.category + ").";
+    }
+
+    // Average daily spend
+    if(/average (daily|per day)|per day (average|spend)|daily average/.test(tl)){
+      var rangeE = parseTimeRangeFromText(tl);
+      var totalE = rangeE.recs.reduce(function(s,r){ return s+r.amount; }, 0);
+      var days;
+      if(rangeE.label==="this month"){ days = new Date().getDate(); }
+      else if(rangeE.label==="this week"){ days = 7; }
+      else if(rangeE.label==="overall"){
+        if(state.records.length===0){ days = 1; }
+        else {
+          var dates = state.records.map(function(r){ return r.date; }).sort();
+          var earliest = new Date(dates[0]+"T00:00:00");
+          days = Math.max(1, Math.round((new Date() - earliest) / 86400000) + 1);
+        }
+      } else { days = 1; }
+      var avg = totalE / days;
+      return "Your average daily spend " + rangeE.label + " is " + fmtPHP(avg) + " (" + fmtPHP(totalE) + " over " + days + " day" + (days!==1?"s":"") + ").";
+    }
+
+    // Count of transactions
+    if(/how many (expense|item|transaction)/.test(tl)){
+      var range2 = parseTimeRangeFromText(tl);
+      return "You've logged " + range2.recs.length + " expense" + (range2.recs.length!==1?"s":"") + " " + range2.label + ".";
+    }
+
+    // Category spend
+    var cat = findCategoryInText(tl);
+    if(cat && /spen|expense|cost|total/.test(tl)){
+      var range3 = parseTimeRangeFromText(tl);
+      var catRecs = range3.recs.filter(function(r){ return r.category===cat; });
+      var total = catRecs.reduce(function(s,r){ return s+r.amount; }, 0);
+      return "You spent " + fmtPHP(total) + " on " + cat + " " + range3.label + " (" + catRecs.length + " item" + (catRecs.length!==1?"s":"") + ").";
+    }
+
+    // Payment method spend
+    var src2 = findSourceInText(tl);
+    if(src2 && /spen|expense|cost|total|charge/.test(tl)){
+      var range4 = parseTimeRangeFromText(tl);
+      var srcRecs = range4.recs.filter(function(r){ return r.source && r.source.toLowerCase()===src2.name.toLowerCase(); });
+      var total2 = srcRecs.reduce(function(s,r){ return s+r.amount; }, 0);
+      return "You spent " + fmtPHP(total2) + " via " + src2.name + " " + range4.label + " (" + srcRecs.length + " item" + (srcRecs.length!==1?"s":"") + ").";
+    }
+
+    // Specific budget mentioned by name, without the literal word "budget"
+    // (e.g. "How much is left on my Entertainment Fund?")
+    var namedBudget = findBudgetInText(tl);
+    if(namedBudget && /left|remaining|spent|status|how much/.test(tl)){
+      var spentN = budgetActual(namedBudget);
+      var remainingN = namedBudget.amount - spentN;
+      return '"' + namedBudget.name + '" — ' + fmtPHP(spentN) + " spent of " + fmtPHP(namedBudget.amount) + ", " +
+        (remainingN>=0 ? fmtPHP(remainingN)+" left." : fmtPHP(Math.abs(remainingN))+" over budget.");
+    }
+
+    // General total spend
+    if(/how much (did i |have i )?spen|total (expense|spending)|my (spending|expenses)/.test(tl)){
+      var range5 = parseTimeRangeFromText(tl);
+      var total3 = range5.recs.reduce(function(s,r){ return s+r.amount; }, 0);
+      return "You spent " + fmtPHP(total3) + " " + range5.label + " across " + range5.recs.length + " item" + (range5.recs.length!==1?"s":"") + ".";
+    }
+
+    return null;
+  }
+
+  var OFFLINE_HELP_TEXT =
+    "I couldn't quite figure that out with what I can answer offline. Try things like:\n" +
+    "• How much did I spend this month?\n" +
+    "• Where does my money go? (top categories)\n" +
+    "• What are my top expenses this week?\n" +
+    "• How much is left on my [budget name]?\n" +
+    "• Which budgets am I close to maxing out?\n" +
+    "• What's my average daily spend?\n" +
+    "• How much available credit do I have on [card name]?\n" +
+    "• What's my total credit card debt?\n" +
+    "• What's my net balance?\n" +
+    "• What's in my planning list?\n\n" +
+    "For more flexible answers, add an Anthropic API key in Settings → AI Features.";
+
   // ---------- AI data agent (answers questions about the user's data) ----------
   function buildDataContext(){
     var sortedRecords = state.records.slice().sort(function(a,b){ return b.createdAt - a.createdAt; });
@@ -1719,6 +2105,13 @@ Taobao Bag - 3500</div>
   }
 
   async function askDataAgent(question){
+    if(!aiApiKey){
+      state.chatLog.push({ type:"ai-answer", text: OFFLINE_HELP_TEXT, date: todayISO() });
+      renderChat();
+      await saveChatLog();
+      return;
+    }
+
     var typingRow = document.createElement("div");
     typingRow.className = "bubble-row system";
     typingRow.id = "ai-typing-indicator";
@@ -1741,7 +2134,12 @@ Taobao Bag - 3500</div>
 
       var response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": aiApiKey,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
         body: JSON.stringify({
           model: "claude-sonnet-4-6",
           max_tokens: 1000,
@@ -1750,13 +2148,17 @@ Taobao Bag - 3500</div>
         })
       });
       var data = await response.json();
-      answerText = (data.content || [])
-        .map(function(c){ return c.type === "text" ? c.text : ""; })
-        .join("\n")
-        .trim();
-      if(!answerText) answerText = "Sorry, I couldn't come up with an answer for that. Try rephrasing the question?";
+      if(data && data.error){
+        answerText = "Anthropic API error: " + (data.error.message || data.error.type || "request failed") + ". Check your API key in Settings.";
+      } else {
+        answerText = (data.content || [])
+          .map(function(c){ return c.type === "text" ? c.text : ""; })
+          .join("\n")
+          .trim();
+        if(!answerText) answerText = "Sorry, I couldn't come up with an answer for that. Try rephrasing the question?";
+      }
     } catch(e){
-      answerText = "Sorry, I couldn't process that question right now. Please try again in a moment.";
+      answerText = "Sorry, I couldn't process that question right now. Please check your internet connection and try again.";
     }
 
     var indicator = document.getElementById("ai-typing-indicator");
@@ -1791,8 +2193,16 @@ Taobao Bag - 3500</div>
     });
 
     if(newRecords.length === 0){
-      // Nothing parsed as an expense entry — treat this as a question about the data
-      await askDataAgent(text);
+      // Nothing parsed as an expense entry — treat this as a question about the data.
+      // Try the offline engine first (instant, free, no network needed).
+      var offlineAnswer = tryOfflineAnswer(text);
+      if(offlineAnswer){
+        state.chatLog.push({ type:"ai-answer", text: offlineAnswer, date: todayISO() });
+        renderChat();
+        await saveChatLog();
+      } else {
+        await askDataAgent(text);
+      }
       return;
     }
 
@@ -2187,6 +2597,11 @@ Taobao Bag - 3500</div>
   // ---------- Rendering: Ledger ----------
   var ledgerFilters = document.getElementById("ledger-filters");
   var ledgerList = document.getElementById("ledger-list");
+  var ledgerSearchInput = document.getElementById("ledger-search");
+  ledgerSearchInput.addEventListener("input", function(){
+    state.ledgerSearch = ledgerSearchInput.value.trim().toLowerCase();
+    renderLedger();
+  });
 
   function renderLedgerFilters(){
     ledgerFilters.innerHTML = "";
@@ -2203,35 +2618,54 @@ Taobao Bag - 3500</div>
     });
   }
 
+  function monthYearLabel(mKey){
+    var parts = mKey.split("-");
+    var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, 1);
+    return d.toLocaleDateString("en-PH", { month:"long", year:"numeric" });
+  }
+
   function renderLedger(){
     renderLedgerFilters();
     ledgerList.innerHTML = "";
-    var recs = state.records.slice().sort(function(a,b){ return b.createdAt - a.createdAt; });
+    var recs = state.records.slice().sort(function(a,b){
+      if(a.date !== b.date) return b.date.localeCompare(a.date);
+      return b.createdAt - a.createdAt;
+    });
     if(state.ledgerFilter !== "all"){
       recs = recs.filter(function(r){ return r.category === state.ledgerFilter; });
+    }
+    if(state.ledgerSearch){
+      var q = state.ledgerSearch;
+      recs = recs.filter(function(r){
+        return (r.item && r.item.toLowerCase().indexOf(q) !== -1) ||
+               (r.notes && r.notes.toLowerCase().indexOf(q) !== -1) ||
+               (r.category && r.category.toLowerCase().indexOf(q) !== -1) ||
+               (r.source && r.source.toLowerCase().indexOf(q) !== -1);
+      });
     }
     if(recs.length===0){
       var e = document.createElement("div");
       e.className = "empty-ledger";
-      e.textContent = "No records yet. Add expenses from the Chat tab.";
+      e.textContent = state.ledgerSearch ? "No expenses match your search." : "No records yet. Add expenses from the Chat tab.";
       ledgerList.appendChild(e);
       return;
     }
     var groups = {};
     var order = [];
     recs.forEach(function(r){
-      if(!groups[r.date]){ groups[r.date]=[]; order.push(r.date); }
-      groups[r.date].push(r);
+      var mKey = monthKey(r.date);
+      if(!groups[mKey]){ groups[mKey]=[]; order.push(mKey); }
+      groups[mKey].push(r);
     });
-    order.forEach(function(dateKey){
+    order.forEach(function(mKeyVal){
       var group = document.createElement("div");
-      group.className = "day-group";
-      var dayTotal = groups[dateKey].filter(function(r){ return r.active!==false; }).reduce(function(s,r){return s+r.amount;},0);
+      group.className = "month-group";
+      var monthTotal = groups[mKeyVal].filter(function(r){ return r.active!==false; }).reduce(function(s,r){return s+r.amount;},0);
       var lbl = document.createElement("div");
-      lbl.className = "day-label";
-      lbl.innerHTML = "<span>"+dayLabel(dateKey)+"</span><b>"+fmtPHP(dayTotal)+"</b>";
+      lbl.className = "month-label";
+      lbl.innerHTML = "<span>"+monthYearLabel(mKeyVal)+"</span><span class=\"month-total-amt\">"+fmtPHP(monthTotal)+"</span>";
       group.appendChild(lbl);
-      groups[dateKey].forEach(function(r){
+      groups[mKeyVal].forEach(function(r){
         var isPlanning = r.active === false;
         var card = document.createElement("div");
         card.className = "record-card" + (isPlanning ? " planning" : "");
@@ -3453,8 +3887,8 @@ Taobao Bag - 3500</div>
 
   // ---------- Init ----------
   // ---------- App Settings: theme color ----------
-  var DEFAULT_ACCENT = "#1F2A44";
-  var THEME_PRESETS = ["#1F2A44","#2F5233","#7A2E2E","#1F5C5C","#4A2D5C","#34405A","#0F4C3A","#8A5A1E"];
+  var DEFAULT_ACCENT = "#4F7C5C";
+  var THEME_PRESETS = ["#4F7C5C","#8B7FC7","#3F6B4A","#2F5233","#6B8F71","#C17A56","#1F5C5C","#34405A"];
   var appSettingsBackdrop = document.getElementById("app-settings-backdrop");
   var themeSwatchGrid = document.getElementById("theme-swatch-grid");
   var fThemeColor = document.getElementById("f-theme-color");
@@ -3593,9 +4027,167 @@ Taobao Bag - 3500</div>
     reader.readAsText(file);
   });
 
+  // ---------- AI API key (needed when running outside Claude.ai) ----------
+  var aiApiKey = null;
+  var fAiApiKey = document.getElementById("f-ai-api-key");
+  async function loadAiApiKey(){
+    try{
+      var r = await LocalStore.get("sulit_ai_api_key");
+      aiApiKey = (r && r.value) ? r.value : null;
+    }catch(e){ aiApiKey = null; }
+    fAiApiKey.value = aiApiKey || "";
+  }
+  async function saveAiApiKey(key){
+    aiApiKey = key || null;
+    try{
+      if(aiApiKey){ await LocalStore.set("sulit_ai_api_key", aiApiKey); }
+      else { await LocalStore.set("sulit_ai_api_key", ""); }
+    }catch(e){}
+  }
+  fAiApiKey.addEventListener("change", async function(){
+    await saveAiApiKey(fAiApiKey.value.trim());
+  });
+  document.getElementById("btn-ai-key-clear").addEventListener("click", async function(){
+    fAiApiKey.value = "";
+    await saveAiApiKey("");
+  });
+
+  // ---------- Background image ----------
+  var bgImageDataUrl = null;
+  var bgOpacity = 0.3;
+  var bgPreviewWrap = document.getElementById("bg-preview-wrap");
+  var bgPreviewImg = document.getElementById("bg-preview");
+  var fBgImage = document.getElementById("f-bg-image");
+  var fBgOpacity = document.getElementById("f-bg-opacity");
+  var bgOpacityValue = document.getElementById("bg-opacity-value");
+  var appEl = document.getElementById("app");
+
+  function applyBackgroundImage(dataUrl, opacity){
+    if(opacity == null) opacity = bgOpacity;
+    if(dataUrl){
+      var tint = 1 - opacity;
+      appEl.style.backgroundImage = "linear-gradient(rgba(238,242,228," + tint + "), rgba(238,242,228," + tint + ")), url('" + dataUrl + "')";
+      appEl.style.backgroundSize = "cover";
+      appEl.style.backgroundPosition = "center";
+      appEl.style.backgroundRepeat = "no-repeat";
+      bgPreviewImg.src = dataUrl;
+      bgPreviewWrap.style.display = "";
+    } else {
+      appEl.style.backgroundImage = "";
+      bgPreviewWrap.style.display = "none";
+    }
+  }
+  async function saveBackgroundImage(dataUrl){
+    bgImageDataUrl = dataUrl || null;
+    try{ await LocalStore.set("sulit_bg_image", dataUrl || ""); }catch(e){}
+  }
+  async function saveBgOpacity(val){
+    bgOpacity = val;
+    try{ await LocalStore.set("sulit_bg_opacity", String(val)); }catch(e){}
+  }
+  async function loadBackgroundImage(){
+    try{
+      var o = await LocalStore.get("sulit_bg_opacity");
+      if(o && o.value !== ""){ bgOpacity = parseFloat(o.value); }
+    }catch(e){}
+    fBgOpacity.value = Math.round(bgOpacity*100);
+    bgOpacityValue.textContent = Math.round(bgOpacity*100) + "%";
+    try{
+      var r = await LocalStore.get("sulit_bg_image");
+      if(r && r.value){
+        bgImageDataUrl = r.value;
+        applyBackgroundImage(bgImageDataUrl, bgOpacity);
+      }
+    }catch(e){}
+  }
+  function resizeImageFile(file, maxDim, quality){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        var img = new Image();
+        img.onload = function(){
+          var w = img.width, h = img.height;
+          if(w > h){ if(w > maxDim){ h = Math.round(h * maxDim / w); w = maxDim; } }
+          else { if(h > maxDim){ w = Math.round(w * maxDim / h); h = maxDim; } }
+          var canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+        img.onerror = function(){ reject(new Error("Couldn't load image")); };
+        img.src = e.target.result;
+      };
+      reader.onerror = function(){ reject(new Error("Couldn't read file")); };
+      reader.readAsDataURL(file);
+    });
+  }
+  document.getElementById("btn-bg-upload").addEventListener("click", function(){ fBgImage.click(); });
+  fBgImage.addEventListener("change", async function(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    if(file.type.indexOf("image/") !== 0){
+      alert("Please choose an image file.");
+      fBgImage.value = "";
+      return;
+    }
+    try{
+      var dataUrl = await resizeImageFile(file, 900, 0.72);
+      applyBackgroundImage(dataUrl, bgOpacity);
+      await saveBackgroundImage(dataUrl);
+    }catch(err){
+      alert("Couldn't process that image. Please try a different one.");
+    }
+    fBgImage.value = "";
+  });
+  document.getElementById("btn-bg-remove").addEventListener("click", async function(){
+    applyBackgroundImage(null, bgOpacity);
+    await saveBackgroundImage(null);
+  });
+  fBgOpacity.addEventListener("input", async function(){
+    var val = parseInt(fBgOpacity.value, 10) / 100;
+    bgOpacityValue.textContent = fBgOpacity.value + "%";
+    applyBackgroundImage(bgImageDataUrl, val);
+    await saveBgOpacity(val);
+  });
+
+  // ---------- Glass effect (iOS-style frosted translucency) ----------
+  var glassMode = false;
+  var fGlassToggle = document.getElementById("f-glass-toggle");
+  function buildGlassToggle(){
+    fGlassToggle.querySelectorAll(".active-toggle-btn").forEach(function(btn){
+      var val = btn.getAttribute("data-glass") === "true";
+      btn.classList.toggle("selected", val === glassMode);
+    });
+  }
+  function applyGlassMode(on){
+    glassMode = on;
+    appEl.classList.toggle("glass-mode", on);
+    buildGlassToggle();
+  }
+  async function saveGlassMode(on){
+    try{ await LocalStore.set("sulit_glass_mode", on ? "1" : "0"); }catch(e){}
+  }
+  async function loadGlassMode(){
+    try{
+      var r = await LocalStore.get("sulit_glass_mode");
+      applyGlassMode(!!(r && r.value === "1"));
+    }catch(e){ applyGlassMode(false); }
+  }
+  fGlassToggle.querySelectorAll(".active-toggle-btn").forEach(function(btn){
+    btn.addEventListener("click", async function(){
+      var on = btn.getAttribute("data-glass") === "true";
+      applyGlassMode(on);
+      await saveGlassMode(on);
+    });
+  });
+
   async function init(){
     await loadState();
     await loadAccentColor();
+    await loadAiApiKey();
+    await loadBackgroundImage();
+    await loadGlassMode();
     renderChat();
     renderLedger();
     renderSummary();
