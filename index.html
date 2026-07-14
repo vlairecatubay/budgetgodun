@@ -58,68 +58,68 @@
 
   /* ---------- Header ---------- */
   header{
-    padding: calc(14px + var(--safe-top)) 20px 16px;
+    padding: calc(10px + var(--safe-top)) 16px 10px;
     background: var(--accent);
     color: var(--white);
     flex-shrink:0;
     position:relative;
     z-index:5;
-    border-radius: 0 0 22px 22px;
+    border-radius: 0 0 18px 18px;
   }
   header .brand{
-    display:flex; align-items:baseline; justify-content:space-between;
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    margin-bottom:8px;
   }
+  header .brand-text{ display:flex; align-items:baseline; gap:6px; min-width:0; overflow:hidden; }
   header h1{
     font-family:'Fredoka', sans-serif;
     font-weight:700;
-    font-size:23px;
+    font-size:17px;
     margin:0;
     letter-spacing:.2px;
+    white-space:nowrap;
   }
   header .tagline{
-    font-size:11px;
+    font-size:9.5px;
     color:#BBD1AE;
-    margin-top:2px;
     font-family:'IBM Plex Mono', monospace;
-    letter-spacing:.4px;
-    text-transform:uppercase;
+    letter-spacing:.3px;
+    white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis;
   }
-  header .month-total{
-    text-align:right;
+  .header-stats-row{
+    display:flex; gap:6px; overflow-x:auto;
+    padding-bottom:1px;
   }
-  header .month-total .label{
-    font-size:10px; color:#BBD1AE; text-transform:uppercase; letter-spacing:.6px; font-family:'IBM Plex Mono',monospace;
+  .header-stats-row::-webkit-scrollbar{ display:none; }
+  .header-stat-chip{
+    flex-shrink:0;
+    display:flex; align-items:baseline; gap:4px;
+    background:rgba(255,255,255,.13);
+    border-radius:999px;
+    padding:4px 10px;
   }
-  header .month-total .amt{
+  .header-stat-chip .hsc-icon{ font-size:10px; }
+  .header-stat-chip .hsc-val{
     font-family:'IBM Plex Mono', monospace;
-    font-size:17px;
+    font-size:11px;
     font-weight:600;
     color:#F0D9A8;
+    white-space:nowrap;
   }
-  header .month-total .savings-row{
-    margin-top:5px;
-    padding-top:5px;
-    border-top:1px solid rgba(174,184,212,.2);
-  }
-  header .month-total .savings-amt{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:13.5px;
-    font-weight:600;
-    color:#9FE8B0;
-  }
+  .header-stat-chip.hsc-savings .hsc-val{ color:#9FE8B0; }
   .header-icon-btn{
     background:none;
     border:none;
     color:#BBD1AE;
     padding:5px;
-    margin-left:8px;
     cursor:pointer;
     display:flex;
     align-items:center;
     justify-content:center;
     flex-shrink:0;
   }
-  .header-icon-btn svg{ width:20px; height:20px; stroke:#BBD1AE; }
+  .header-icon-btn svg{ width:19px; height:19px; stroke:#BBD1AE; }
   .header-icon-btn:active{ opacity:.6; }
 
   /* ---------- Tabs content area ---------- */
@@ -762,7 +762,7 @@
     font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--muted);
     margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--paper-dim);
   }
-  .expenses-list{ max-height:48vh; overflow-y:auto; margin:0 -4px; padding:0 4px; }
+  .expenses-list{ margin:0 -4px; padding:0 4px; }
   .expenses-day-label{
     font-family:'IBM Plex Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px;
     color:var(--muted); margin:12px 0 6px; display:flex; justify-content:space-between;
@@ -1210,25 +1210,27 @@
 
   <header>
     <div class="brand">
-      <div>
+      <div class="brand-text">
         <h1>BudgetGodun</h1>
         <div class="tagline">🌿 chat your spend</div>
-      </div>
-      <div class="month-total">
-        <div class="label" id="month-label">This month</div>
-        <div class="amt" id="month-amt">₱0.00</div>
-        <div class="savings-row">
-          <div class="label">Liquid Savings</div>
-          <div class="savings-amt" id="savings-header-amt">₱0.00</div>
-        </div>
-        <div class="savings-row">
-          <div class="label">Net Balance</div>
-          <div class="savings-amt" id="net-balance-header-amt">₱0.00</div>
-        </div>
       </div>
       <button class="header-icon-btn" id="btn-open-settings" aria-label="Settings">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
+    </div>
+    <div class="header-stats-row" id="header-stats-row">
+      <div class="header-stat-chip" title="This month">
+        <span class="hsc-icon">📅</span><span class="hsc-val" id="month-amt">₱0.00</span>
+      </div>
+      <div class="header-stat-chip hsc-savings" title="Liquid Savings">
+        <span class="hsc-icon">💰</span><span class="hsc-val" id="savings-header-amt">₱0.00</span>
+      </div>
+      <div class="header-stat-chip" title="Net Balance">
+        <span class="hsc-icon">⚖️</span><span class="hsc-val" id="net-balance-header-amt">₱0.00</span>
+      </div>
+      <div class="header-stat-chip" title="Credit Card Debt">
+        <span class="hsc-icon">💳</span><span class="hsc-val" id="cc-debt-header-amt">₱0.00</span>
+      </div>
     </div>
   </header>
 
@@ -1398,6 +1400,10 @@ Taobao Bag - 3500</div>
         <label>Amount (PHP)</label>
         <input type="number" id="f-budget-amount" inputmode="decimal">
         <button type="button" class="calc-link" data-target="f-budget-amount">🧮 Use calculator</button>
+      </div>
+      <div class="field">
+        <label>Remaining Amount</label>
+        <div class="pm-computed" id="budget-remaining-preview">—</div>
       </div>
       <div class="field">
         <label>Notes</label>
@@ -3777,8 +3783,27 @@ Taobao Bag - 3500</div>
   var fBudgetName = document.getElementById("f-budget-name");
   var fBudgetAmount = document.getElementById("f-budget-amount");
   var fBudgetNotes = document.getElementById("f-budget-notes");
+  var budgetRemainingPreview = document.getElementById("budget-remaining-preview");
   var btnBudgetDelete = document.getElementById("btn-budget-delete");
   var editingBudgetId = null;
+
+  function updateBudgetRemainingPreview(){
+    var amt = parseFloat(fBudgetAmount.value);
+    var name = fBudgetName.value.trim();
+    if(isNaN(amt) || !name){
+      budgetRemainingPreview.textContent = "—";
+      budgetRemainingPreview.style.color = "";
+      return;
+    }
+    var spent = budgetActual({ id: editingBudgetId || "__preview__", name: name });
+    var remaining = amt - spent;
+    budgetRemainingPreview.textContent =
+      (remaining < 0 ? "-" : "") + fmtPHP(Math.abs(remaining)) + (remaining < 0 ? " over" : " left") +
+      " · " + fmtPHP(spent) + " spent so far";
+    budgetRemainingPreview.style.color = remaining < 0 ? "var(--expense)" : "var(--green)";
+  }
+  fBudgetAmount.addEventListener("input", updateBudgetRemainingPreview);
+  fBudgetName.addEventListener("input", updateBudgetRemainingPreview);
 
   function openBudgetModal(id){
     var b = state.budgets.find(function(x){ return x.id === id; });
@@ -3790,6 +3815,7 @@ Taobao Bag - 3500</div>
     fBudgetAmount.style.borderColor = "";
     fBudgetNotes.value = b.notes || "";
     btnBudgetDelete.style.display = "";
+    updateBudgetRemainingPreview();
     budgetModalBackdrop.classList.add("open");
   }
   function openNewBudgetModal(){
@@ -3800,6 +3826,7 @@ Taobao Bag - 3500</div>
     fBudgetAmount.style.borderColor = "";
     fBudgetNotes.value = "";
     btnBudgetDelete.style.display = "none";
+    updateBudgetRemainingPreview();
     budgetModalBackdrop.classList.add("open");
   }
   function closeBudgetModal(){
@@ -3933,7 +3960,12 @@ Taobao Bag - 3500</div>
     var savingsTotal = liquidSavingsTotal();
     document.getElementById("savings-header-amt").textContent = fmtPHP(savingsTotal);
 
-    var netBalance = savingsTotal - totalCcDebt();
+    var ccDebt = totalCcDebt();
+    var ccDebtEl = document.getElementById("cc-debt-header-amt");
+    ccDebtEl.textContent = fmtPHP(ccDebt);
+    ccDebtEl.style.color = ccDebt > 0 ? "#E8A98A" : "#9FE8B0";
+
+    var netBalance = savingsTotal - ccDebt;
     var netEl = document.getElementById("net-balance-header-amt");
     netEl.textContent = (netBalance < 0 ? "-" : "") + fmtPHP(Math.abs(netBalance));
     netEl.style.color = netBalance < 0 ? "#E8A98A" : "#9FE8B0";
