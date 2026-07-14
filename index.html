@@ -393,7 +393,7 @@
   }
   .ledger-search-input:focus{ outline:none; border-color:var(--ink-soft); }
   .ledger-search-input::-webkit-search-cancel-button{ -webkit-appearance:none; }
-  .month-group{ margin-bottom:20px; }
+  .month-group{ margin-bottom:14px; }
   .month-label{
     font-family:'Fraunces', serif;
     font-weight:600;
@@ -404,6 +404,13 @@
     padding-bottom:6px;
     border-bottom:1px solid var(--paper-line);
   }
+  .month-label-toggle{
+    width:100%; background:none; border:none; cursor:pointer;
+    font-family:'Fraunces', serif;
+  }
+  .month-chevron{ display:inline-block; color:var(--accent); font-size:12px; width:12px; }
+  .month-count{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); font-weight:400; }
+  .month-items{ animation: questStepIn .25s ease; }
   .month-label .month-total-amt{
     font-family:'IBM Plex Mono', monospace;
     font-size:13px;
@@ -1839,7 +1846,7 @@ Taobao Bag - 3500</div>
     [/emergency|urgent|hospitalization|calamity/i,"Emergency"]
   ];
 
-  var state = { records: [], chatLog: [], budgets: [], paymentMethods: [], ledgerFilter: "all", ledgerSearch: "", pmSort: "name", activeTab: "chat", pendingBudget: null, pendingAssociation: null, pendingUpdate: null, pendingPmFlow: null, gamification: null };
+  var state = { records: [], chatLog: [], budgets: [], paymentMethods: [], ledgerFilter: "all", ledgerSearch: "", pmSort: "name", activeTab: "chat", pendingBudget: null, pendingAssociation: null, pendingUpdate: null, pendingPmFlow: null, gamification: null, ledgerExpandedMonths: null, budgetsExpandedGroups: null };
   var editingId = null;
 
   // ---------- Storage ----------
@@ -3407,31 +3414,50 @@ Taobao Bag - 3500</div>
       if(!groups[mKey]){ groups[mKey]=[]; order.push(mKey); }
       groups[mKey].push(r);
     });
+    if(!state.ledgerExpandedMonths){
+      state.ledgerExpandedMonths = {};
+      state.ledgerExpandedMonths[monthKey(todayISO())] = true;
+    }
+    var forceExpandAll = !!state.ledgerSearch;
     order.forEach(function(mKeyVal){
       var group = document.createElement("div");
       group.className = "month-group";
       var monthTotal = groups[mKeyVal].filter(function(r){ return r.active!==false; }).reduce(function(s,r){return s+r.amount;},0);
-      var lbl = document.createElement("div");
-      lbl.className = "month-label";
-      lbl.innerHTML = "<span>"+monthYearLabel(mKeyVal)+"</span><span class=\"month-total-amt\">"+fmtPHP(monthTotal)+"</span>";
-      group.appendChild(lbl);
-      groups[mKeyVal].forEach(function(r){
-        var isPlanning = r.active === false;
-        var card = document.createElement("div");
-        card.className = "record-card" + (isPlanning ? " planning" : "");
-        var budgetTag = "";
-        if(r.budgetId){
-          var b = state.budgets.find(function(bb){ return bb.id === r.budgetId; });
-          if(b) budgetTag = " · 🎯 " + escapeHtml(b.name);
-        }
-        card.innerHTML =
-          '<div class="rc-cat-dot">'+(CATEGORY_ICON[r.category]||"📌")+'</div>'+
-          '<div class="rc-main"><div class="rc-item">'+escapeHtml(r.item)+(isPlanning ? '<span class="planning-badge">Planning</span>' : '')+'</div>'+
-          '<div class="rc-meta">'+escapeHtml(dayLabel(r.date))+" · "+escapeHtml(r.category)+(r.source ? " · 💳 "+escapeHtml(r.source) : "")+(r.notes ? " · "+escapeHtml(r.notes) : "")+budgetTag+'</div></div>'+
-          '<div class="rc-amt">'+fmtPHP(r.amount)+'</div>';
-        card.addEventListener("click", function(){ openEditModal(r.id); });
-        group.appendChild(card);
+      var isExpanded = forceExpandAll || !!state.ledgerExpandedMonths[mKeyVal];
+      var lbl = document.createElement("button");
+      lbl.type = "button";
+      lbl.className = "month-label month-label-toggle";
+      lbl.innerHTML =
+        "<span><span class=\"month-chevron\">"+(isExpanded?"▾":"▸")+"</span> "+monthYearLabel(mKeyVal)+
+        " <span class=\"month-count\">("+groups[mKeyVal].length+")</span></span>"+
+        "<span class=\"month-total-amt\">"+fmtPHP(monthTotal)+"</span>";
+      lbl.addEventListener("click", function(){
+        state.ledgerExpandedMonths[mKeyVal] = !isExpanded;
+        renderLedger();
       });
+      group.appendChild(lbl);
+      if(isExpanded){
+        var itemsWrap = document.createElement("div");
+        itemsWrap.className = "month-items";
+        groups[mKeyVal].forEach(function(r){
+          var isPlanning = r.active === false;
+          var card = document.createElement("div");
+          card.className = "record-card" + (isPlanning ? " planning" : "");
+          var budgetTag = "";
+          if(r.budgetId){
+            var b = state.budgets.find(function(bb){ return bb.id === r.budgetId; });
+            if(b) budgetTag = " · 🎯 " + escapeHtml(b.name);
+          }
+          card.innerHTML =
+            '<div class="rc-cat-dot">'+(CATEGORY_ICON[r.category]||"📌")+'</div>'+
+            '<div class="rc-main"><div class="rc-item">'+escapeHtml(r.item)+(isPlanning ? '<span class="planning-badge">Planning</span>' : '')+'</div>'+
+            '<div class="rc-meta">'+escapeHtml(dayLabel(r.date))+" · "+escapeHtml(r.category)+(r.source ? " · 💳 "+escapeHtml(r.source) : "")+(r.notes ? " · "+escapeHtml(r.notes) : "")+budgetTag+'</div></div>'+
+            '<div class="rc-amt">'+fmtPHP(r.amount)+'</div>';
+          card.addEventListener("click", function(){ openEditModal(r.id); });
+          itemsWrap.appendChild(card);
+        });
+        group.appendChild(itemsWrap);
+      }
       ledgerList.appendChild(group);
     });
   }
@@ -3681,6 +3707,7 @@ Taobao Bag - 3500</div>
           '</div>'+
           '<div style="text-align:right;flex-shrink:0;">'+
             '<div class="camt" style="width:auto;">'+fmtPHP(spent)+' / '+fmtPHP(bud.amount)+'</div>'+
+            '<div style="font-size:10.5px;font-family:\'IBM Plex Mono\',monospace;font-weight:600;margin-top:2px;color:'+(over?"var(--expense)":"var(--green)")+';">'+(over ? fmtPHP(spent-bud.amount)+' over' : fmtPHP(bud.amount-spent)+' left')+'</div>'+
             '<button class="del-budget" data-budget-id="'+bud.id+'" style="margin-top:6px;border:none;background:none;color:var(--muted);font-size:11px;cursor:pointer;text-decoration:underline;">Remove</button>'+
           '</div>'+
         '</div>';
@@ -3733,6 +3760,68 @@ Taobao Bag - 3500</div>
   // ---------- Rendering: Budgets tab ----------
   var budgetsList = document.getElementById("budgets-list");
 
+  var MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  function parseBudgetYearMonth(name){
+    var yearMatch = name.match(/\b(20\d{2})\b/);
+    var year = yearMatch ? yearMatch[1] : null;
+    var month = null;
+    if(year){
+      for(var i=0;i<MONTH_NAMES.length;i++){
+        if(new RegExp("\\b"+MONTH_NAMES[i]+"\\b","i").test(name)){ month = MONTH_NAMES[i]; break; }
+      }
+    }
+    return { year: year, month: month };
+  }
+
+  function buildBudgetCardElement(b){
+    var spent = budgetActual(b);
+    var pct = b.amount > 0 ? Math.min(100, Math.round((spent/b.amount)*100)) : 0;
+    var over = spent > b.amount;
+    var card = document.createElement("div");
+    card.className = "budget-list-card";
+    var quest = evaluateBudgetQuest(b);
+    var questHtml = "";
+    if(quest.status === "claimable"){
+      questHtml = '<div class="quest-status quest-claimable" data-claim-budget="'+b.id+'" data-claim-month="'+quest.monthKey+'">🏆 Quest Complete! Stayed under budget in '+monthYearLabel(quest.monthKey)+' — Tap to claim +30 XP</div>';
+    } else if(quest.status === "failed_new"){
+      questHtml = '<div class="quest-status quest-failed">❌ Missed budget in '+monthYearLabel(quest.monthKey)+' <button type="button" class="quest-dismiss" data-ack-budget="'+b.id+'" data-ack-month="'+quest.monthKey+'">Dismiss</button></div>';
+    } else {
+      questHtml = '<div class="quest-status quest-progress">⚔️ Quest in progress · '+daysLeftInMonth()+' day'+(daysLeftInMonth()!==1?'s':'')+' left this month</div>';
+    }
+    card.innerHTML =
+      '<div class="blc-top"><span class="blc-name">🎯 '+escapeHtml(b.name)+'</span><span class="blc-amt">'+fmtPHP(b.amount)+'</span></div>'+
+      (b.notes ? '<div class="blc-notes">"'+escapeHtml(b.notes)+'"</div>' : '')+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+(over?"var(--expense)":"var(--green)")+';"></div></div>'+
+      '<div class="blc-spent">Spent '+fmtPHP(spent)+' of '+fmtPHP(b.amount)+' · '+(over ? '<span style="color:var(--expense);font-weight:600;">'+fmtPHP(spent-b.amount)+' over</span>' : '<span style="color:var(--green);font-weight:600;">'+fmtPHP(b.amount-spent)+' left</span>')+'</div>'+
+      questHtml;
+    card.addEventListener("click", function(e){
+      if(e.target.closest(".quest-claimable")){
+        claimBudgetQuestReward(e.target.closest(".quest-claimable").getAttribute("data-claim-budget"), e.target.closest(".quest-claimable").getAttribute("data-claim-month"));
+        return;
+      }
+      if(e.target.closest(".quest-dismiss")){
+        acknowledgeFailedQuest(e.target.closest(".quest-dismiss").getAttribute("data-ack-budget"), e.target.closest(".quest-dismiss").getAttribute("data-ack-month"));
+        return;
+      }
+      openBudgetActionSheet(b.id);
+    });
+    return card;
+  }
+
+  function buildGroupHeader(label, count, groupKey, expanded){
+    var lbl = document.createElement("button");
+    lbl.type = "button";
+    lbl.className = "month-label month-label-toggle";
+    lbl.innerHTML =
+      "<span><span class=\"month-chevron\">"+(expanded?"▾":"▸")+"</span> "+escapeHtml(label)+
+      " <span class=\"month-count\">("+count+")</span></span>";
+    lbl.addEventListener("click", function(){
+      state.budgetsExpandedGroups[groupKey] = !expanded;
+      renderBudgetsTab();
+    });
+    return lbl;
+  }
+
   function renderBudgetsTab(){
     budgetsList.innerHTML = "";
     if(state.budgets.length === 0){
@@ -3742,39 +3831,81 @@ Taobao Bag - 3500</div>
       budgetsList.appendChild(e);
       return;
     }
-    state.budgets.slice().sort(function(a,b){ return b.createdAt - a.createdAt; }).forEach(function(b){
-      var spent = budgetActual(b);
-      var pct = b.amount > 0 ? Math.min(100, Math.round((spent/b.amount)*100)) : 0;
-      var over = spent > b.amount;
-      var card = document.createElement("div");
-      card.className = "budget-list-card";
-      var quest = evaluateBudgetQuest(b);
-      var questHtml = "";
-      if(quest.status === "claimable"){
-        questHtml = '<div class="quest-status quest-claimable" data-claim-budget="'+b.id+'" data-claim-month="'+quest.monthKey+'">🏆 Quest Complete! Stayed under budget in '+monthYearLabel(quest.monthKey)+' — Tap to claim +30 XP</div>';
-      } else if(quest.status === "failed_new"){
-        questHtml = '<div class="quest-status quest-failed">❌ Missed budget in '+monthYearLabel(quest.monthKey)+' <button type="button" class="quest-dismiss" data-ack-budget="'+b.id+'" data-ack-month="'+quest.monthKey+'">Dismiss</button></div>';
+    if(!state.budgetsExpandedGroups){
+      var currentYear = String(new Date().getFullYear());
+      var currentMonth = MONTH_NAMES[new Date().getMonth()];
+      state.budgetsExpandedGroups = {};
+      state.budgetsExpandedGroups["y:"+currentYear] = true;
+      state.budgetsExpandedGroups["m:"+currentYear+":"+currentMonth] = true;
+    }
+
+    var sorted = state.budgets.slice().sort(function(a,b){ return b.createdAt - a.createdAt; });
+    var ungrouped = [];
+    var years = {};
+    var yearOrder = [];
+    sorted.forEach(function(b){
+      var ym = parseBudgetYearMonth(b.name);
+      if(!ym.year){ ungrouped.push(b); return; }
+      if(!years[ym.year]){ years[ym.year] = { months:{}, monthOrder:[], other:[] }; yearOrder.push(ym.year); }
+      if(ym.month){
+        if(years[ym.year].months[ym.month] === undefined){
+          years[ym.year].months[ym.month] = [];
+          years[ym.year].monthOrder.push(ym.month);
+        }
+        years[ym.year].months[ym.month].push(b);
       } else {
-        questHtml = '<div class="quest-status quest-progress">⚔️ Quest in progress · '+daysLeftInMonth()+' day'+(daysLeftInMonth()!==1?'s':'')+' left this month</div>';
+        years[ym.year].other.push(b);
       }
-      card.innerHTML =
-        '<div class="blc-top"><span class="blc-name">🎯 '+escapeHtml(b.name)+'</span><span class="blc-amt">'+fmtPHP(b.amount)+'</span></div>'+
-        (b.notes ? '<div class="blc-notes">"'+escapeHtml(b.notes)+'"</div>' : '')+
-        '<div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+(over?"var(--expense)":"var(--green)")+';"></div></div>'+
-        '<div class="blc-spent">Spent '+fmtPHP(spent)+' of '+fmtPHP(b.amount)+(over?" · over budget":"")+'</div>'+
-        questHtml;
-      card.addEventListener("click", function(e){
-        if(e.target.closest(".quest-claimable")){
-          claimBudgetQuestReward(e.target.closest(".quest-claimable").getAttribute("data-claim-budget"), e.target.closest(".quest-claimable").getAttribute("data-claim-month"));
-          return;
+    });
+    yearOrder.sort(function(a,b){ return b-a; });
+
+    ungrouped.forEach(function(b){ budgetsList.appendChild(buildBudgetCardElement(b)); });
+
+    yearOrder.forEach(function(year){
+      var yearGroup = years[year];
+      var yearCount = yearGroup.other.length + yearGroup.monthOrder.reduce(function(s,m){ return s+yearGroup.months[m].length; }, 0);
+      var yKey = "y:"+year;
+      var yExpanded = !!state.budgetsExpandedGroups[yKey];
+      var yearWrap = document.createElement("div");
+      yearWrap.className = "month-group";
+      yearWrap.appendChild(buildGroupHeader("Year "+year, yearCount, yKey, yExpanded));
+      if(yExpanded){
+        var body = document.createElement("div");
+        body.className = "month-items";
+        yearGroup.monthOrder.sort(function(a,b){ return MONTH_NAMES.indexOf(b) - MONTH_NAMES.indexOf(a); });
+        yearGroup.monthOrder.forEach(function(mName){
+          var mKey = "m:"+year+":"+mName;
+          var mExpanded = !!state.budgetsExpandedGroups[mKey];
+          var monthWrap = document.createElement("div");
+          monthWrap.className = "month-group";
+          monthWrap.style.marginLeft = "10px";
+          monthWrap.appendChild(buildGroupHeader(mName+" "+year, yearGroup.months[mName].length, mKey, mExpanded));
+          if(mExpanded){
+            var mBody = document.createElement("div");
+            mBody.className = "month-items";
+            yearGroup.months[mName].forEach(function(b){ mBody.appendChild(buildBudgetCardElement(b)); });
+            monthWrap.appendChild(mBody);
+          }
+          body.appendChild(monthWrap);
+        });
+        if(yearGroup.other.length){
+          var otherKey = "o:"+year;
+          var otherExpanded = !!state.budgetsExpandedGroups[otherKey];
+          var otherWrap = document.createElement("div");
+          otherWrap.className = "month-group";
+          otherWrap.style.marginLeft = "10px";
+          otherWrap.appendChild(buildGroupHeader("Other "+year, yearGroup.other.length, otherKey, otherExpanded));
+          if(otherExpanded){
+            var oBody = document.createElement("div");
+            oBody.className = "month-items";
+            yearGroup.other.forEach(function(b){ oBody.appendChild(buildBudgetCardElement(b)); });
+            otherWrap.appendChild(oBody);
+          }
+          body.appendChild(otherWrap);
         }
-        if(e.target.closest(".quest-dismiss")){
-          acknowledgeFailedQuest(e.target.closest(".quest-dismiss").getAttribute("data-ack-budget"), e.target.closest(".quest-dismiss").getAttribute("data-ack-month"));
-          return;
-        }
-        openBudgetActionSheet(b.id);
-      });
-      budgetsList.appendChild(card);
+        yearWrap.appendChild(body);
+      }
+      budgetsList.appendChild(yearWrap);
     });
   }
 
