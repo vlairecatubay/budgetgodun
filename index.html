@@ -25,6 +25,8 @@
     --green:#4F7C5C;
     --muted:#7C8B77;
     --white:#FEFEF9;
+    --body-glow:#35543F;
+    --body-base:#1E3328;
     --shadow: 0 1px 2px rgba(44,74,59,.07), 0 10px 26px -12px rgba(44,74,59,.22);
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -33,8 +35,8 @@
   html,body{height:100%;}
   body{
     margin:0;
-    background: #1E3328;
-    background: radial-gradient(1200px 800px at 50% -10%, #35543F 0%, #1E3328 60%);
+    background: var(--body-base);
+    background: radial-gradient(1200px 800px at 50% -10%, var(--body-glow) 0%, var(--body-base) 60%);
     font-family:'Inter',sans-serif;
     color:var(--ink);
     display:flex;
@@ -458,16 +460,190 @@
   /* ---------- SUMMARY VIEW ---------- */
   #summary-scroll{ flex:1; overflow-y:auto; padding:16px 16px 90px; }
   .sum-card{
-    background:var(--card); border-radius:14px; box-shadow:var(--shadow); padding:16px; margin-bottom:14px;
+    background:var(--card); border-radius:22px; box-shadow: 4px 6px 0 0 var(--paper-line), 0 12px 24px -14px rgba(0,0,0,.28); padding:18px; margin-bottom:16px;
+    position:relative;
   }
-  .sum-title{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:4px;}
+  .sum-card-bead{
+    position:absolute; top:14px; left:16px;
+    width:9px; height:9px; border-radius:50%;
+    background: var(--accent);
+    box-shadow: inset 0 -1px 2px rgba(0,0,0,.2), 0 1px 2px rgba(255,255,255,.4);
+  }
+  .sum-title{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:4px; padding-left:16px;}
   .sum-big{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; color:var(--ink); }
   .sum-sub{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+
+  .wave-chart-wrap{ margin-top:8px; border-radius:14px; overflow:hidden; background:var(--paper); padding:10px 8px 0; }
+  .donut-chart-row{ display:flex; align-items:center; gap:16px; margin-top:6px; }
+  .donut-chart-svg-wrap{ position:relative; flex-shrink:0; width:120px; height:120px; }
+  .donut-chart-svg-wrap svg{ width:100%; height:100%; }
+  .donut-center-label{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; pointer-events:none;
+  }
+  .donut-center-amt{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:15px; color:var(--ink); line-height:1.1; }
+  .donut-center-sub{ font-family:'IBM Plex Mono',monospace; font-size:8.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; margin-top:2px; }
+  .donut-legend{ flex:1; min-width:0; display:flex; flex-direction:column; gap:7px; }
+  .donut-legend-row{ display:flex; align-items:center; gap:7px; font-size:12px; }
+  .donut-legend-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .donut-legend-cat{ flex:1; min-width:0; color:var(--ink); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .donut-legend-amt{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); flex-shrink:0; }
   .cat-row{ display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--paper-dim); }
   .cat-row:last-child{ border-bottom:none; }
   .cat-row .cname{ font-size:13.5px; color:var(--ink); width:105px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .cat-row .bar-track{ flex:1; height:7px; background:var(--paper); border-radius:4px; overflow:hidden; }
   .cat-row .bar-fill{ height:100%; background:var(--green); border-radius:4px; }
+  .bar-track{
+    height:11px; border-radius:999px; background:var(--paper-dim);
+    overflow:hidden; box-shadow: inset 0 2px 3px rgba(0,0,0,.16);
+    border:1px solid var(--paper-line);
+  }
+  .bar-fill{
+    height:100%; border-radius:999px;
+    background: linear-gradient(90deg, var(--green), color-mix(in srgb, var(--green) 65%, white));
+    transition: width .5s cubic-bezier(.34,1.56,.64,1);
+    position:relative;
+  }
+  .bar-fill::after{
+    content:"";
+    position:absolute; top:1px; left:3px; right:3px; height:3px;
+    background:rgba(255,255,255,.55); border-radius:999px;
+  }
+
+  /* ---------- Gamification: daily quest strip ---------- */
+  .quest-strip{
+    display:flex; gap:9px; overflow-x:auto; padding:2px 2px 12px;
+  }
+  .quest-strip:empty{ display:none; }
+  .quest-card{
+    flex-shrink:0;
+    width:132px;
+    background:var(--card);
+    border:1.5px solid var(--paper-line);
+    border-radius:16px;
+    padding:10px 11px;
+    box-shadow: 3px 4px 0 0 var(--paper-line), 0 8px 16px -10px rgba(0,0,0,.3);
+    transition: opacity .3s ease, transform .2s ease;
+  }
+  .quest-card.done{
+    opacity:.55;
+    border-color:var(--green);
+    box-shadow: 3px 4px 0 0 var(--paper-dim), 0 6px 12px -10px rgba(0,0,0,.2);
+  }
+  .quest-card .quest-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+  .quest-card .quest-icon{ font-size:18px; }
+  .quest-card .quest-check{
+    width:18px; height:18px; border-radius:50%; border:1.5px solid var(--paper-line);
+    display:flex; align-items:center; justify-content:center; font-size:11px; color:transparent;
+    background:var(--paper);
+  }
+  .quest-card.done .quest-check{ background:var(--green); border-color:var(--green); color:#fff; }
+  .quest-card .quest-label{ font-family:'Fredoka',sans-serif; font-size:12px; font-weight:600; color:var(--ink); line-height:1.25; margin-bottom:5px; }
+  .quest-card .quest-xp{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; color:var(--accent); }
+  .quest-card.done .quest-xp{ color:var(--green); }
+
+  .levelup-card{
+    width:100%;
+    background: linear-gradient(160deg, var(--accent), color-mix(in srgb, var(--accent) 65%, black));
+    border-radius:20px;
+    padding:18px 16px;
+    text-align:center;
+    color:#fff;
+    box-shadow: 0 10px 26px -10px rgba(0,0,0,.4);
+    position:relative;
+    overflow:hidden;
+  }
+  .levelup-stars{ font-size:13px; letter-spacing:4px; color:rgba(255,255,255,.7); margin-bottom:6px; }
+  .levelup-badge{
+    width:52px; height:52px; border-radius:50%; margin:0 auto 8px;
+    background:#fff; color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:22px;
+    box-shadow: 0 4px 10px -2px rgba(0,0,0,.3);
+  }
+  .levelup-heading{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:19px; letter-spacing:1px; margin-bottom:3px; }
+  .levelup-title{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:14px; color:rgba(255,255,255,.9); }
+
+  .quest-status{
+    margin-top:9px; padding:8px 10px; border-radius:10px;
+    font-size:11.5px; font-weight:600; font-family:'Inter',sans-serif;
+    display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;
+  }
+  .quest-progress{ background:var(--paper); color:var(--muted); }
+  .quest-claimable{
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, white));
+    color:#fff; cursor:pointer;
+    animation: questGlow 1.6s ease-in-out infinite;
+  }
+  @keyframes questGlow{ 0%,100%{ box-shadow:0 0 0 0 rgba(0,0,0,0); } 50%{ box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent); } }
+  .quest-failed{ background: color-mix(in srgb, var(--expense) 18%, var(--paper)); color:var(--expense); }
+  .quest-dismiss{
+    background:none; border:1px solid var(--expense); color:var(--expense);
+    border-radius:999px; padding:2px 9px; font-size:10.5px; font-weight:600; cursor:pointer;
+  }
+
+  /* ---------- Add Expense quest flow ---------- */
+  .quest-sheet{ padding-top:14px; }
+  .quest-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .quest-back, .quest-close{
+    width:32px; height:32px; border-radius:50%; border:none; background:var(--paper);
+    color:var(--ink-soft); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .quest-back{ visibility:hidden; }
+  .quest-back.show{ visibility:visible; }
+  .quest-dots{ display:flex; gap:6px; }
+  .quest-dot{ width:8px; height:8px; border-radius:50%; background:var(--paper-line); transition:all .25s ease; }
+  .quest-dot.active{ background:var(--accent); width:20px; border-radius:999px; }
+  .quest-step{ display:none; animation: questStepIn .3s ease; }
+  .quest-step.active{ display:block; }
+  @keyframes questStepIn{ from{ opacity:0; transform:translateX(12px); } to{ opacity:1; transform:translateX(0); } }
+  .quest-step-title{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:18px; color:var(--ink); margin-bottom:16px; text-align:center; }
+
+  .quest-amount-display{
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:44px; text-align:center;
+    color:var(--ink); margin-bottom:18px; letter-spacing:.5px;
+    transition: transform .1s ease;
+  }
+  .quest-amount-display.bump{ animation: amountBump .15s ease; }
+  @keyframes amountBump{ 0%{ transform:scale(1); } 50%{ transform:scale(1.08); } 100%{ transform:scale(1); } }
+  .quest-numpad{
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:9px; margin-bottom:18px;
+  }
+  .quest-key{
+    padding:16px 0; border-radius:14px; border:1.5px solid var(--paper-line);
+    background:var(--card); font-family:'Fredoka',sans-serif; font-size:19px; font-weight:600;
+    color:var(--ink); cursor:pointer;
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.6), 0 3px 8px -3px rgba(0,0,0,.15);
+    transition: transform .08s ease;
+  }
+  .quest-key:active{ transform:scale(.92); }
+  .quest-key-op{ background:var(--paper-dim); color:var(--accent); font-size:14px; }
+  .quest-next-btn, .quest-submit-btn{ width:100%; padding:15px; font-size:16px; }
+
+  .quest-cat-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:6px;
+  }
+  .quest-cat-tile{
+    background:var(--card); border:2px solid var(--paper-line); border-radius:16px;
+    padding:14px 6px; text-align:center; cursor:pointer;
+    box-shadow: 3px 4px 0 0 var(--paper-line);
+    transition: transform .12s ease;
+  }
+  .quest-cat-tile:active{ transform:scale(.94); }
+  .quest-cat-tile.picked{
+    border-color:var(--accent);
+    animation: catPick .35s ease;
+  }
+  @keyframes catPick{ 0%{ transform:scale(1); } 40%{ transform:scale(1.12); } 100%{ transform:scale(1); } }
+  .quest-cat-tile .qc-icon{ font-size:26px; display:block; margin-bottom:5px; }
+  .quest-cat-tile .qc-label{ font-family:'Fredoka',sans-serif; font-size:10.5px; font-weight:600; color:var(--ink-soft); line-height:1.2; }
+
+  .quest-summary{
+    background:var(--paper); border-radius:14px; padding:12px 14px; margin-bottom:14px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .quest-summary .qs-amt{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:20px; color:var(--ink); }
+  .quest-summary .qs-cat{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:12.5px; color:var(--ink-soft); }
   .cat-row .camt{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); width:74px; text-align:right; flex-shrink:0; }
 
   /* ---------- Tab bar ---------- */
@@ -501,6 +677,8 @@
   nav.tabbar button.active{ color:#fff; }
   nav.tabbar button.active .tab-icon-badge{ background:#fff; box-shadow: 0 3px 8px -2px rgba(0,0,0,.3); }
   nav.tabbar button.active svg{ stroke:var(--accent); }
+  .tab-icon-badge.badge-pop{ animation: badgePop .4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes badgePop{ 0%{ transform:scale(1); } 40%{ transform:scale(1.28); } 100%{ transform:scale(1); } }
 
   /* ---------- Modal ---------- */
   .modal-backdrop{
@@ -621,6 +799,112 @@
   .toast .toast-close{ background:none; border:none; color:#BBD1AE; font-size:15px; cursor:pointer; line-height:1; padding:0 0 0 4px; flex-shrink:0; }
   @keyframes toastIn{ from{ opacity:0; transform:translateY(-10px); } to{ opacity:1; transform:translateY(0); } }
 
+  /* ---------- Gamification: game bar ---------- */
+  .game-bar{
+    flex-shrink:0;
+    display:flex; align-items:center; gap:10px;
+    width:100%;
+    background:var(--card);
+    border:none;
+    border-bottom:1px solid var(--paper-line);
+    padding:9px 16px;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    position:relative; z-index:4;
+  }
+  .game-bar-level{ display:flex; align-items:center; gap:6px; flex-shrink:0; }
+  .game-level-badge{
+    width:24px; height:24px; border-radius:50%;
+    background:var(--accent); color:var(--white);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:12px;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,.4), inset 0 -2px 3px rgba(0,0,0,.15);
+  }
+  .game-level-title{ font-family:'Fredoka',sans-serif; font-size:11.5px; font-weight:600; color:var(--ink-soft); white-space:nowrap; }
+  .game-xp-track{
+    flex:1; height:8px; border-radius:999px; background:var(--paper-dim);
+    overflow:hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,.12);
+  }
+  .game-xp-fill{
+    height:100%; border-radius:999px;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    width:0%; transition: width .5s ease;
+  }
+  .game-streak{
+    display:flex; align-items:center; gap:3px; flex-shrink:0;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; color:var(--expense);
+  }
+
+  /* ---------- Gamification: achievements modal ---------- */
+  .ach-level-card{
+    display:flex; align-items:center; gap:14px;
+    background:var(--paper); border-radius:16px; padding:14px; margin-bottom:12px;
+  }
+  .ach-level-circle{
+    width:56px; height:56px; border-radius:50%; flex-shrink:0;
+    background:var(--accent); color:var(--white);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:22px;
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.4), inset 0 -3px 6px rgba(0,0,0,.18), 0 6px 14px -6px rgba(0,0,0,.3);
+  }
+  .ach-level-info{ flex:1; min-width:0; }
+  .ach-level-title{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:16px; color:var(--ink); margin-bottom:6px; }
+  .ach-xp-track{ margin-bottom:4px; height:9px; }
+  .ach-xp-label{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); }
+  .ach-streak-card{
+    display:flex; align-items:center; gap:12px;
+    background:var(--paper); border-radius:16px; padding:14px; margin-bottom:14px;
+  }
+  .ach-streak-icon{ font-size:28px; }
+  .ach-streak-count{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:15px; color:var(--ink); }
+  .ach-streak-hint{ font-size:11.5px; color:var(--muted); margin-top:2px; }
+  .badges-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;
+  }
+  .badge-item{
+    background:var(--card); border:1px solid var(--paper-line); border-radius:14px;
+    padding:12px 8px; text-align:center; box-shadow:var(--shadow);
+  }
+  .badge-item.locked{ opacity:.38; filter:grayscale(1); }
+  .badge-item .badge-icon{ font-size:26px; display:block; margin-bottom:5px; }
+  .badge-item .badge-name{ font-family:'Fredoka',sans-serif; font-size:10.5px; font-weight:600; color:var(--ink); line-height:1.25; }
+
+  /* ---------- Gamification: confetti ---------- */
+  #confetti-container{
+    position:fixed; inset:0; pointer-events:none; z-index:200; overflow:hidden;
+  }
+  .confetti-piece{
+    position:absolute; top:-20px; width:8px; height:14px; opacity:.9;
+    animation: confettiFall 2.2s ease-in forwards;
+  }
+  @keyframes confettiFall{
+    0%{ transform: translateY(0) rotate(0deg); opacity:1; }
+    100%{ transform: translateY(560px) rotate(540deg); opacity:0; }
+  }
+
+  /* ---------- Gamification: XP popup ---------- */
+  #xp-popup-container{
+    position:fixed; top:120px; left:50%; transform:translateX(-50%);
+    pointer-events:none; z-index:150;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .xp-popup{
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:18px;
+    color:var(--accent);
+    background:var(--card);
+    border:1px solid var(--paper-line);
+    padding:6px 16px; border-radius:999px;
+    box-shadow: var(--shadow);
+    animation: xpPopUp 1.4s ease-out forwards;
+  }
+  @keyframes xpPopUp{
+    0%{ opacity:0; transform:translateY(6px) scale(.9); }
+    15%{ opacity:1; transform:translateY(-4px) scale(1.05); }
+    30%{ transform:translateY(-8px) scale(1); }
+    75%{ opacity:1; transform:translateY(-24px) scale(1); }
+    100%{ opacity:0; transform:translateY(-40px) scale(.96); }
+  }
+
   /* ---------- Calculator ---------- */
   .calc-link{
     display:inline-block;
@@ -701,6 +985,28 @@
   .pm-entries-empty{ font-size:12px; color:var(--muted); font-style:italic; }
 
   /* ---------- Theme settings ---------- */
+  .preset-theme-grid{
+    display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; margin-bottom:6px;
+  }
+  .preset-theme-card{
+    flex-shrink:0;
+    width:84px;
+    border-radius:16px;
+    border:2px solid var(--paper-line);
+    background:var(--card);
+    padding:8px;
+    cursor:pointer;
+    text-align:left;
+  }
+  .preset-theme-card.selected{ border-color:var(--ink); }
+  .preset-theme-swatches{
+    display:flex; border-radius:8px; overflow:hidden; height:28px; margin-bottom:6px;
+  }
+  .preset-theme-swatches span{ flex:1; display:block; }
+  .preset-theme-name{
+    font-family:'Fredoka',sans-serif; font-size:10.5px; font-weight:600; color:var(--ink-soft);
+    line-height:1.25; display:block;
+  }
   .theme-swatch-grid{
     display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px;
   }
@@ -740,32 +1046,88 @@
     font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); width:38px; text-align:right; flex-shrink:0;
   }
 
-  /* ---------- iOS-style glass effect ---------- */
+  /* ---------- iOS-style liquid glass effect ---------- */
   #app.glass-mode header{
-    background: color-mix(in srgb, var(--accent) 55%, transparent);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: color-mix(in srgb, var(--accent) 50%, transparent);
+    backdrop-filter: blur(24px) saturate(200%) brightness(1.06);
+    -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.06);
+    border-bottom: 1px solid rgba(255,255,255,.28);
+    position:relative;
+    overflow:hidden;
+  }
+  #app.glass-mode header::before{
+    content:"";
+    position:absolute; inset:0;
+    background: linear-gradient(120deg, rgba(255,255,255,.32) 0%, rgba(255,255,255,.06) 35%, rgba(255,255,255,0) 60%);
+    pointer-events:none;
   }
   #app.glass-mode nav.tabbar{
-    background: color-mix(in srgb, var(--accent) 55%, transparent);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: color-mix(in srgb, var(--accent) 48%, transparent);
+    backdrop-filter: blur(24px) saturate(200%) brightness(1.06);
+    -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.06);
+    border: 1px solid rgba(255,255,255,.3);
+    position:relative;
+    overflow:hidden;
+  }
+  #app.glass-mode nav.tabbar::before{
+    content:"";
+    position:absolute; inset:0;
+    background: linear-gradient(200deg, rgba(255,255,255,.28) 0%, rgba(255,255,255,0) 45%);
+    pointer-events:none;
   }
   #app.glass-mode .modal-sheet{
-    background: color-mix(in srgb, var(--paper) 75%, transparent);
-    backdrop-filter: blur(26px) saturate(180%);
-    -webkit-backdrop-filter: blur(26px) saturate(180%);
+    background: color-mix(in srgb, var(--paper) 68%, transparent);
+    backdrop-filter: blur(30px) saturate(200%) brightness(1.05);
+    -webkit-backdrop-filter: blur(30px) saturate(200%) brightness(1.05);
+    border: 1px solid rgba(255,255,255,.4);
+    border-bottom:none;
+    position:relative;
+    overflow:hidden;
+  }
+  #app.glass-mode .modal-sheet::before{
+    content:"";
+    position:absolute; inset:0;
+    background: linear-gradient(160deg, rgba(255,255,255,.3) 0%, rgba(255,255,255,0) 30%);
+    pointer-events:none;
   }
   #app.glass-mode .toast{
-    background: color-mix(in srgb, var(--ink) 68%, transparent);
-    backdrop-filter: blur(16px) saturate(160%);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    background: color-mix(in srgb, var(--ink) 62%, transparent);
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    border: 1px solid rgba(255,255,255,.22);
   }
   #app.glass-mode .helper-bar,
   #app.glass-mode .input-bar{
-    background: color-mix(in srgb, var(--paper-dim) 70%, transparent);
-    backdrop-filter: blur(18px) saturate(160%);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    background: color-mix(in srgb, var(--paper-dim) 62%, transparent);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+  #app.glass-mode .helper-bar{ border-top: 1px solid rgba(255,255,255,.3); }
+  #app.glass-mode .record-card,
+  #app.glass-mode .budget-list-card,
+  #app.glass-mode .pm-row,
+  #app.glass-mode .sum-card,
+  #app.glass-mode .receipt,
+  #app.glass-mode .budget-card,
+  #app.glass-mode .picker-bubble,
+  #app.glass-mode .bubble.prompt,
+  #app.glass-mode .bubble.ai-answer{
+    background: color-mix(in srgb, var(--card) 62%, transparent) !important;
+    backdrop-filter: blur(16px) saturate(180%) brightness(1.04);
+    -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(1.04);
+    border: 1px solid rgba(255,255,255,.35);
+  }
+  #app.glass-mode .btn-primary{
+    background: color-mix(in srgb, var(--accent) 78%, transparent);
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+    border: 1px solid rgba(255,255,255,.4);
+  }
+  #app.glass-mode #send-btn{
+    background: color-mix(in srgb, var(--accent) 78%, transparent);
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+    border: 1px solid rgba(255,255,255,.4);
   }
   .settings-data-actions{ display:flex; gap:10px; margin-bottom:8px; }
   .settings-data-actions .btn{ flex:1; }
@@ -859,6 +1221,10 @@
           <div class="label">Liquid Savings</div>
           <div class="savings-amt" id="savings-header-amt">₱0.00</div>
         </div>
+        <div class="savings-row">
+          <div class="label">Net Balance</div>
+          <div class="savings-amt" id="net-balance-header-amt">₱0.00</div>
+        </div>
       </div>
       <button class="header-icon-btn" id="btn-open-settings" aria-label="Settings">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -866,12 +1232,24 @@
     </div>
   </header>
 
+  <button type="button" id="game-bar" class="game-bar">
+    <div class="game-bar-level">
+      <span class="game-level-badge" id="game-level-badge">1</span>
+      <span class="game-level-title" id="game-level-title">Coin Collector</span>
+    </div>
+    <div class="game-xp-track"><div class="game-xp-fill" id="game-xp-fill"></div></div>
+    <div class="game-streak"><span>🔥</span><span id="game-streak-count">0</span></div>
+  </button>
+
   <div id="toast-container"></div>
+  <div id="confetti-container"></div>
+  <div id="xp-popup-container"></div>
 
   <main>
     <!-- CHAT VIEW -->
     <section class="view active" id="view-chat">
       <div id="chat-scroll">
+        <div class="quest-strip" id="quest-strip"></div>
         <div class="empty-state" id="chat-empty">
           <div class="stamp">Type your expenses like a text message</div>
           <div>BudgetGodun turns them into records automatically. Any of these work:</div>
@@ -1202,11 +1580,124 @@ Taobao Bag - 3500</div>
     </div>
   </div>
 
+  <!-- Achievements modal -->
+  <div class="modal-backdrop" id="achievements-backdrop">
+    <div class="modal-sheet">
+      <h2>🏆 Achievements</h2>
+      <div class="ach-level-card">
+        <div class="ach-level-circle" id="ach-level-circle">1</div>
+        <div class="ach-level-info">
+          <div class="ach-level-title" id="ach-level-title">Coin Collector</div>
+          <div class="game-xp-track ach-xp-track"><div class="game-xp-fill" id="ach-xp-fill"></div></div>
+          <div class="ach-xp-label" id="ach-xp-label">0 / 100 XP</div>
+        </div>
+      </div>
+      <div class="ach-streak-card">
+        <span class="ach-streak-icon">🔥</span>
+        <div>
+          <div class="ach-streak-count" id="ach-streak-count">0 day streak</div>
+          <div class="ach-streak-hint">Log an active expense each day to keep it going.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Badges</label>
+        <div class="badges-grid" id="badges-grid"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="btn-achievements-close" style="width:100%;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Expense Quest modal -->
+  <div class="modal-backdrop" id="quest-expense-backdrop">
+    <div class="modal-sheet quest-sheet">
+      <div class="quest-header">
+        <button type="button" class="quest-back" id="quest-back-btn">‹</button>
+        <div class="quest-dots" id="quest-dots">
+          <span class="quest-dot active"></span><span class="quest-dot"></span><span class="quest-dot"></span>
+        </div>
+        <button type="button" class="quest-close" id="quest-close-btn">✕</button>
+      </div>
+
+      <!-- Step 1: Amount -->
+      <div class="quest-step active" id="quest-step-1">
+        <div class="quest-step-title">How much did you spend?</div>
+        <div class="quest-amount-display" id="quest-amount-display">₱0</div>
+        <input type="hidden" id="qf-amount-bridge">
+        <div class="quest-numpad" id="quest-numpad">
+          <button type="button" class="quest-key" data-key="7">7</button>
+          <button type="button" class="quest-key" data-key="8">8</button>
+          <button type="button" class="quest-key" data-key="9">9</button>
+          <button type="button" class="quest-key quest-key-op" data-key="back">⌫</button>
+          <button type="button" class="quest-key" data-key="4">4</button>
+          <button type="button" class="quest-key" data-key="5">5</button>
+          <button type="button" class="quest-key" data-key="6">6</button>
+          <button type="button" class="quest-key quest-key-op" data-key="k">×1K</button>
+          <button type="button" class="quest-key" data-key="1">1</button>
+          <button type="button" class="quest-key" data-key="2">2</button>
+          <button type="button" class="quest-key" data-key="3">3</button>
+          <button type="button" class="quest-key quest-key-op" data-key="clear">C</button>
+          <button type="button" class="quest-key" data-key="0" style="grid-column:span 2;">0</button>
+          <button type="button" class="quest-key" data-key=".">.</button>
+          <button type="button" class="quest-key quest-key-op calc-link" data-key="calc" data-target="qf-amount-bridge">🧮</button>
+        </div>
+        <button type="button" class="btn btn-primary quest-next-btn" id="quest-to-step2">Next →</button>
+      </div>
+
+      <!-- Step 2: Category -->
+      <div class="quest-step" id="quest-step-2">
+        <div class="quest-step-title">Pick a category</div>
+        <div class="quest-cat-grid" id="quest-cat-grid"></div>
+      </div>
+
+      <!-- Step 3: Details & confirm -->
+      <div class="quest-step" id="quest-step-3">
+        <div class="quest-step-title">Finish the details</div>
+        <div class="quest-summary" id="quest-summary"></div>
+        <div class="field">
+          <label>What was it for?</label>
+          <input type="text" id="qf-item" placeholder="e.g. Grocery Landers">
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <div class="active-toggle" id="qf-active-toggle">
+            <button type="button" class="active-toggle-btn" data-active="true">✅ Active</button>
+            <button type="button" class="active-toggle-btn" data-active="false">📝 Planning Only</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Credit Source</label>
+          <select id="qf-source-select"></select>
+          <input type="text" id="qf-source-new" placeholder="Enter new credit source name" style="margin-top:8px; display:none;">
+        </div>
+        <div class="field">
+          <label>Budget Plan</label>
+          <select id="qf-budget"></select>
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="qf-date">
+        </div>
+        <div class="field">
+          <label>Notes</label>
+          <textarea id="qf-notes" rows="2" placeholder="Optional notes..."></textarea>
+        </div>
+        <button type="button" class="btn btn-primary quest-submit-btn" id="quest-submit-btn">🎉 Log Expense! +10 XP</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Calculator modal (reused by any Amount field) -->
   <!-- App Settings modal -->
   <div class="modal-backdrop" id="app-settings-backdrop">
     <div class="modal-sheet">
       <h2>Settings</h2>
+      <div class="field">
+        <label>Preset Themes</label>
+        <div class="preset-theme-grid" id="preset-theme-grid"></div>
+        <div class="settings-data-hint">Tap a preset to instantly restyle the whole app — colors, header, and cards.</div>
+      </div>
       <div class="field">
         <label>Theme Color</label>
         <div class="theme-swatch-grid" id="theme-swatch-grid"></div>
@@ -1236,7 +1727,7 @@ Taobao Bag - 3500</div>
           <button type="button" class="active-toggle-btn" data-glass="true">✨ Glass Effect On</button>
           <button type="button" class="active-toggle-btn" data-glass="false">Off</button>
         </div>
-        <div class="settings-data-hint">Gives the header, tab bar, and pop-up sheets an iOS-style frosted glass look.</div>
+        <div class="settings-data-hint">Gives the header, tab bar, cards, and pop-up sheets a frosted "liquid glass" look with light rim highlights. Looks best with a background image set, or with the Doha Nights / Liquid Glass presets.</div>
       </div>
       <div class="field">
         <label>Data</label>
@@ -1342,7 +1833,7 @@ Taobao Bag - 3500</div>
     [/emergency|urgent|hospitalization|calamity/i,"Emergency"]
   ];
 
-  var state = { records: [], chatLog: [], budgets: [], paymentMethods: [], ledgerFilter: "all", ledgerSearch: "", pmSort: "name", activeTab: "chat", pendingBudget: null, pendingAssociation: null, pendingUpdate: null, pendingPmFlow: null };
+  var state = { records: [], chatLog: [], budgets: [], paymentMethods: [], ledgerFilter: "all", ledgerSearch: "", pmSort: "name", activeTab: "chat", pendingBudget: null, pendingAssociation: null, pendingUpdate: null, pendingPmFlow: null, gamification: null };
   var editingId = null;
 
   // ---------- Storage ----------
@@ -1499,6 +1990,237 @@ Taobao Bag - 3500</div>
     return d.toLocaleDateString("en-PH",{month:"short", day:"numeric", year: d.getFullYear()!==today.getFullYear() ? "numeric": undefined});
   }
   function monthKey(iso){ return iso.slice(0,7); }
+
+  // ---------- Gamification: XP, levels, streaks, badges ----------
+  var LEVEL_TITLES = ["Coin Collector","Budget Rookie","Savings Apprentice","Expense Tracker","Money Manager","Budget Strategist","Finance Guardian","Wealth Architect","Savings Sage","Money Master"];
+  var BADGES = [
+    { id:"first_expense", icon:"🎯", name:"First Steps", desc:"Log your first expense" },
+    { id:"first_budget", icon:"📋", name:"Planner", desc:"Create your first budget" },
+    { id:"first_credit_source", icon:"💳", name:"Wallet Ready", desc:"Add your first credit source" },
+    { id:"streak_3", icon:"🔥", name:"Warming Up", desc:"3-day logging streak" },
+    { id:"streak_7", icon:"🔥", name:"On Fire", desc:"7-day logging streak" },
+    { id:"streak_30", icon:"🔥", name:"Unstoppable", desc:"30-day logging streak" },
+    { id:"expense_25", icon:"📝", name:"Regular", desc:"Log 25 expenses" },
+    { id:"expense_100", icon:"📚", name:"Century Club", desc:"Log 100 expenses" },
+    { id:"level_5", icon:"⭐", name:"Rising Star", desc:"Reach Level 5" },
+    { id:"level_10", icon:"🌟", name:"Legend", desc:"Reach Level 10" },
+    { id:"big_saver", icon:"💰", name:"Big Saver", desc:"Reach ₱10,000 in liquid savings" }
+  ];
+  function levelTitle(level){
+    var idx = Math.min(level-1, LEVEL_TITLES.length-1);
+    var extra = level > LEVEL_TITLES.length ? " ✦" + (level - LEVEL_TITLES.length) : "";
+    return LEVEL_TITLES[idx] + extra;
+  }
+  function xpForLevel(level){
+    var total = 0;
+    for(var i=1;i<level;i++){ total += 100 + (i-1)*50; }
+    return total;
+  }
+  function computeLevelFromXp(xp){
+    var level = 1;
+    while(xpForLevel(level+1) <= xp){ level++; }
+    return level;
+  }
+  function xpProgress(xp){
+    var level = computeLevelFromXp(xp);
+    var floor = xpForLevel(level);
+    var ceil = xpForLevel(level+1);
+    return { level:level, floor:floor, ceil:ceil, pct: ceil>floor ? (xp-floor)/(ceil-floor) : 1 };
+  }
+
+  async function loadGamification(){
+    try{
+      var r = await LocalStore.get("sulit_gamification");
+      if(r && r.value){ state.gamification = JSON.parse(r.value); }
+    }catch(e){}
+    if(!state.gamification){
+      state.gamification = { xp:0, streak:0, lastActiveDate:null, badges:[] };
+    }
+    renderGameBar();
+    renderQuestStrip();
+  }
+  async function saveGamification(){
+    try{ await LocalStore.set("sulit_gamification", JSON.stringify(state.gamification)); }catch(e){}
+  }
+
+  function renderGameBar(){
+    var g = state.gamification;
+    if(!g) return;
+    var p = xpProgress(g.xp);
+    document.getElementById("game-level-badge").textContent = p.level;
+    document.getElementById("game-level-title").textContent = levelTitle(p.level);
+    document.getElementById("game-xp-fill").style.width = Math.round(p.pct*100) + "%";
+    document.getElementById("game-streak-count").textContent = g.streak || 0;
+  }
+
+  function triggerConfetti(){
+    var container = document.getElementById("confetti-container");
+    if(!container) return;
+    var colors = ["#4F7C5C","#C17A56","#E8A93A","#7C6FE0","#4FBFA8","#D97B4F"];
+    for(var i=0;i<36;i++){
+      var piece = document.createElement("div");
+      piece.className = "confetti-piece";
+      piece.style.left = (Math.random()*100) + "%";
+      piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+      piece.style.animationDelay = (Math.random()*0.3) + "s";
+      piece.style.borderRadius = Math.random()>0.5 ? "50%" : "2px";
+      container.appendChild(piece);
+      (function(el){ setTimeout(function(){ if(el.parentNode) el.remove(); }, 2600); })(piece);
+    }
+  }
+
+  function showXpPopup(amount){
+    var container = document.getElementById("xp-popup-container");
+    if(!container) return;
+    var el = document.createElement("div");
+    el.className = "xp-popup";
+    el.textContent = "+" + amount + " XP";
+    container.appendChild(el);
+    setTimeout(function(){ if(el.parentNode) el.remove(); }, 1500);
+  }
+
+  async function awardXp(amount, reason){
+    var g = state.gamification;
+    if(!g) return;
+    var beforeLevel = computeLevelFromXp(g.xp);
+    g.xp += amount;
+    var afterLevel = computeLevelFromXp(g.xp);
+    showXpPopup(amount);
+    renderGameBar();
+    await saveGamification();
+    if(afterLevel > beforeLevel){
+      triggerConfetti();
+      state.chatLog.push({ type:"level-up", level: afterLevel, title: levelTitle(afterLevel), date: todayISO() });
+      renderChat();
+      await saveChatLog();
+    }
+    await checkBadges();
+  }
+
+  async function updateStreakForToday(){
+    var g = state.gamification;
+    if(!g) return;
+    var today = todayISO();
+    if(g.lastActiveDate === today) return;
+    var y = new Date(); y.setDate(y.getDate()-1);
+    var yKey = y.toISOString().slice(0,10);
+    g.streak = (g.lastActiveDate === yKey) ? (g.streak + 1) : 1;
+    g.lastActiveDate = today;
+    renderGameBar();
+    await saveGamification();
+    await awardXp(5, "streak");
+  }
+
+  function showBadgeUnlockToast(badge){
+    var container = document.getElementById("toast-container");
+    if(!container) return;
+    var toast = document.createElement("div");
+    toast.className = "toast";
+    toast.style.borderLeftColor = "var(--accent)";
+    toast.innerHTML =
+      '<span class="toast-icon">'+badge.icon+'</span>'+
+      '<div class="toast-body"><div class="toast-title">Badge Unlocked</div>'+
+      '<div>'+escapeHtml(badge.name)+' — '+escapeHtml(badge.desc)+'</div></div>'+
+      '<button class="toast-close" aria-label="Dismiss">✕</button>';
+    toast.querySelector(".toast-close").addEventListener("click", function(){ toast.remove(); });
+    container.appendChild(toast);
+    setTimeout(function(){ if(toast.parentNode) toast.remove(); }, 6500);
+  }
+
+  async function checkBadges(){
+    var g = state.gamification;
+    if(!g) return;
+    var newlyUnlocked = [];
+    function unlock(id){
+      if(g.badges.indexOf(id) === -1){ g.badges.push(id); newlyUnlocked.push(id); }
+    }
+    var activeRecs = state.records.filter(function(r){ return r.active!==false; });
+    if(activeRecs.length >= 1) unlock("first_expense");
+    if(state.budgets.length >= 1) unlock("first_budget");
+    if(state.paymentMethods.length >= 1) unlock("first_credit_source");
+    if(g.streak >= 3) unlock("streak_3");
+    if(g.streak >= 7) unlock("streak_7");
+    if(g.streak >= 30) unlock("streak_30");
+    if(activeRecs.length >= 25) unlock("expense_25");
+    if(activeRecs.length >= 100) unlock("expense_100");
+    var lvl = computeLevelFromXp(g.xp);
+    if(lvl >= 5) unlock("level_5");
+    if(lvl >= 10) unlock("level_10");
+    if(typeof liquidSavingsTotal === "function" && liquidSavingsTotal() >= 10000) unlock("big_saver");
+
+    if(newlyUnlocked.length){
+      await saveGamification();
+      newlyUnlocked.forEach(function(id){
+        var badge = BADGES.find(function(b){ return b.id === id; });
+        if(badge) showBadgeUnlockToast(badge);
+      });
+      if(achievementsBackdrop && achievementsBackdrop.classList.contains("open")){ renderAchievementsModal(); }
+    }
+  }
+
+  function renderAchievementsModal(){
+    var g = state.gamification;
+    var p = xpProgress(g.xp);
+    document.getElementById("ach-level-circle").textContent = p.level;
+    document.getElementById("ach-level-title").textContent = levelTitle(p.level);
+    document.getElementById("ach-xp-fill").style.width = Math.round(p.pct*100) + "%";
+    document.getElementById("ach-xp-label").textContent = (g.xp - p.floor) + " / " + (p.ceil - p.floor) + " XP to next level";
+    document.getElementById("ach-streak-count").textContent = (g.streak||0) + " day streak";
+    var grid = document.getElementById("badges-grid");
+    grid.innerHTML = "";
+    BADGES.forEach(function(badge){
+      var earned = g.badges.indexOf(badge.id) !== -1;
+      var el = document.createElement("div");
+      el.className = "badge-item" + (earned ? "" : " locked");
+      el.innerHTML = '<span class="badge-icon">'+badge.icon+'</span><span class="badge-name">'+escapeHtml(badge.name)+'</span>';
+      grid.appendChild(el);
+    });
+  }
+  var achievementsBackdrop = null;
+
+  // ---------- Gamification: daily quests ----------
+  var DAILY_QUEST_DEFS = [
+    { id:"log_expense", icon:"📝", label:"Log an expense today", xp:10 },
+    { id:"check_budget", icon:"🎯", label:"Check your budgets", xp:5 },
+    { id:"visit_summary", icon:"📊", label:"Review your summary", xp:5 }
+  ];
+  function ensureDailyQuestsCurrent(){
+    var g = state.gamification;
+    if(!g) return;
+    var today = todayISO();
+    if(!g.dailyQuests || g.dailyQuests.date !== today){
+      g.dailyQuests = { date: today, completed: [] };
+    }
+  }
+  async function completeQuest(id){
+    var g = state.gamification;
+    if(!g) return;
+    ensureDailyQuestsCurrent();
+    if(g.dailyQuests.completed.indexOf(id) !== -1) return;
+    g.dailyQuests.completed.push(id);
+    await saveGamification();
+    renderQuestStrip();
+    var def = DAILY_QUEST_DEFS.find(function(d){ return d.id === id; });
+    if(def) await awardXp(def.xp, "quest");
+  }
+  function renderQuestStrip(){
+    var g = state.gamification;
+    var strip = document.getElementById("quest-strip");
+    if(!g || !strip) return;
+    ensureDailyQuestsCurrent();
+    strip.innerHTML = "";
+    DAILY_QUEST_DEFS.forEach(function(def){
+      var done = g.dailyQuests.completed.indexOf(def.id) !== -1;
+      var card = document.createElement("div");
+      card.className = "quest-card" + (done ? " done" : "");
+      card.innerHTML =
+        '<div class="quest-top"><span class="quest-icon">'+def.icon+'</span><span class="quest-check">'+(done?"✓":"")+'</span></div>'+
+        '<div class="quest-label">'+escapeHtml(def.label)+'</div>'+
+        '<div class="quest-xp">+'+def.xp+' XP</div>';
+      strip.appendChild(card);
+    });
+  }
+
 
   // ---------- Rendering: Chat ----------
   var chatScroll = document.getElementById("chat-scroll");
@@ -1668,6 +2390,16 @@ Taobao Bag - 3500</div>
       aiBubble.appendChild(aiLabel);
       aiBubble.appendChild(aiText);
       row.appendChild(aiBubble);
+    } else if(entry.type === "level-up"){
+      row.className = "bubble-row system";
+      var lvlCard = document.createElement("div");
+      lvlCard.className = "levelup-card";
+      lvlCard.innerHTML =
+        '<div class="levelup-stars">✦ ✧ ✦</div>'+
+        '<div class="levelup-badge">'+entry.level+'</div>'+
+        '<div class="levelup-heading">LEVEL UP!</div>'+
+        '<div class="levelup-title">'+escapeHtml(entry.title)+'</div>';
+      row.appendChild(lvlCard);
     } else {
       row.className = "bubble-row system";
       var wrap = document.createElement("div");
@@ -1717,14 +2449,19 @@ Taobao Bag - 3500</div>
 
   function renderChat(){
     chatScroll.innerHTML = "";
+    var questStripEl = document.createElement("div");
+    questStripEl.className = "quest-strip";
+    questStripEl.id = "quest-strip";
+    chatScroll.appendChild(questStripEl);
     if(state.chatLog.length===0){
       chatScroll.appendChild(chatEmpty);
-      return;
+    } else {
+      state.chatLog.forEach(function(entry){
+        chatScroll.appendChild(renderChatBubble(entry));
+      });
     }
-    state.chatLog.forEach(function(entry){
-      chatScroll.appendChild(renderChatBubble(entry));
-    });
     chatScroll.scrollTop = chatScroll.scrollHeight;
+    renderQuestStrip();
   }
 
   // ---------- Chat input handling ----------
@@ -1759,6 +2496,7 @@ Taobao Bag - 3500</div>
     state.budgets.push(budget);
     await saveBudgets();
     state.chatLog.push({ type:"budget-card", budget: budget, date: todayISO() });
+    await awardXp(25, "budget");
     return budget;
   }
 
@@ -2212,6 +2950,11 @@ Taobao Bag - 3500</div>
       for(var i=0;i<newRecords.length;i++){
         if(newRecords[i].source){ await ensurePaymentMethod(newRecords[i].source); }
       }
+      await updateStreakForToday();
+      await completeQuest("log_expense");
+      for(var j=0;j<newRecords.length;j++){
+        await awardXp(10, "expense");
+      }
       await checkBudgetAlerts();
       if(state.budgets.length){
         state.pendingAssociation = { step:"ask", recordIds: newRecords.map(function(r){ return r.id; }) };
@@ -2245,6 +2988,7 @@ Taobao Bag - 3500</div>
     });
     await saveRecords();
     await checkBudgetAlerts();
+    await awardXp(5, "associate");
     pushPrompt('Done! Those items are now under "' + budget.name + '".');
     state.pendingAssociation = null;
     renderChat();
@@ -2703,9 +3447,72 @@ Taobao Bag - 3500</div>
     return getBudgetExpenseRecords(budget).reduce(function(s,r){ return s + r.amount; }, 0);
   }
 
+  // ---------- Gamification: monthly budget quests ----------
+  function previousMonthKeyValue(){
+    var d = new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth()-1);
+    return d.toISOString().slice(0,7);
+  }
+  function daysLeftInMonth(){
+    var now = new Date();
+    var end = new Date(now.getFullYear(), now.getMonth()+1, 0);
+    return Math.max(0, Math.ceil((end - now)/86400000));
+  }
+  function evaluateBudgetQuest(budget){
+    var pmKey = previousMonthKeyValue();
+    if(!budget.questClaims) budget.questClaims = [];
+    var recs = getBudgetExpenseRecords(budget).filter(function(r){ return monthKey(r.date) === pmKey; });
+    if(recs.length === 0) return { status:"none", monthKey:pmKey };
+    var spent = recs.reduce(function(s,r){ return s+r.amount; }, 0);
+    var already = budget.questClaims.indexOf(pmKey) !== -1;
+    if(spent <= budget.amount){
+      return { status: already ? "settled" : "claimable", monthKey:pmKey, spent:spent };
+    }
+    return { status: already ? "settled" : "failed_new", monthKey:pmKey, spent:spent };
+  }
+  async function claimBudgetQuestReward(budgetId, mKey){
+    var b = state.budgets.find(function(x){ return x.id === budgetId; });
+    if(!b) return;
+    if(!b.questClaims) b.questClaims = [];
+    if(b.questClaims.indexOf(mKey) !== -1) return;
+    b.questClaims.push(mKey);
+    await saveBudgets();
+    triggerConfetti();
+    await awardXp(30, "budget_quest");
+    state.chatLog.push({ type:"ai-answer", text: "🏆 Quest Complete! You stayed under \""+b.name+"\" for "+monthYearLabel(mKey)+". +30 XP!", date: todayISO() });
+    renderChat();
+    await saveChatLog();
+    renderBudgetsTab();
+  }
+  async function acknowledgeFailedQuest(budgetId, mKey){
+    var b = state.budgets.find(function(x){ return x.id === budgetId; });
+    if(!b) return;
+    if(!b.questClaims) b.questClaims = [];
+    if(b.questClaims.indexOf(mKey) === -1) b.questClaims.push(mKey);
+    await saveBudgets();
+    renderBudgetsTab();
+  }
+
   // ---------- Budget threshold alerts ----------
   var ALERT_THRESHOLD = 0.9;
   var ALERT_RESET_THRESHOLD = 0.8;
+
+  function showInfoToast(title, message){
+    var container = document.getElementById("toast-container");
+    if(!container) return;
+    var toast = document.createElement("div");
+    toast.className = "toast";
+    toast.style.borderLeftColor = "var(--accent)";
+    toast.innerHTML =
+      '<span class="toast-icon">💡</span>'+
+      '<div class="toast-body"><div class="toast-title">'+escapeHtml(title)+'</div>'+
+      '<div>'+escapeHtml(message)+'</div></div>'+
+      '<button class="toast-close" aria-label="Dismiss">✕</button>';
+    toast.querySelector(".toast-close").addEventListener("click", function(){ toast.remove(); });
+    container.appendChild(toast);
+    setTimeout(function(){ if(toast.parentNode) toast.remove(); }, 7000);
+  }
 
   function showBudgetAlertToast(b, spent, pct){
     var container = document.getElementById("toast-container");
@@ -2762,6 +3569,65 @@ Taobao Bag - 3500</div>
     }
   }
 
+  var CHART_PALETTE = ["#4F7C5C","#C17A56","#E8CBA0","#8FA37C","#B08968","#6B8F71","#D9A56C","#3F6B54","#A8927A","#7C8B77"];
+
+  function smoothSvgPath(points){
+    if(points.length < 2) return "M"+points[0].x+","+points[0].y;
+    var d = "M"+points[0].x+","+points[0].y;
+    for(var i=0;i<points.length-1;i++){
+      var xMid = (points[i].x+points[i+1].x)/2;
+      var yMid = (points[i].y+points[i+1].y)/2;
+      d += " Q"+points[i].x+","+points[i].y+" "+xMid+","+yMid;
+    }
+    d += " T"+points[points.length-1].x+","+points[points.length-1].y;
+    return d;
+  }
+  function getDailyTotalsLast14(){
+    var days = [];
+    for(var i=13;i>=0;i--){
+      var d = new Date(); d.setDate(d.getDate()-i);
+      var key = d.toISOString().slice(0,10);
+      var amt = state.records.filter(function(r){ return r.date===key && r.active!==false; }).reduce(function(s,r){ return s+r.amount; }, 0);
+      days.push({ date:key, amt:amt });
+    }
+    return days;
+  }
+  function buildWaveChartSVG(dailyTotals){
+    var w = 300, h = 100, pad = 6;
+    var maxAmt = Math.max.apply(null, dailyTotals.map(function(d){ return d.amt; })) || 1;
+    var stepX = (w - pad*2) / Math.max(1, dailyTotals.length-1);
+    var points = dailyTotals.map(function(d,i){
+      return { x: pad + i*stepX, y: h - pad - (d.amt/maxAmt)*(h-pad*2) };
+    });
+    var accentColor = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#4F7C5C";
+    var greenColor = getComputedStyle(document.documentElement).getPropertyValue("--green").trim() || "#4F7C5C";
+    var linePath = smoothSvgPath(points);
+    var areaPath = linePath + " L"+points[points.length-1].x+","+(h-pad)+" L"+points[0].x+","+(h-pad)+" Z";
+    var gid = "waveGrad" + Date.now();
+    return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" height="'+h+'" preserveAspectRatio="none">'+
+      '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0%" stop-color="'+accentColor+'" stop-opacity="0.5"/>'+
+        '<stop offset="100%" stop-color="'+greenColor+'" stop-opacity="0.04"/>'+
+      '</linearGradient></defs>'+
+      '<path d="'+areaPath+'" fill="url(#'+gid+')"/>'+
+      '<path d="'+linePath+'" fill="none" stroke="'+accentColor+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '</svg>';
+  }
+  function buildDonutChartSVG(catList, total){
+    var size = 120, r = 44, cx = size/2, cy = size/2, strokeWidth = 20;
+    var circumference = 2*Math.PI*r;
+    var offset = 0;
+    var segs = catList.map(function(c, i){
+      var frac = total>0 ? c.amt/total : 0;
+      var dash = Math.max(frac*circumference - 1.5, 0);
+      var html = '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+CHART_PALETTE[i%CHART_PALETTE.length]+'" '+
+        'stroke-width="'+strokeWidth+'" stroke-dasharray="'+dash+' '+circumference+'" stroke-dashoffset="'+(-offset)+'" stroke-linecap="round"/>';
+      offset += frac*circumference;
+      return html;
+    }).join("");
+    return '<svg viewBox="0 0 '+size+' '+size+'" style="transform:rotate(-90deg); filter: drop-shadow(0 6px 10px rgba(0,0,0,.18));">'+segs+'</svg>';
+  }
+
   function renderSummary(){
     summaryScroll.innerHTML = "";
     var now = new Date();
@@ -2775,15 +3641,28 @@ Taobao Bag - 3500</div>
     var overview = document.createElement("div");
     overview.className = "sum-card";
     overview.innerHTML =
+      '<div class="sum-card-bead"></div>'+
       '<div class="sum-title">This month</div>'+
       '<div class="sum-big">'+fmtPHP(monthTotal)+'</div>'+
       '<div class="sum-sub">'+monthRecs.length+' item'+(monthRecs.length!==1?'s':'')+' logged · Today: '+fmtPHP(todayTotal)+'</div>';
     summaryScroll.appendChild(overview);
 
+    var trendCard = document.createElement("div");
+    trendCard.className = "sum-card";
+    var dailyTotals = getDailyTotalsLast14();
+    var trendHasData = dailyTotals.some(function(d){ return d.amt>0; });
+    trendCard.innerHTML =
+      '<div class="sum-card-bead"></div>'+
+      '<div class="sum-title">Spending trend · last 14 days</div>'+
+      (trendHasData
+        ? '<div class="wave-chart-wrap">'+buildWaveChartSVG(dailyTotals)+'</div>'
+        : '<div class="sum-sub" style="padding-left:16px;">Log a few expenses to see your trend here.</div>');
+    summaryScroll.appendChild(trendCard);
+
     if(state.budgets.length){
       var budgetCard = document.createElement("div");
       budgetCard.className = "sum-card";
-      var bHtml = '<div class="sum-title">Budgets</div>';
+      var bHtml = '<div class="sum-card-bead"></div><div class="sum-title">Budgets</div>';
       state.budgets.slice().sort(function(a,b){return b.createdAt-a.createdAt;}).forEach(function(bud){
         var spent = budgetActual(bud);
         var pct = bud.amount>0 ? Math.min(100, Math.round((spent/bud.amount)*100)) : 0;
@@ -2822,17 +3701,24 @@ Taobao Bag - 3500</div>
     var catCard = document.createElement("div");
     catCard.className = "sum-card";
     if(catList.length===0){
-      catCard.innerHTML = '<div class="sum-title">By category</div><div class="sum-sub" style="margin-top:8px;">Nothing logged this month yet.</div>';
+      catCard.innerHTML = '<div class="sum-card-bead"></div><div class="sum-title">By category</div><div class="sum-sub" style="padding-left:16px;">Nothing logged this month yet.</div>';
     } else {
-      var maxAmt = catList[0].amt;
-      var rowsHtml = '<div class="sum-title">By category</div>';
-      catList.forEach(function(c){
-        var pct = Math.max(4, Math.round((c.amt/maxAmt)*100));
-        rowsHtml += '<div class="cat-row"><div class="cname">'+(CATEGORY_ICON[c.cat]||"📌")+' '+escapeHtml(c.cat)+'</div>'+
-          '<div class="bar-track"><div class="bar-fill" style="width:'+pct+'%"></div></div>'+
-          '<div class="camt">'+fmtPHP(c.amt)+'</div></div>';
-      });
-      catCard.innerHTML = rowsHtml;
+      var legendHtml = catList.map(function(c, i){
+        return '<div class="donut-legend-row">'+
+          '<span class="donut-legend-dot" style="background:'+CHART_PALETTE[i%CHART_PALETTE.length]+';"></span>'+
+          '<span class="donut-legend-cat">'+(CATEGORY_ICON[c.cat]||"📌")+' '+escapeHtml(c.cat)+'</span>'+
+          '<span class="donut-legend-amt">'+fmtPHP(c.amt)+'</span>'+
+        '</div>';
+      }).join("");
+      catCard.innerHTML =
+        '<div class="sum-card-bead"></div>'+
+        '<div class="sum-title">By category</div>'+
+        '<div class="donut-chart-row">'+
+          '<div class="donut-chart-svg-wrap">'+buildDonutChartSVG(catList, monthTotal)+
+            '<div class="donut-center-label"><div class="donut-center-amt">'+fmtPHP(monthTotal)+'</div><div class="donut-center-sub">Total</div></div>'+
+          '</div>'+
+          '<div class="donut-legend">'+legendHtml+'</div>'+
+        '</div>';
     }
     summaryScroll.appendChild(catCard);
     renderBudgetsTab();
@@ -2856,12 +3742,32 @@ Taobao Bag - 3500</div>
       var over = spent > b.amount;
       var card = document.createElement("div");
       card.className = "budget-list-card";
+      var quest = evaluateBudgetQuest(b);
+      var questHtml = "";
+      if(quest.status === "claimable"){
+        questHtml = '<div class="quest-status quest-claimable" data-claim-budget="'+b.id+'" data-claim-month="'+quest.monthKey+'">🏆 Quest Complete! Stayed under budget in '+monthYearLabel(quest.monthKey)+' — Tap to claim +30 XP</div>';
+      } else if(quest.status === "failed_new"){
+        questHtml = '<div class="quest-status quest-failed">❌ Missed budget in '+monthYearLabel(quest.monthKey)+' <button type="button" class="quest-dismiss" data-ack-budget="'+b.id+'" data-ack-month="'+quest.monthKey+'">Dismiss</button></div>';
+      } else {
+        questHtml = '<div class="quest-status quest-progress">⚔️ Quest in progress · '+daysLeftInMonth()+' day'+(daysLeftInMonth()!==1?'s':'')+' left this month</div>';
+      }
       card.innerHTML =
         '<div class="blc-top"><span class="blc-name">🎯 '+escapeHtml(b.name)+'</span><span class="blc-amt">'+fmtPHP(b.amount)+'</span></div>'+
         (b.notes ? '<div class="blc-notes">"'+escapeHtml(b.notes)+'"</div>' : '')+
         '<div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+(over?"var(--expense)":"var(--green)")+';"></div></div>'+
-        '<div class="blc-spent">Spent '+fmtPHP(spent)+' of '+fmtPHP(b.amount)+(over?" · over budget":"")+'</div>';
-      card.addEventListener("click", function(){ openBudgetActionSheet(b.id); });
+        '<div class="blc-spent">Spent '+fmtPHP(spent)+' of '+fmtPHP(b.amount)+(over?" · over budget":"")+'</div>'+
+        questHtml;
+      card.addEventListener("click", function(e){
+        if(e.target.closest(".quest-claimable")){
+          claimBudgetQuestReward(e.target.closest(".quest-claimable").getAttribute("data-claim-budget"), e.target.closest(".quest-claimable").getAttribute("data-claim-month"));
+          return;
+        }
+        if(e.target.closest(".quest-dismiss")){
+          acknowledgeFailedQuest(e.target.closest(".quest-dismiss").getAttribute("data-ack-budget"), e.target.closest(".quest-dismiss").getAttribute("data-ack-month"));
+          return;
+        }
+        openBudgetActionSheet(b.id);
+      });
       budgetsList.appendChild(card);
     });
   }
@@ -2913,6 +3819,7 @@ Taobao Bag - 3500</div>
     }
     fBudgetAmount.style.borderColor = "";
     var notes = fBudgetNotes.value.trim();
+    var wasNewBudget = !editingBudgetId;
     if(editingBudgetId){
       var b = state.budgets.find(function(x){ return x.id === editingBudgetId; });
       if(b){ b.name = name; b.amount = amt; b.notes = notes; }
@@ -2924,6 +3831,7 @@ Taobao Bag - 3500</div>
     renderBudgetsTab();
     renderSummary();
     await checkBudgetAlerts();
+    if(wasNewBudget){ await awardXp(25, "budget"); }
   });
   btnBudgetDelete.addEventListener("click", async function(){
     if(!editingBudgetId) return;
@@ -3022,10 +3930,13 @@ Taobao Bag - 3500</div>
     var total = state.records.filter(function(r){return monthKey(r.date)===mKey && r.active!==false;}).reduce(function(s,r){return s+r.amount;},0);
     document.getElementById("month-amt").textContent = fmtPHP(total);
 
-    var savingsTotal = state.paymentMethods
-      .filter(function(pm){ return (pm.type || "Cash") !== "Credit Card"; })
-      .reduce(function(s,pm){ return s + (pm.remainingBalance!=null && !isNaN(pm.remainingBalance) ? pm.remainingBalance : 0); }, 0);
+    var savingsTotal = liquidSavingsTotal();
     document.getElementById("savings-header-amt").textContent = fmtPHP(savingsTotal);
+
+    var netBalance = savingsTotal - totalCcDebt();
+    var netEl = document.getElementById("net-balance-header-amt");
+    netEl.textContent = (netBalance < 0 ? "-" : "") + fmtPHP(Math.abs(netBalance));
+    netEl.style.color = netBalance < 0 ? "#E8A98A" : "#9FE8B0";
   }
 
   // ---------- Tabs ----------
@@ -3035,11 +3946,17 @@ Taobao Bag - 3500</div>
       var tab = btn.getAttribute("data-tab");
       state.activeTab = tab;
       tabButtons.forEach(function(b){ b.classList.toggle("active", b===btn); });
+      var badge = btn.querySelector(".tab-icon-badge");
+      if(badge){
+        badge.classList.remove("badge-pop");
+        void badge.offsetWidth;
+        badge.classList.add("badge-pop");
+      }
       document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
       document.getElementById("view-"+tab).classList.add("active");
       if(tab==="ledger") renderLedger();
-      if(tab==="summary") renderSummary();
-      if(tab==="budgets") renderBudgetsTab();
+      if(tab==="summary"){ renderSummary(); completeQuest("visit_summary"); }
+      if(tab==="budgets"){ renderBudgetsTab(); completeQuest("check_budget"); }
       if(tab==="paymentmethods") renderPaymentMethodsList();
       if(tab==="chat"){ chatScroll.scrollTop = chatScroll.scrollHeight; }
     });
@@ -3261,10 +4178,12 @@ Taobao Bag - 3500</div>
         createdAt: Date.now()
       });
     }
+    var wasNewPm = !editingPmId;
     await savePaymentMethods();
     closePmModal();
     renderPaymentMethodsList();
     renderHeaderTotal();
+    if(wasNewPm){ await awardXp(15, "credit_source"); }
   });
   btnPmDelete.addEventListener("click", async function(){
     if(!editingPmId) return;
@@ -3302,7 +4221,7 @@ Taobao Bag - 3500</div>
   pmEntryBackdrop.addEventListener("click", function(e){
     if(e.target === pmEntryBackdrop) closePmEntryModal();
   });
-  document.getElementById("btn-pm-entry-save").addEventListener("click", function(){
+  document.getElementById("btn-pm-entry-save").addEventListener("click", async function(){
     var amt = parseFloat(fPmEntryAmount.value);
     if(isNaN(amt) || amt <= 0){
       fPmEntryAmount.style.borderColor = "var(--expense)";
@@ -3318,6 +4237,7 @@ Taobao Bag - 3500</div>
     });
     closePmEntryModal();
     updateCcComputedDisplays();
+    await awardXp(10, "cc_entry");
   });
 
 
@@ -3716,7 +4636,7 @@ Taobao Bag - 3500</div>
     editingId = null;
     isNewExpense = false;
   }
-  document.getElementById("btn-new-expense").addEventListener("click", openNewExpenseModal);
+  document.getElementById("btn-new-expense").addEventListener("click", openQuestExpenseModal);
   modalBackdrop.addEventListener("click", function(e){
     if(e.target === modalBackdrop) closeModal();
   });
@@ -3764,12 +4684,18 @@ Taobao Bag - 3500</div>
       rec.active = selectedActive;
       rec.date = chosenDate;
     }
+    var wasNewActiveExpense = isNewExpense && selectedActive;
     await saveRecords();
     closeModal();
     renderLedger();
     renderSummary();
     renderHeaderTotal();
     renderChat();
+    if(wasNewActiveExpense){
+      await updateStreakForToday();
+      await completeQuest("log_expense");
+      await awardXp(10, "expense");
+    }
   });
   document.getElementById("btn-delete").addEventListener("click", async function(){
     state.records = state.records.filter(function(r){ return r.id !== editingId; });
@@ -3778,6 +4704,232 @@ Taobao Bag - 3500</div>
     renderLedger();
     renderSummary();
     renderHeaderTotal();
+  });
+
+  // ---------- Add Expense quest flow ----------
+  var questBackdrop = document.getElementById("quest-expense-backdrop");
+  var questAmountDisplay = document.getElementById("quest-amount-display");
+  var questAmountBridge = document.getElementById("qf-amount-bridge");
+  var questCatGrid = document.getElementById("quest-cat-grid");
+  var questSummary = document.getElementById("quest-summary");
+  var qfActiveToggle = document.getElementById("qf-active-toggle");
+  var qfSourceSelect = document.getElementById("qf-source-select");
+  var qfSourceNew = document.getElementById("qf-source-new");
+  var qfBudget = document.getElementById("qf-budget");
+  var qfItem = document.getElementById("qf-item");
+  var qfDate = document.getElementById("qf-date");
+  var qfNotes = document.getElementById("qf-notes");
+
+  var questAmountBuffer = "";
+  var questSelectedCategory = null;
+  var questSelectedActive = true;
+  var questCurrentStep = 1;
+
+  function questFormatAmount(){
+    var n = parseFloat(questAmountBuffer);
+    if(isNaN(n)) return "₱0";
+    return "₱" + n.toLocaleString("en-PH", { maximumFractionDigits: 2 });
+  }
+  function updateQuestAmountDisplay(){
+    questAmountDisplay.textContent = questFormatAmount();
+    questAmountDisplay.classList.remove("bump");
+    void questAmountDisplay.offsetWidth;
+    questAmountDisplay.classList.add("bump");
+    questAmountBridge.value = questAmountBuffer || "";
+  }
+  questAmountBridge.addEventListener("input", function(){
+    var v = parseFloat(questAmountBridge.value);
+    if(!isNaN(v)){
+      questAmountBuffer = String(v);
+      updateQuestAmountDisplay();
+    }
+  });
+
+  document.getElementById("quest-numpad").addEventListener("click", function(e){
+    var btn = e.target.closest(".quest-key");
+    if(!btn) return;
+    var key = btn.getAttribute("data-key");
+    if(key === "calc") return; // handled by the global calc-link delegation
+    if(key === "clear"){ questAmountBuffer = ""; }
+    else if(key === "back"){ questAmountBuffer = questAmountBuffer.slice(0,-1); }
+    else if(key === "k"){
+      var n = parseFloat(questAmountBuffer);
+      if(!isNaN(n)) questAmountBuffer = String(n * 1000);
+    }
+    else if(key === "."){
+      if(questAmountBuffer.indexOf(".") === -1) questAmountBuffer += (questAmountBuffer===""?"0.":".");
+    }
+    else{
+      questAmountBuffer += key;
+    }
+    updateQuestAmountDisplay();
+  });
+
+  function questGoToStep(n){
+    questCurrentStep = n;
+    [1,2,3].forEach(function(i){
+      document.getElementById("quest-step-"+i).classList.toggle("active", i===n);
+    });
+    document.querySelectorAll("#quest-dots .quest-dot").forEach(function(dot, idx){
+      dot.classList.toggle("active", idx === n-1);
+    });
+    document.getElementById("quest-back-btn").classList.toggle("show", n>1);
+    if(n===3) questUpdateSummary();
+  }
+  document.getElementById("quest-back-btn").addEventListener("click", function(){
+    if(questCurrentStep>1) questGoToStep(questCurrentStep-1);
+  });
+  document.getElementById("quest-close-btn").addEventListener("click", closeQuestExpenseModal);
+  questBackdrop.addEventListener("click", function(e){
+    if(e.target === questBackdrop) closeQuestExpenseModal();
+  });
+  document.getElementById("quest-to-step2").addEventListener("click", function(){
+    var amt = parseFloat(questAmountBuffer);
+    if(isNaN(amt) || amt<=0){
+      questAmountDisplay.style.color = "var(--expense)";
+      setTimeout(function(){ questAmountDisplay.style.color = ""; }, 500);
+      return;
+    }
+    questGoToStep(2);
+  });
+
+  function questBuildCatGrid(){
+    questCatGrid.innerHTML = "";
+    CATEGORIES.forEach(function(cat){
+      var tile = document.createElement("div");
+      tile.className = "quest-cat-tile" + (cat===questSelectedCategory ? " picked":"");
+      tile.innerHTML = '<span class="qc-icon">'+(CATEGORY_ICON[cat]||"📌")+'</span><span class="qc-label">'+cat+'</span>';
+      tile.addEventListener("click", function(){
+        questSelectedCategory = cat;
+        questBuildCatGrid();
+        setTimeout(function(){ questGoToStep(3); }, 280);
+      });
+      questCatGrid.appendChild(tile);
+    });
+  }
+
+  function questBuildActiveToggle(){
+    qfActiveToggle.querySelectorAll(".active-toggle-btn").forEach(function(btn){
+      var val = btn.getAttribute("data-active") === "true";
+      btn.classList.toggle("selected", val === questSelectedActive);
+    });
+  }
+  qfActiveToggle.querySelectorAll(".active-toggle-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      questSelectedActive = btn.getAttribute("data-active") === "true";
+      questBuildActiveToggle();
+    });
+  });
+
+  function questPopulateBudgetSelect(){
+    qfBudget.innerHTML = "";
+    var noneOpt = document.createElement("option");
+    noneOpt.value = ""; noneOpt.textContent = "No budget";
+    qfBudget.appendChild(noneOpt);
+    state.budgets.slice().sort(function(a,b){ return b.createdAt-a.createdAt; }).forEach(function(b){
+      var opt = document.createElement("option");
+      opt.value = b.id; opt.textContent = b.name;
+      qfBudget.appendChild(opt);
+    });
+  }
+  function questPopulateSourceSelect(){
+    qfSourceSelect.innerHTML = "";
+    var noneOpt = document.createElement("option");
+    noneOpt.value = ""; noneOpt.textContent = "Not specified";
+    qfSourceSelect.appendChild(noneOpt);
+    state.paymentMethods.slice().sort(function(a,b){ return a.name.localeCompare(b.name); }).forEach(function(pm){
+      var opt = document.createElement("option");
+      opt.value = pm.name; opt.textContent = pm.name;
+      qfSourceSelect.appendChild(opt);
+    });
+    var addOpt = document.createElement("option");
+    addOpt.value = "__new__"; addOpt.textContent = "+ Add new credit source...";
+    qfSourceSelect.appendChild(addOpt);
+    qfSourceSelect.value = "";
+    qfSourceNew.style.display = "none";
+    qfSourceNew.value = "";
+  }
+  qfSourceSelect.addEventListener("change", function(){
+    if(qfSourceSelect.value === "__new__"){
+      qfSourceNew.style.display = "";
+      qfSourceNew.focus();
+    } else {
+      qfSourceNew.style.display = "none";
+      qfSourceNew.value = "";
+    }
+  });
+
+  function questUpdateSummary(){
+    questSummary.innerHTML =
+      '<span class="qs-amt">'+questFormatAmount()+'</span>'+
+      '<span class="qs-cat">'+(CATEGORY_ICON[questSelectedCategory]||"📌")+' '+escapeHtml(questSelectedCategory||"")+'</span>';
+  }
+
+  function openQuestExpenseModal(){
+    questAmountBuffer = "";
+    questSelectedCategory = null;
+    questSelectedActive = true;
+    updateQuestAmountDisplay();
+    questBuildCatGrid();
+    questBuildActiveToggle();
+    questPopulateBudgetSelect();
+    questPopulateSourceSelect();
+    qfItem.value = "";
+    qfDate.value = todayISO();
+    qfNotes.value = "";
+    questGoToStep(1);
+    questBackdrop.classList.add("open");
+  }
+  function closeQuestExpenseModal(){
+    questBackdrop.classList.remove("open");
+  }
+
+  document.getElementById("quest-submit-btn").addEventListener("click", async function(){
+    var amt = parseFloat(questAmountBuffer);
+    if(isNaN(amt) || amt<=0){ questGoToStep(1); return; }
+    if(!questSelectedCategory){ questGoToStep(2); return; }
+    var itemName = qfItem.value.trim();
+    if(!itemName){
+      qfItem.style.borderColor = "var(--expense)";
+      qfItem.focus();
+      return;
+    }
+    qfItem.style.borderColor = "";
+
+    var sourceValue = "";
+    if(qfSourceSelect.value === "__new__"){
+      sourceValue = qfSourceNew.value.trim();
+      if(sourceValue) await ensurePaymentMethod(sourceValue);
+    } else {
+      sourceValue = qfSourceSelect.value;
+    }
+
+    var newRec = {
+      id: uid(),
+      item: itemName,
+      amount: amt,
+      category: questSelectedCategory,
+      budgetId: qfBudget.value || "",
+      source: sourceValue,
+      notes: qfNotes.value.trim(),
+      active: questSelectedActive,
+      date: qfDate.value || todayISO(),
+      createdAt: Date.now()
+    };
+    state.records.push(newRec);
+    await saveRecords();
+    closeQuestExpenseModal();
+    renderLedger();
+    renderSummary();
+    renderHeaderTotal();
+    renderChat();
+    await checkBudgetAlerts();
+    if(questSelectedActive){
+      triggerConfetti();
+      await updateStreakForToday();
+      await completeQuest("log_expense");
+      await awardXp(10, "expense");
+    }
   });
 
   // ---------- Calculator (shared by any Amount field) ----------
@@ -3886,6 +5038,103 @@ Taobao Bag - 3500</div>
   });
 
   // ---------- Init ----------
+  // ---------- App Settings: full palette presets ----------
+  var PRESET_THEMES = [
+    {
+      key:"doha", name:"Doha Nights", glass:true,
+      vars:{ ink:"#EDE9F7", accent:"#8B7FE0", inkSoft:"#CFC7E8", paper:"#1D1838", paperDim:"#252047", paperLine:"#41396B", card:"#2B2452", expense:"#E8A15C", green:"#9C90EE", muted:"#A79FC9", white:"#FFFFFF", bodyGlow:"#3A3170", bodyBase:"#120D26" }
+    },
+    {
+      key:"pastel", name:"Pastel Dashboard",
+      vars:{ ink:"#3A3F4B", accent:"#7FA6C4", inkSoft:"#5B6270", paper:"#F6F1E9", paperDim:"#EFE8DB", paperLine:"#DCD0BE", card:"#FFFDF9", expense:"#E8A6A0", green:"#8FB490", muted:"#8C8A7E", white:"#FFFFFF", bodyGlow:"#EADFCB", bodyBase:"#C9D9DE" }
+    },
+    {
+      key:"amber", name:"Smart Amber", glass:true,
+      vars:{ ink:"#F3E9DC", accent:"#E8873A", inkSoft:"#D9C6B0", paper:"#241A14", paperDim:"#2E2119", paperLine:"#4E3B2A", card:"#33251C", expense:"#E8875A", green:"#B7C27A", muted:"#B5A18C", white:"#FFFFFF", bodyGlow:"#4A3020", bodyBase:"#160E08" }
+    },
+    {
+      key:"journal", name:"Sunny Journal",
+      vars:{ ink:"#2E2A22", accent:"#E8A93A", inkSoft:"#4F4A3C", paper:"#F4EFE4", paperDim:"#EAE2D0", paperLine:"#D8CBAA", card:"#FFFCF5", expense:"#C1503D", green:"#7C9A5E", muted:"#8A8370", white:"#FFFEF9", bodyGlow:"#E3DCCB", bodyBase:"#CFC6AE" }
+    },
+    {
+      key:"liquidglass", name:"Liquid Glass",
+      vars:{ ink:"#2A2E3A", accent:"#7C6FE0", inkSoft:"#4A4F63", paper:"#EFEEF5", paperDim:"#E4E3EF", paperLine:"#CBC9DE", card:"#FDFCFF", expense:"#4FBFA8", green:"#4FBFA8", muted:"#83879C", white:"#FFFFFF", bodyGlow:"#8FA9B5", bodyBase:"#4A5A63" }
+    },
+    {
+      key:"mindwell", name:"Mindwell Sage",
+      vars:{ ink:"#1F3329", accent:"#3F6B54", inkSoft:"#3C5548", paper:"#E9F0E7", paperDim:"#DCE8D9", paperLine:"#BFD3BE", card:"#FBFDF9", expense:"#8A6A4A", green:"#3F6B54", muted:"#75897E", white:"#FBFDF9", bodyGlow:"#274436", bodyBase:"#0C1712" }
+    },
+    {
+      key:"earth", name:"Earth Explorer",
+      vars:{ ink:"#3B2E28", accent:"#C97B4A", inkSoft:"#5C4A3F", paper:"#EFE7DA", paperDim:"#E5D9C6", paperLine:"#D1BC9E", card:"#FCF8F1", expense:"#B25A3E", green:"#8FA37C", muted:"#8D7F6E", white:"#FEFBF6", bodyGlow:"#8B9481", bodyBase:"#5D6653" }
+    }
+  ];
+  var presetThemeGrid = document.getElementById("preset-theme-grid");
+  var currentPresetKey = null;
+
+  function applyPresetTheme(preset, skipAccentSync){
+    var v = preset.vars;
+    var root = document.documentElement.style;
+    root.setProperty("--ink", v.ink);
+    root.setProperty("--ink-soft", v.inkSoft);
+    root.setProperty("--paper", v.paper);
+    root.setProperty("--paper-dim", v.paperDim);
+    root.setProperty("--paper-line", v.paperLine);
+    root.setProperty("--card", v.card);
+    root.setProperty("--expense", v.expense);
+    root.setProperty("--green", v.green);
+    root.setProperty("--muted", v.muted);
+    root.setProperty("--white", v.white);
+    root.setProperty("--body-glow", v.bodyGlow);
+    root.setProperty("--body-base", v.bodyBase);
+    currentPresetKey = preset.key;
+    if(!skipAccentSync) applyAccentColor(v.accent);
+    buildPresetThemeGrid();
+  }
+  async function savePresetTheme(key){
+    try{ await LocalStore.set("sulit_theme_preset", key || ""); }catch(e){}
+  }
+  async function loadPresetTheme(){
+    try{
+      var r = await LocalStore.get("sulit_theme_preset");
+      if(r && r.value){
+        var preset = PRESET_THEMES.find(function(p){ return p.key === r.value; });
+        if(preset){ applyPresetTheme(preset, true); return true; }
+      }
+    }catch(e){}
+    buildPresetThemeGrid();
+    return false;
+  }
+  function buildPresetThemeGrid(){
+    presetThemeGrid.innerHTML = "";
+    PRESET_THEMES.forEach(function(preset){
+      var card = document.createElement("button");
+      card.type = "button";
+      card.className = "preset-theme-card" + (preset.key === currentPresetKey ? " selected" : "");
+      var v = preset.vars;
+      card.innerHTML =
+        '<div class="preset-theme-swatches">'+
+          '<span style="background:'+v.accent+';"></span>'+
+          '<span style="background:'+v.paper+';"></span>'+
+          '<span style="background:'+v.expense+';"></span>'+
+        '</div>'+
+        '<span class="preset-theme-name">'+preset.name+'</span>';
+      card.addEventListener("click", async function(){
+        applyPresetTheme(preset);
+        await savePresetTheme(preset.key);
+        await saveAccentColor(preset.vars.accent);
+        if(preset.glass){
+          applyGlassMode(true);
+          await saveGlassMode(true);
+          if(!bgImageDataUrl){
+            showInfoToast("Add a photo for the full look", 'This preset shines with a background image — scroll up and tap "Choose Image" to add one.');
+          }
+        }
+      });
+      presetThemeGrid.appendChild(card);
+    });
+  }
+
   // ---------- App Settings: theme color ----------
   var DEFAULT_ACCENT = "#4F7C5C";
   var THEME_PRESETS = ["#4F7C5C","#8B7FC7","#3F6B4A","#2F5233","#6B8F71","#C17A56","#1F5C5C","#34405A"];
@@ -3921,18 +5170,33 @@ Taobao Bag - 3500</div>
       sw.setAttribute("aria-label", hex);
       sw.addEventListener("click", async function(){
         applyAccentColor(hex);
+        currentPresetKey = null;
+        buildPresetThemeGrid();
         await saveAccentColor(hex);
+        await savePresetTheme("");
       });
       themeSwatchGrid.appendChild(sw);
     });
   }
   fThemeColor.addEventListener("input", async function(){
     applyAccentColor(fThemeColor.value);
+    currentPresetKey = null;
+    buildPresetThemeGrid();
     await saveAccentColor(fThemeColor.value);
+    await savePresetTheme("");
   });
+  var DEFAULT_PALETTE = {
+    ink:"#2C4A3B", inkSoft:"#4B6857", paper:"#EEF2E4", paperDim:"#E1EAD8", paperLine:"#C6D9BE",
+    card:"#FDFBF4", expense:"#C17A56", green:"#4F7C5C", muted:"#7C8B77", white:"#FEFEF9",
+    bodyGlow:"#35543F", bodyBase:"#1E3328"
+  };
   document.getElementById("btn-theme-reset").addEventListener("click", async function(){
+    applyPresetTheme({ key:null, vars: Object.assign({}, DEFAULT_PALETTE, { accent: DEFAULT_ACCENT }) }, true);
     applyAccentColor(DEFAULT_ACCENT);
+    currentPresetKey = null;
+    buildPresetThemeGrid();
     await saveAccentColor(DEFAULT_ACCENT);
+    await savePresetTheme("");
   });
   document.getElementById("btn-open-settings").addEventListener("click", function(){
     appSettingsBackdrop.classList.add("open");
@@ -3942,6 +5206,19 @@ Taobao Bag - 3500</div>
   });
   appSettingsBackdrop.addEventListener("click", function(e){
     if(e.target === appSettingsBackdrop) appSettingsBackdrop.classList.remove("open");
+  });
+
+  // ---------- Achievements modal ----------
+  achievementsBackdrop = document.getElementById("achievements-backdrop");
+  document.getElementById("game-bar").addEventListener("click", function(){
+    renderAchievementsModal();
+    achievementsBackdrop.classList.add("open");
+  });
+  document.getElementById("btn-achievements-close").addEventListener("click", function(){
+    achievementsBackdrop.classList.remove("open");
+  });
+  achievementsBackdrop.addEventListener("click", function(e){
+    if(e.target === achievementsBackdrop) achievementsBackdrop.classList.remove("open");
   });
 
   // ---------- Export / Import data ----------
@@ -4184,10 +5461,12 @@ Taobao Bag - 3500</div>
 
   async function init(){
     await loadState();
+    await loadPresetTheme();
     await loadAccentColor();
     await loadAiApiKey();
     await loadBackgroundImage();
     await loadGlassMode();
+    await loadGamification();
     renderChat();
     renderLedger();
     renderSummary();
