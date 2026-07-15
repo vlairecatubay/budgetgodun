@@ -1,4 +1,4 @@
-const CACHE_NAME = "budgetgodun-cache-v10";
+const CACHE_NAME = "budgetgodun-cache-v11";
 const ASSETS = ["./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", function (event) {
