@@ -409,7 +409,7 @@
     font-size:15px;
     color:var(--ink);
     margin-bottom:9px;
-    display:flex; justify-content:space-between; align-items:baseline;
+    display:flex; justify-content:space-between; align-items:center;
     padding-bottom:6px;
     border-bottom:1px solid var(--paper-line);
   }
@@ -420,11 +420,18 @@
   .month-chevron{ display:inline-block; color:var(--accent); font-size:12px; width:12px; }
   .month-count{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); font-weight:400; }
   .month-items{ animation: questStepIn .25s ease; }
+  .month-total-wrap{ display:flex; flex-direction:column; align-items:flex-end; gap:1px; }
   .month-label .month-total-amt{
     font-family:'IBM Plex Mono', monospace;
     font-size:13px;
     font-weight:600;
     color:var(--expense);
+  }
+  .month-label .month-projected-amt{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    font-weight:600;
+    color:var(--muted);
   }
   .ledger-controls{
     display:flex; gap:8px; margin-bottom:14px; overflow-x:auto; padding-bottom:2px;
@@ -2014,8 +2021,21 @@ Taobao Bag - 3500</div>
           <button type="button" class="btn btn-ghost" id="btn-export-data">⬇️ Export Data</button>
           <button type="button" class="btn btn-ghost" id="btn-import-data">⬆️ Import Data</button>
         </div>
-        <div class="settings-data-hint">Export saves everything — expenses, budgets, credit sources, goals, your level/XP/streak progress, your last 50 chat messages, and your saved AI API key — as a JSON file. Import replaces current data with a previously exported file. Since your API key is included in plain text, keep exported files private and don't share them.</div>
+        <div class="settings-data-hint">Export saves everything — expenses, budgets, credit sources, goals, your level/XP/streak progress, your last 50 chat messages, your saved AI API key, and your Google Drive Sync URL — as a JSON file. Import replaces current data with a previously exported file. Since your API key is included in plain text, keep exported files private and don't share them.</div>
         <input type="file" id="import-file-input" accept="application/json,.json" style="display:none;">
+      </div>
+      <div class="field">
+        <label>Google Drive Sync</label>
+        <div class="settings-data-hint" style="margin-bottom:8px;">
+          Sync your data across devices using a small Google Apps Script as a bridge (see the setup instructions Claude gave you). Paste your deployed script's Web App URL below.
+          This is manual — tap "Sync to Drive" to push what's on this device, or "Load from Drive" to pull the latest and overwrite this device. Whichever you do last wins, so avoid editing on two devices at once without syncing between.
+        </div>
+        <input type="text" id="f-gdrive-url" placeholder="Paste your Apps Script Web App URL">
+        <div class="settings-data-actions" style="margin-top:8px;">
+          <button type="button" class="btn btn-ghost" id="btn-gdrive-sync">☁️ Sync to Drive</button>
+          <button type="button" class="btn btn-ghost" id="btn-gdrive-load">⬇️ Load from Drive</button>
+        </div>
+        <div class="settings-data-hint" id="gdrive-sync-status" style="margin-top:8px;"></div>
       </div>
       <div class="field">
         <label>AI Features</label>
@@ -4007,6 +4027,7 @@ Taobao Bag - 3500</div>
       var group = document.createElement("div");
       group.className = "month-group";
       var monthTotal = groups[mKeyVal].filter(function(r){ return r.active!==false; }).reduce(function(s,r){return s+r.amount;},0);
+      var monthProjected = groups[mKeyVal].filter(function(r){ return r.active===false; }).reduce(function(s,r){return s+r.amount;},0);
       var isExpanded = forceExpandAll || !!state.ledgerExpandedMonths[mKeyVal];
       var lbl = document.createElement("button");
       lbl.type = "button";
@@ -4014,7 +4035,10 @@ Taobao Bag - 3500</div>
       lbl.innerHTML =
         "<span><span class=\"month-chevron\">"+(isExpanded?"▾":"▸")+"</span> "+monthYearLabel(mKeyVal)+
         " <span class=\"month-count\">("+groups[mKeyVal].length+")</span></span>"+
-        "<span class=\"month-total-amt\">"+fmtPHP(monthTotal)+"</span>";
+        "<span class=\"month-total-wrap\">"+
+          "<span class=\"month-total-amt\">"+fmtPHP(monthTotal)+"</span>"+
+          (monthProjected > 0 ? "<span class=\"month-projected-amt\">+"+fmtPHP(monthProjected)+" projected</span>" : "")+
+        "</span>";
       lbl.addEventListener("click", function(){
         state.ledgerExpandedMonths[mKeyVal] = !isExpanded;
         renderLedger();
@@ -6377,8 +6401,8 @@ Taobao Bag - 3500</div>
   });
 
   // ---------- Export / Import data ----------
-  function exportData(){
-    var payload = {
+  function buildExportPayload(){
+    return {
       app: "BudgetGodun",
       exportVersion: 2,
       exportedAt: new Date().toISOString(),
@@ -6389,9 +6413,13 @@ Taobao Bag - 3500</div>
         paymentMethods: state.paymentMethods,
         chatLog: state.chatLog.slice(-50),
         gamification: state.gamification,
-        aiApiKey: aiApiKey || ""
+        aiApiKey: aiApiKey || "",
+        gdriveSyncUrl: gdriveSyncUrl || ""
       }
     };
+  }
+  function exportData(){
+    var payload = buildExportPayload();
     var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
@@ -6408,6 +6436,41 @@ Taobao Bag - 3500</div>
   document.getElementById("btn-import-data").addEventListener("click", function(){
     importFileInput.click();
   });
+  async function applyImportedPayload(payload){
+    state.records = Array.isArray(payload.records) ? payload.records : [];
+    state.budgets = Array.isArray(payload.budgets) ? payload.budgets : [];
+    state.goals = Array.isArray(payload.goals) ? payload.goals : [];
+    state.paymentMethods = Array.isArray(payload.paymentMethods) ? payload.paymentMethods : [];
+    state.chatLog = Array.isArray(payload.chatLog) ? payload.chatLog : [];
+    if(payload.gamification && typeof payload.gamification === "object"){
+      state.gamification = payload.gamification;
+    }
+
+    await saveRecords();
+    await saveBudgets();
+    await saveGoals();
+    await savePaymentMethods();
+    await saveChatLog();
+    await saveGamification();
+
+    if(typeof payload.aiApiKey === "string" && payload.aiApiKey){
+      await saveAiApiKey(payload.aiApiKey);
+      if(fAiApiKey) fAiApiKey.value = payload.aiApiKey;
+    }
+    if(typeof payload.gdriveSyncUrl === "string" && payload.gdriveSyncUrl){
+      await saveGdriveSyncUrl(payload.gdriveSyncUrl);
+      if(fGdriveUrl) fGdriveUrl.value = payload.gdriveSyncUrl;
+    }
+
+    renderChat();
+    renderLedger();
+    renderSummary();
+    renderHeaderTotal();
+    renderPaymentMethodsList();
+    renderGoalsTab();
+    renderGameBar();
+  }
+
   importFileInput.addEventListener("change", function(e){
     var file = e.target.files && e.target.files[0];
     if(!file) return;
@@ -6435,34 +6498,7 @@ Taobao Bag - 3500</div>
         return;
       }
 
-      state.records = Array.isArray(payload.records) ? payload.records : [];
-      state.budgets = Array.isArray(payload.budgets) ? payload.budgets : [];
-      state.goals = Array.isArray(payload.goals) ? payload.goals : [];
-      state.paymentMethods = Array.isArray(payload.paymentMethods) ? payload.paymentMethods : [];
-      state.chatLog = Array.isArray(payload.chatLog) ? payload.chatLog : [];
-      if(payload.gamification && typeof payload.gamification === "object"){
-        state.gamification = payload.gamification;
-      }
-
-      await saveRecords();
-      await saveBudgets();
-      await saveGoals();
-      await savePaymentMethods();
-      await saveChatLog();
-      await saveGamification();
-
-      if(typeof payload.aiApiKey === "string" && payload.aiApiKey){
-        await saveAiApiKey(payload.aiApiKey);
-        if(fAiApiKey) fAiApiKey.value = payload.aiApiKey;
-      }
-
-      renderChat();
-      renderLedger();
-      renderSummary();
-      renderHeaderTotal();
-      renderPaymentMethodsList();
-      renderGoalsTab();
-      renderGameBar();
+      await applyImportedPayload(payload);
 
       appSettingsBackdrop.classList.remove("open");
       importFileInput.value = "";
@@ -6473,6 +6509,70 @@ Taobao Bag - 3500</div>
       importFileInput.value = "";
     };
     reader.readAsText(file);
+  });
+
+  // ---------- Google Drive Sync (via Apps Script bridge) ----------
+  var fGdriveUrl = document.getElementById("f-gdrive-url");
+  var gdriveSyncStatus = document.getElementById("gdrive-sync-status");
+  var gdriveSyncUrl = null;
+
+  async function loadGdriveSyncUrl(){
+    try{
+      var r = await LocalStore.get("sulit_gdrive_sync_url");
+      gdriveSyncUrl = r && r.value ? r.value : null;
+    }catch(e){ gdriveSyncUrl = null; }
+    if(fGdriveUrl) fGdriveUrl.value = gdriveSyncUrl || "";
+  }
+  async function saveGdriveSyncUrl(url){
+    gdriveSyncUrl = url || null;
+    try{
+      await LocalStore.set("sulit_gdrive_sync_url", gdriveSyncUrl || "");
+    }catch(e){}
+  }
+  fGdriveUrl.addEventListener("change", function(){
+    saveGdriveSyncUrl(fGdriveUrl.value.trim());
+  });
+
+  document.getElementById("btn-gdrive-sync").addEventListener("click", async function(){
+    var url = fGdriveUrl.value.trim();
+    if(!url){ gdriveSyncStatus.textContent = "Paste your Apps Script URL first."; return; }
+    await saveGdriveSyncUrl(url);
+    gdriveSyncStatus.textContent = "Syncing...";
+    try{
+      var payload = buildExportPayload();
+      var res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      if(!res.ok) throw new Error("Request failed: " + res.status);
+      gdriveSyncStatus.textContent = "✅ Synced to Drive at " + new Date().toLocaleTimeString();
+    }catch(err){
+      gdriveSyncStatus.textContent = "❌ Sync failed. Check your Web App URL and that it's deployed with \"Anyone\" access.";
+    }
+  });
+
+  document.getElementById("btn-gdrive-load").addEventListener("click", async function(){
+    var url = fGdriveUrl.value.trim();
+    if(!url){ gdriveSyncStatus.textContent = "Paste your Apps Script URL first."; return; }
+    await saveGdriveSyncUrl(url);
+    var confirmed = window.confirm("Loading from Drive will replace all current data on this device — expenses, budgets, credit sources, goals, and progress. This cannot be undone. Continue?");
+    if(!confirmed) return;
+    gdriveSyncStatus.textContent = "Loading...";
+    try{
+      var res = await fetch(url, { method: "GET" });
+      if(!res.ok) throw new Error("Request failed: " + res.status);
+      var parsed = await res.json();
+      var payload = (parsed && parsed.data) ? parsed.data : parsed;
+      if(!payload || (!Array.isArray(payload.records) && !Array.isArray(payload.budgets) && !Array.isArray(payload.paymentMethods))){
+        gdriveSyncStatus.textContent = "❌ No valid data found at that URL yet. Try \"Sync to Drive\" first from a device that already has data.";
+        return;
+      }
+      await applyImportedPayload(payload);
+      gdriveSyncStatus.textContent = "✅ Loaded from Drive at " + new Date().toLocaleTimeString();
+    }catch(err){
+      gdriveSyncStatus.textContent = "❌ Load failed. Check your Web App URL and that it's deployed with \"Anyone\" access.";
+    }
   });
 
   // ---------- AI API key (needed when running outside Claude.ai) ----------
@@ -6688,6 +6788,7 @@ Taobao Bag - 3500</div>
     await loadBackgroundImage();
     await loadGlassMode();
     await loadGamification();
+    await loadGdriveSyncUrl();
     swapNavIconsToArt();
     renderChat();
     renderLedger();
