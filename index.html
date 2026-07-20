@@ -3829,11 +3829,13 @@
               const src = profile.creditSources.find(s => s.id === e.sourceId);
               const subitems = e.subitems || [];
               const subitemsTotal = getExpenseSubitemsTotal(e);
-              const matches = subitems.length === 0 || subitemsTotal === (e.amount || 0);
+              const diff = subitemsTotal - (e.amount || 0);
+              const matches = subitems.length === 0 || diff === 0;
               const subitemsMarkup = subitems.length > 0 ? subitems.map(item => `
                 <div style="margin-top:4px; font-size:11px; color:var(--paper-faint);">• ${escapeHtml(item.name || "Item")}: ${formatCurrency(item.amount || 0)}</div>
               `).join("") : "";
-              const statusMarkup = subitems.length > 0 ? `<div style="margin-top:6px; font-size:11px; color:${matches ? "var(--sage)" : "var(--brass)"};">${matches ? "Subitems match total" : "Subitems total does not match the main amount"}</div>` : "";
+              const diffMarkup = subitems.length > 0 ? `<div style="margin-top:6px; font-size:11px; color:var(--paper-faint);">Difference: ${formatCurrency(diff)}</div>` : "";
+              const statusMarkup = subitems.length > 0 ? `<div style="margin-top:6px; font-size:11px; color:${matches ? "var(--sage)" : "var(--brass)"};">${matches ? "Subitems match total" : "Subitems total does not match the main amount"}</div>${diffMarkup}` : "";
               return `
               <tr data-expense-id="${e.id}">
                 <td data-label="Date">${new Date(e.date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</td>
