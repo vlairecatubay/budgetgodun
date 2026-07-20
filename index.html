@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>FinancialGodun — Personal Wealth Operating System</title>
+<link rel="icon" type="image/png" href="FinanceGodun.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Baloo+2:wght@600;700;800&family=DM+Sans:wght@400;500;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -520,29 +521,42 @@
   }
 
   .brand-mark {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 20px;
-    letter-spacing: 0.01em;
-    color: var(--brass-bright);
     display: flex;
-    align-items: baseline;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-mark img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  .brand-title {
+    display: flex;
+    flex-direction: column;
     gap: 2px;
   }
-  .brand-mark small {
+  .brand-title strong {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--brass-bright);
+    letter-spacing: 0.01em;
+  }
+  .brand-title small {
     font-family: var(--font-mono);
     font-size: 10px;
     color: var(--paper-faint);
     font-weight: 400;
     letter-spacing: 0.08em;
-    margin-left: 8px;
     text-transform: uppercase;
   }
   .brand-sub {
     font-size: 11px;
     color: var(--paper-faint);
-    margin-top: 4px;
-    letter-spacing: 0.03em;
+    margin-top: 8px;
   }
 
   .nav-list {
@@ -639,7 +653,15 @@
       inset: 0;
       z-index: 50;
       width: 100%;
+      max-width: 100%;
+      overflow-y: auto;
+      background: var(--ink-raised);
+      padding-top: calc(24px + env(safe-area-inset-top, 0px));
     }
+    .app.nav-open .sidebar::after { display: none; }
+    .nav-list { padding: 8px 18px 18px; }
+    .nav-item { padding: 14px 16px; }
+    .sidebar-footer { padding: 16px 18px 12px; }
   }
 
   /* ---- Main content ---- */
@@ -1125,6 +1147,24 @@
   .score-row-value { font-family: var(--font-mono); color: var(--paper-faint); text-align: right; }
 
   /* ---- Mobile polish: tighter grid minimums, larger touch targets ---- */
+  @media (max-width: 700px) {
+    .content { padding: 28px 18px 110px; }
+    .brand { padding: 0 18px 20px; }
+    .brand-mark { gap: 10px; }
+    .brand-mark img { width: 36px; height: 36px; }
+    .brand-title strong { font-size: 16px; }
+    .brand-sub { font-size: 10px; }
+    .nav-item { font-size: 14px; }
+    .field-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .btn-row { gap: 8px; }
+    .data-table th, .data-table td { padding: 8px 10px; }
+    .chart-grid { grid-template-columns: 1fr; gap: 14px; }
+    .chart-canvas-wrap { height: 190px; }
+    .section-desc { max-width: 100%; }
+    .view-tabs { flex-wrap: wrap; width: 100%; }
+    .view-tab { flex: 1; text-align: center; min-width: 0; }
+  }
+
   @media (max-width: 480px) {
     .kpi-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
     .kpi-card { padding: 13px 14px; }
@@ -1140,6 +1180,25 @@
     .ledger-card { padding: 16px 16px; }
     .group-title { font-size: 14px; margin: 22px 0 12px; }
     .section-desc { font-size: 13px; }
+    .data-table th, .data-table td { padding: 8px 10px; }
+    .data-table-cards td { padding: 10px 0; }
+    .bottom-nav-item { min-height: 50px; padding: 10px 6px 8px; }
+  }
+
+  @media (max-width: 700px) {
+    .data-table-cards td { flex-wrap: wrap; }
+    .data-table-cards td::before { width: 100%; margin-bottom: 5px; }
+    .data-table-cards td input[type="text"],
+    .data-table-cards td input[type="number"],
+    .data-table-cards td select,
+    .field input,
+    .field select {
+      min-width: 0;
+      width: 100%;
+    }
+    .bottom-nav { padding: 0 6px env(safe-area-inset-bottom, 0px); }
+    .content { padding-bottom: 100px; }
+    .field-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   }
 
   @media (hover: none) {
@@ -1599,7 +1658,13 @@
 
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="brand-mark">FinancialGodun <small>v0.1</small></div>
+      <div class="brand-mark">
+        <img src="FinanceGodun.png" alt="FinancialGodun logo">
+        <div class="brand-title">
+          <strong>FinancialGodun</strong>
+          <small>v0.1</small>
+        </div>
+      </div>
       <div class="brand-sub">Personal Wealth Operating System</div>
     </div>
 
