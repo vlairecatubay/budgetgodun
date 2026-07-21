@@ -3315,7 +3315,7 @@
         <div class="inline-note" style="margin-bottom:12px;">Retirement defaults from your saved contribution in the Retirement tab, but is editable per month here too. Prepay defaults from your mortgage's annual prepayment amount, but you can override it per month here as well. Big Expense Amount and Description default from Family Planner/Goal Tracker (baby) or nothing at all otherwise — type your own for anything those tabs don't cover.</div>
         <div class="inline-note" style="margin-bottom:12px;">Balance starts from the prior year’s closing balance, carried into this forecast year automatically. For ${calendarYearFor(year)}, the opening balance is <strong style="color:var(--brass-bright);">${formatCurrency(openingBalance)}</strong>.</div>
         ${balanceWarning}
-        <div class="data-table-wrap data-table-cards"><table class="data-table">
+        <div class="data-table-wrap"><table class="data-table">
           <thead><tr><th>Month</th><th>Income</th><th>Living</th><th>Travel</th><th>Child</th><th>Other</th><th>Mortgage</th><th>Prepay</th><th>Retirement</th><th>Big Expense Amount</th><th>Big Expense Description</th><th>Net Cash</th><th>Balance</th></tr></thead>
           <tbody>
             ${rows.map((r, idx) => forecastRowHTML(r, idx)).join("")}
