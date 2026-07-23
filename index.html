@@ -2833,6 +2833,22 @@
     });
   }
 
+  // Splits this month's actual logged spending by which kind of source
+  // paid for it. "Cash" here means anything that isn't a credit card —
+  // Cash/Debit/Wallet sources, and entries with no source picked at all
+  // (nothing to suggest they were charged to a card) all count as cash.
+  function computeCurrentMonthExpensesBySource(profile) {
+    const entries = getCurrentMonthExpenseEntries(profile);
+    let total = 0, cashTotal = 0;
+    entries.forEach(e => {
+      total += e.amount;
+      const src = e.sourceId ? profile.creditSources.find(s => s.id === e.sourceId) : null;
+      const isCreditCard = !!(src && src.type === "credit_card");
+      if (!isCreditCard) cashTotal += e.amount;
+    });
+    return { total, cashTotal, creditCardTotal: total - cashTotal };
+  }
+
   // Compares actual logged spending this month against the budgeted
   // assumptions already used everywhere else (Settings' monthly Living/
   // Child, Travel's annual budget ÷ 12) — ties the Ledger's real
@@ -3616,12 +3632,18 @@
     const liquid = getLiquidCashTotal(profile);
     const owed = getCreditOwedTotal(profile);
     const potential = getPotentialIncomeTotal(profile);
+    const monthExpenses = computeCurrentMonthExpensesBySource(profile);
+    const monthName = new Date().toLocaleDateString(undefined, { month: "long" });
+    const currentLiquidMoney = liquid - monthExpenses.cashTotal;
 
     return `
       <div class="kpi-grid">
         <div class="kpi-card"><div class="kpi-label">Total Liquid Cash</div><div class="kpi-value tnum positive">${formatCurrency(liquid)}</div></div>
         <div class="kpi-card"><div class="kpi-label">Total Owed (Credit Cards)</div><div class="kpi-value tnum negative">${formatCurrency(owed)}</div></div>
         <div class="kpi-card"><div class="kpi-label">Potential Income</div><div class="kpi-value tnum">${formatCurrency(potential)}</div><div class="kpi-sub">Not counted in Net Worth</div></div>
+        <div class="kpi-card"><div class="kpi-label">Total ${monthName} Expenses</div><div class="kpi-value tnum negative">${formatCurrency(monthExpenses.total)}</div><div class="kpi-sub">All sources, all categories</div></div>
+        <div class="kpi-card"><div class="kpi-label">Total ${monthName} Cash Expenses</div><div class="kpi-value tnum negative">${formatCurrency(monthExpenses.cashTotal)}</div><div class="kpi-sub">Everything except credit cards</div></div>
+        <div class="kpi-card"><div class="kpi-label">Current Liquid Money</div><div class="kpi-value tnum ${currentLiquidMoney >= 0 ? "positive" : "negative"}">${formatCurrency(currentLiquidMoney)}</div><div class="kpi-sub">Liquid Cash minus this month's cash spending</div></div>
       </div>
 
       <div class="ledger-card">
