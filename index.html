@@ -770,6 +770,91 @@
     line-height: 1.6;
   }
 
+  /* ---- Expense card list (Ledger → Expense Log) ----
+     Each expense is its own compact card rather than a table row — a
+     table with 7 columns plus an inline subitems panel doesn't fit a
+     phone screen no matter how it's squeezed, but a stacked card list
+     reads naturally at any width and lets subitems expand right in
+     place instead of an awkward colspan row. */
+  .expense-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .expense-card {
+    background: var(--ink-card);
+    border: 1px solid var(--stitch);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+  .expense-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .expense-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .expense-card-date {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--paper-faint);
+  }
+  .expense-card-category {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--brass-bright);
+    background: var(--ink-raised);
+    border: 1px solid var(--stitch);
+    padding: 2px 8px;
+    border-radius: var(--radius-pill, 999px);
+  }
+  .expense-card-amount {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--clay-bright);
+    flex-shrink: 0;
+  }
+  .expense-card-note {
+    font-size: 12.5px;
+    color: var(--paper-dim);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+  .expense-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .expense-card-subitems {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--stitch-soft);
+  }
+  .expense-subitem-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .expense-subitem-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    background: var(--ink-raised);
+    border-radius: var(--radius-sm);
+    font-size: 12.5px;
+  }
+
   /* ---- Form elements ---- */
   .field-grid {
     display: grid;
@@ -3751,64 +3836,60 @@
 
       <div class="ledger-card">
         <div class="group-title">This Month's Entries</div>
-        <div class="data-table-wrap"><table class="data-table">
-          <thead><tr><th>Date</th><th>Category</th><th>Amount</th><th>Source</th><th>Note</th><th>Subitems</th><th></th></tr></thead>
-          <tbody>
-            ${avb.entries.map(e => {
-              const src = profile.creditSources.find(s => s.id === e.sourceId);
-              const subitems = e.subitems || [];
-              const subitemsTotal = getSubitemsTotal(e);
-              const difference = e.amount - subitemsTotal;
-              const isExpanded = expandedExpenseId === e.id;
-              let rowHTML = `
-              <tr data-expense-id="${e.id}">
-                <td data-label="Date">${new Date(e.date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</td>
-                <td data-label="Category">${EXPENSE_CATEGORIES[e.category] || e.category}</td>
-                <td class="tnum negative" data-label="Amount">${formatCurrency(e.amount)}</td>
-                <td data-label="Source">${src ? src.name : "—"}</td>
-                <td data-label="Note">${e.note || "—"}</td>
-                <td data-label="Subitems"><button class="btn" data-toggle-subitems="${e.id}" type="button" style="padding:4px 10px; font-size:10.5px;">${isExpanded ? "▾" : "▸"} ${subitems.length > 0 ? subitems.length : "Add"}</button></td>
-                <td data-label=""><button class="btn btn-danger" data-remove-expense="${e.id}" type="button" style="padding:4px 10px; font-size:10.5px;">Remove</button></td>
-              </tr>`;
-              if (isExpanded) {
-                rowHTML += `
-              <tr data-subitems-panel="${e.id}">
-                <td colspan="7" style="background:var(--ink-raised);">
-                  <div style="padding:14px;">
-                    <div class="group-title" style="margin:0 0 10px;">Subitems for ${e.note || (EXPENSE_CATEGORIES[e.category] || e.category)} — ${formatCurrency(e.amount)}</div>
-                    ${subitems.length > 0 ? `
-                    <div class="data-table-wrap"><table class="data-table">
-                      <thead><tr><th>Label</th><th>Amount</th><th></th></tr></thead>
-                      <tbody>
-                        ${subitems.map(si => `
-                          <tr>
-                            <td>${si.label ? escapeHtml(si.label) : "—"}</td>
-                            <td class="tnum">${formatCurrency(si.amount)}</td>
-                            <td><button class="btn btn-danger" data-remove-subitem="${e.id}" data-subitem-id="${si.id}" type="button" style="padding:3px 8px; font-size:10px;">Remove</button></td>
-                          </tr>
-                        `).join("")}
-                      </tbody>
-                    </table></div>
-                    ` : `<div class="inline-note" style="margin-bottom:10px;">No subitems yet — break this expense down below.</div>`}
-                    <div class="field-grid" style="margin-top:12px;">
-                      <div class="field"><label>Label</label><input type="text" data-new-subitem-label="${e.id}" placeholder="e.g. Rice"></div>
-                      <div class="field"><label>Amount</label><input type="text" inputmode="decimal" class="tnum" data-numfmt="1" data-new-subitem-amount="${e.id}" value="0"></div>
+        <div class="expense-card-list">
+          ${avb.entries.map(e => {
+            const src = profile.creditSources.find(s => s.id === e.sourceId);
+            const subitems = e.subitems || [];
+            const subitemsTotal = getSubitemsTotal(e);
+            const difference = e.amount - subitemsTotal;
+            const isExpanded = expandedExpenseId === e.id;
+            return `
+            <div class="expense-card" data-expense-id="${e.id}">
+              <div class="expense-card-top">
+                <div class="expense-card-meta">
+                  <span class="expense-card-date">${new Date(e.date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
+                  <span class="expense-card-category">${EXPENSE_CATEGORIES[e.category] || e.category}</span>
+                </div>
+                <div class="tnum expense-card-amount">${formatCurrency(e.amount)}</div>
+              </div>
+              ${e.note ? `<div class="expense-card-note">${escapeHtml(e.note)}</div>` : ""}
+              <div class="expense-card-bottom">
+                <span class="kpi-sub">${src ? src.name : "No source set"}</span>
+                <div style="display:flex; gap:6px;">
+                  <button class="btn" data-toggle-subitems="${e.id}" type="button" style="padding:5px 10px; font-size:10.5px;">${isExpanded ? "▾ Hide" : "▸"} ${subitems.length > 0 ? "Subitems (" + subitems.length + ")" : "Add subitems"}</button>
+                  <button class="btn btn-danger" data-remove-expense="${e.id}" type="button" style="padding:5px 10px; font-size:10.5px;">Remove</button>
+                </div>
+              </div>
+              ${isExpanded ? `
+              <div class="expense-card-subitems">
+                ${subitems.length > 0 ? `
+                <div class="expense-subitem-list">
+                  ${subitems.map(si => `
+                    <div class="expense-subitem-row">
+                      <span>${si.label ? escapeHtml(si.label) : "—"}</span>
+                      <span class="tnum">${formatCurrency(si.amount)}</span>
+                      <button class="btn btn-danger" data-remove-subitem="${e.id}" data-subitem-id="${si.id}" type="button" style="padding:3px 8px; font-size:10px;">Remove</button>
                     </div>
-                    <div class="btn-row">
-                      <button class="btn btn-primary" data-add-subitem="${e.id}" type="button">Add subitem</button>
-                    </div>
-                    <div class="kpi-grid" style="margin-top:14px; margin-bottom:0;">
-                      <div class="kpi-card"><div class="kpi-label">Subitems Total</div><div class="kpi-value tnum">${formatCurrency(subitemsTotal)}</div></div>
-                      <div class="kpi-card"><div class="kpi-label">Difference</div><div class="kpi-value tnum ${difference === 0 ? "positive" : "negative"}">${formatCurrency(difference)}</div><div class="kpi-sub">${difference === 0 ? "Fully accounted for" : (difference > 0 ? "Unaccounted amount left" : "Subitems exceed the total")}</div></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>`;
-              }
-              return rowHTML;
-            }).join("") || `<tr><td colspan="7" style="text-align:center; color:var(--paper-faint);">No expenses logged this month yet</td></tr>`}
-          </tbody>
-        </table></div>
+                  `).join("")}
+                </div>
+                ` : `<div class="inline-note" style="margin-bottom:10px;">No subitems yet — break this expense down below.</div>`}
+                <div class="field-grid" style="margin-top:10px;">
+                  <div class="field"><label>Label</label><input type="text" data-new-subitem-label="${e.id}" placeholder="e.g. Rice"></div>
+                  <div class="field"><label>Amount</label><input type="text" inputmode="decimal" class="tnum" data-numfmt="1" data-new-subitem-amount="${e.id}" value="0"></div>
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn-primary" data-add-subitem="${e.id}" type="button">Add subitem</button>
+                </div>
+                <div class="kpi-grid" style="margin-top:12px; margin-bottom:0;">
+                  <div class="kpi-card"><div class="kpi-label">Subitems Total</div><div class="kpi-value tnum">${formatCurrency(subitemsTotal)}</div></div>
+                  <div class="kpi-card"><div class="kpi-label">Difference</div><div class="kpi-value tnum ${difference === 0 ? "positive" : "negative"}">${formatCurrency(difference)}</div><div class="kpi-sub">${difference === 0 ? "Fully accounted for" : (difference > 0 ? "Unaccounted amount left" : "Subitems exceed the total")}</div></div>
+                </div>
+              </div>
+              ` : ""}
+            </div>
+          `;
+          }).join("") || `<div class="placeholder-card"><p>No expenses logged this month yet</p></div>`}
+        </div>
       </div>
     `;
   }
