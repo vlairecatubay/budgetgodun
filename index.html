@@ -3871,6 +3871,7 @@
             if (isEditingEntry) {
               return `
               <div class="expense-card" data-expense-id="${e.id}">
+                <div class="kpi-sub tnum" style="margin-bottom:8px;">Original Amount: ${formatCurrency(e.originalAmount != null ? e.originalAmount : e.amount)} (fixed — not editable, kept as a record of what you first logged)</div>
                 <div class="field-grid">
                   <div class="field"><label>Date</label><input type="date" data-edit-expense-date="${e.id}" value="${e.date}"></div>
                   <div class="field"><label>Amount</label><input type="text" inputmode="decimal" class="tnum" id="edit-expense-amount-${e.id}" data-numfmt="1" data-edit-expense-amount="${e.id}" value="${formatNumberString(e.amount)}"><a href="#" class="calc-link" data-calc-target="edit-expense-amount-${e.id}">🧮 Calculator</a></div>
@@ -3890,6 +3891,7 @@
               </div>
             `;
             }
+            const originalAmount = e.originalAmount != null ? e.originalAmount : e.amount;
             return `
             <div class="expense-card" data-expense-id="${e.id}">
               <div class="expense-card-top">
@@ -3897,7 +3899,10 @@
                   <span class="expense-card-date">${new Date(e.date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
                   <span class="expense-card-category">${EXPENSE_CATEGORIES[e.category] || e.category}</span>
                 </div>
-                <div class="tnum expense-card-amount">${formatCurrency(e.amount)}</div>
+                <div style="text-align:right;">
+                  <div class="tnum expense-card-amount">${formatCurrency(e.amount)}</div>
+                  ${originalAmount !== e.amount ? `<div class="kpi-sub tnum" style="text-decoration:line-through;">was ${formatCurrency(originalAmount)}</div>` : ""}
+                </div>
               </div>
               ${e.note ? `<div class="expense-card-note">${escapeHtml(e.note)}</div>` : ""}
               <div class="expense-card-bottom">
@@ -4264,6 +4269,7 @@
       return {
         date: e.date,
         category: EXPENSE_CATEGORIES[e.category] || e.category,
+        originalAmount: Math.round(e.originalAmount != null ? e.originalAmount : e.amount),
         amount: Math.round(e.amount),
         source: uniqueSourceNames.length === 0 ? "Unspecified" : uniqueSourceNames.join(", "),
         note: e.note || "",
@@ -5032,7 +5038,10 @@
       // No source at this level anymore, and therefore no balance impact
       // yet either — that happens per-subitem, tagged to whichever
       // account actually paid for that part.
-      profile.expenseLog.push({ id: "exp_" + Date.now(), date, amount, category, note, subitems: [] });
+      // Original Amount is set once, here, and never changes again — a
+      // fixed record of what you first logged, even if Amount gets
+      // corrected later via Edit.
+      profile.expenseLog.push({ id: "exp_" + Date.now(), date, amount, originalAmount: amount, category, note, subitems: [] });
 
       Store.save(profile);
       renderSections();
