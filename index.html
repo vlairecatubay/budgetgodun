@@ -1043,24 +1043,24 @@
   /* ---- Sticky first column ----
      For wide tables (Monthly Forecast, 10-Year, etc.) the leftmost
      column (Month/Year) stays pinned while scrolling horizontally, so
-     it's always clear which row a given cell belongs to. Only applies
-     above the mobile card-transform breakpoint, since sticky-left has no
-     meaning once rows become stacked cards. An explicit opaque
-     background is required — sticky cells need one or content scrolling
-     underneath would show through. */
-  @media (min-width: 701px) {
-    .data-table-wrap table th:first-child,
-    .data-table-wrap table td:first-child {
-      position: sticky;
-      left: 0;
-      z-index: 2;
-      background: var(--ink-card);
-      box-shadow: 2px 0 4px rgba(0,0,0,0.08);
-    }
-    .data-table-wrap table thead th:first-child { z-index: 3; }
-    .data-table-wrap table tbody tr:hover td:first-child { background: var(--ink-card-hover); }
-    .data-table-wrap table tfoot td:first-child { background: var(--ink-card); }
+     it's always clear which row a given cell belongs to. Applies at all
+     sizes now — harmless for tables that still convert to stacked cards
+     on mobile (a sticky block element outside a scroll context is just a
+     no-op), and genuinely useful for Monthly Forecast, which stays a
+     real scrollable table on mobile rather than converting to cards. An
+     explicit opaque background is required — sticky cells need one or
+     content scrolling underneath would show through. */
+  .data-table-wrap table th:first-child,
+  .data-table-wrap table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--ink-card);
+    box-shadow: 2px 0 4px rgba(0,0,0,0.08);
   }
+  .data-table-wrap table thead th:first-child { z-index: 3; }
+  .data-table-wrap table tbody tr:hover td:first-child { background: var(--ink-card-hover); }
+  .data-table-wrap table tfoot td:first-child { background: var(--ink-card); }
 
   /* ---- Wide tables become stacked cards on mobile instead of a
      horizontal-scroll table — the single biggest mobile usability win
@@ -3249,7 +3249,7 @@
         <div class="inline-note" style="margin-bottom:12px;">Months marked <strong style="color:var(--brass-bright);">●</strong> use actual logged expenses from the Ledger instead — those cells aren't editable here since the Ledger is the source of truth for months you've actually logged.</div>
         <div class="inline-note" style="margin-bottom:12px;">Retirement defaults from your saved contribution in the Retirement tab, but is editable per month here too. Big Expense Amount and Description default from Family Planner/Goal Tracker (baby) or nothing at all otherwise — type your own for anything those tabs don't cover.</div>
         <div class="inline-note" style="margin-bottom:12px;">Balance starts from your actual current savings — <strong style="color:var(--brass-bright);">${formatCurrency(getLiquidCashTotal(profile))}</strong> across your Credit Sources today — plus every prior year's accumulated Net Cash. It's not starting from zero.</div>
-        <div class="data-table-wrap data-table-cards"><table class="data-table">
+        <div class="data-table-wrap"><table class="data-table">
           <thead><tr><th>Month</th><th>Income</th><th>Living</th><th>Travel</th><th>Child</th><th>Other</th><th>Mortgage</th><th>Prepay</th><th>Retirement</th><th>Big Expense Amount</th><th>Big Expense Description</th><th>Net Cash</th><th>Balance</th></tr></thead>
           <tbody>
             ${rows.map((r, idx) => forecastRowHTML(r, idx)).join("")}
@@ -3467,6 +3467,7 @@
   const CREDIT_SOURCE_TYPES = { cash: "Cash", debit: "Debit Account", wallet: "Mobile Wallet", credit_card: "Credit Card", potential: "Potential Income" };
   const EXPENSE_CATEGORIES = { living: "Living", travel: "Travel", child: "Child", other: "Other" };
   let ledgerView = "sources";
+  let expandedExpenseId = null;
 
   /* ==========================================================
      AI INSIGHTS — chat grounded in the person's real financial data,
@@ -3750,26 +3751,70 @@
 
       <div class="ledger-card">
         <div class="group-title">This Month's Entries</div>
-        <div class="data-table-wrap data-table-cards"><table class="data-table">
-          <thead><tr><th>Date</th><th>Category</th><th>Amount</th><th>Source</th><th>Note</th><th></th></tr></thead>
+        <div class="data-table-wrap"><table class="data-table">
+          <thead><tr><th>Date</th><th>Category</th><th>Amount</th><th>Source</th><th>Note</th><th>Subitems</th><th></th></tr></thead>
           <tbody>
             ${avb.entries.map(e => {
               const src = profile.creditSources.find(s => s.id === e.sourceId);
-              return `
+              const subitems = e.subitems || [];
+              const subitemsTotal = getSubitemsTotal(e);
+              const difference = e.amount - subitemsTotal;
+              const isExpanded = expandedExpenseId === e.id;
+              let rowHTML = `
               <tr data-expense-id="${e.id}">
                 <td data-label="Date">${new Date(e.date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</td>
                 <td data-label="Category">${EXPENSE_CATEGORIES[e.category] || e.category}</td>
                 <td class="tnum negative" data-label="Amount">${formatCurrency(e.amount)}</td>
                 <td data-label="Source">${src ? src.name : "—"}</td>
                 <td data-label="Note">${e.note || "—"}</td>
+                <td data-label="Subitems"><button class="btn" data-toggle-subitems="${e.id}" type="button" style="padding:4px 10px; font-size:10.5px;">${isExpanded ? "▾" : "▸"} ${subitems.length > 0 ? subitems.length : "Add"}</button></td>
                 <td data-label=""><button class="btn btn-danger" data-remove-expense="${e.id}" type="button" style="padding:4px 10px; font-size:10.5px;">Remove</button></td>
-              </tr>
-            `;
-            }).join("") || `<tr><td colspan="6" style="text-align:center; color:var(--paper-faint);">No expenses logged this month yet</td></tr>`}
+              </tr>`;
+              if (isExpanded) {
+                rowHTML += `
+              <tr data-subitems-panel="${e.id}">
+                <td colspan="7" style="background:var(--ink-raised);">
+                  <div style="padding:14px;">
+                    <div class="group-title" style="margin:0 0 10px;">Subitems for ${e.note || (EXPENSE_CATEGORIES[e.category] || e.category)} — ${formatCurrency(e.amount)}</div>
+                    ${subitems.length > 0 ? `
+                    <div class="data-table-wrap"><table class="data-table">
+                      <thead><tr><th>Label</th><th>Amount</th><th></th></tr></thead>
+                      <tbody>
+                        ${subitems.map(si => `
+                          <tr>
+                            <td>${si.label ? escapeHtml(si.label) : "—"}</td>
+                            <td class="tnum">${formatCurrency(si.amount)}</td>
+                            <td><button class="btn btn-danger" data-remove-subitem="${e.id}" data-subitem-id="${si.id}" type="button" style="padding:3px 8px; font-size:10px;">Remove</button></td>
+                          </tr>
+                        `).join("")}
+                      </tbody>
+                    </table></div>
+                    ` : `<div class="inline-note" style="margin-bottom:10px;">No subitems yet — break this expense down below.</div>`}
+                    <div class="field-grid" style="margin-top:12px;">
+                      <div class="field"><label>Label</label><input type="text" data-new-subitem-label="${e.id}" placeholder="e.g. Rice"></div>
+                      <div class="field"><label>Amount</label><input type="text" inputmode="decimal" class="tnum" data-numfmt="1" data-new-subitem-amount="${e.id}" value="0"></div>
+                    </div>
+                    <div class="btn-row">
+                      <button class="btn btn-primary" data-add-subitem="${e.id}" type="button">Add subitem</button>
+                    </div>
+                    <div class="kpi-grid" style="margin-top:14px; margin-bottom:0;">
+                      <div class="kpi-card"><div class="kpi-label">Subitems Total</div><div class="kpi-value tnum">${formatCurrency(subitemsTotal)}</div></div>
+                      <div class="kpi-card"><div class="kpi-label">Difference</div><div class="kpi-value tnum ${difference === 0 ? "positive" : "negative"}">${formatCurrency(difference)}</div><div class="kpi-sub">${difference === 0 ? "Fully accounted for" : (difference > 0 ? "Unaccounted amount left" : "Subitems exceed the total")}</div></div>
+                    </div>
+                  </div>
+                </td>
+              </tr>`;
+              }
+              return rowHTML;
+            }).join("") || `<tr><td colspan="7" style="text-align:center; color:var(--paper-faint);">No expenses logged this month yet</td></tr>`}
           </tbody>
         </table></div>
       </div>
     `;
+  }
+
+  function getSubitemsTotal(entry) {
+    return (entry.subitems || []).reduce((s, si) => s + (si.amount || 0), 0);
   }
 
   function progressBar(percent) {
@@ -4815,7 +4860,7 @@
       const note = document.getElementById("newExpenseNote").value.trim();
       if (amount <= 0) { showToast("Enter an amount greater than 0."); return; }
 
-      profile.expenseLog.push({ id: "exp_" + Date.now(), date, amount, category, sourceId: sourceId || null, note });
+      profile.expenseLog.push({ id: "exp_" + Date.now(), date, amount, category, sourceId: sourceId || null, note, subitems: [] });
 
       // Logging against a real source actually moves money: spending
       // reduces a liquid source's balance, or increases what's owed on a
@@ -4849,6 +4894,46 @@
         renderSections();
         navigateToCurrentHash();
         showToast("Expense removed and balance restored.");
+      });
+    });
+
+    section.querySelectorAll("[data-toggle-subitems]").forEach(b => {
+      b.addEventListener("click", () => {
+        const id = b.dataset.toggleSubitems;
+        expandedExpenseId = expandedExpenseId === id ? null : id;
+        renderSections();
+        navigateToCurrentHash();
+      });
+    });
+
+    section.querySelectorAll("[data-add-subitem]").forEach(b => {
+      b.addEventListener("click", () => {
+        const expenseId = b.dataset.addSubitem;
+        const entry = profile.expenseLog.find(e => e.id === expenseId);
+        if (!entry) return;
+        const labelInput = section.querySelector(`[data-new-subitem-label="${expenseId}"]`);
+        const amountInput = section.querySelector(`[data-new-subitem-amount="${expenseId}"]`);
+        const label = labelInput ? labelInput.value.trim() : "";
+        const amount = amountInput ? getNumValue(amountInput) : 0;
+        if (!label) { showToast("Enter a label for this subitem."); return; }
+        if (amount <= 0) { showToast("Enter an amount greater than 0."); return; }
+        if (!entry.subitems) entry.subitems = [];
+        entry.subitems.push({ id: "sub_" + Date.now(), label, amount });
+        Store.save(profile);
+        renderSections();
+        navigateToCurrentHash();
+      });
+    });
+
+    section.querySelectorAll("[data-remove-subitem]").forEach(b => {
+      b.addEventListener("click", () => {
+        const expenseId = b.dataset.removeSubitem;
+        const entry = profile.expenseLog.find(e => e.id === expenseId);
+        if (!entry) return;
+        entry.subitems = (entry.subitems || []).filter(si => si.id !== b.dataset.subitemId);
+        Store.save(profile);
+        renderSections();
+        navigateToCurrentHash();
       });
     });
   }
