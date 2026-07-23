@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>FinancialGodun — Personal Wealth Operating System</title>
-<link rel="icon" type="image/png" href="FinanceGodun.png">
-<link rel="apple-touch-icon" sizes="180x180" href="FinanceGodun.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Baloo+2:wght@600;700;800&family=DM+Sans:wght@400;500;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -522,42 +520,29 @@
   }
 
   .brand-mark {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .brand-mark img {
-    width: 42px;
-    height: 42px;
-    object-fit: contain;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.06);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
-  }
-  .brand-title {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .brand-title strong {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 18px;
-    color: var(--brass-bright);
+    font-size: 20px;
     letter-spacing: 0.01em;
+    color: var(--brass-bright);
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
   }
-  .brand-title small {
+  .brand-mark small {
     font-family: var(--font-mono);
     font-size: 10px;
     color: var(--paper-faint);
     font-weight: 400;
     letter-spacing: 0.08em;
+    margin-left: 8px;
     text-transform: uppercase;
   }
   .brand-sub {
     font-size: 11px;
     color: var(--paper-faint);
-    margin-top: 8px;
+    margin-top: 4px;
+    letter-spacing: 0.03em;
   }
 
   .nav-list {
@@ -654,15 +639,7 @@
       inset: 0;
       z-index: 50;
       width: 100%;
-      max-width: 100%;
-      overflow-y: auto;
-      background: var(--ink-raised);
-      padding-top: calc(24px + env(safe-area-inset-top, 0px));
     }
-    .app.nav-open .sidebar::after { display: none; }
-    .nav-list { padding: 8px 18px 18px; }
-    .nav-item { padding: 14px 16px; }
-    .sidebar-footer { padding: 16px 18px 12px; }
   }
 
   /* ---- Main content ---- */
@@ -1148,24 +1125,6 @@
   .score-row-value { font-family: var(--font-mono); color: var(--paper-faint); text-align: right; }
 
   /* ---- Mobile polish: tighter grid minimums, larger touch targets ---- */
-  @media (max-width: 700px) {
-    .content { padding: 28px 18px 110px; }
-    .brand { padding: 0 18px 20px; }
-    .brand-mark { gap: 10px; }
-    .brand-mark img { width: 36px; height: 36px; }
-    .brand-title strong { font-size: 16px; }
-    .brand-sub { font-size: 10px; }
-    .nav-item { font-size: 14px; }
-    .field-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-    .btn-row { gap: 8px; }
-    .data-table th, .data-table td { padding: 8px 10px; }
-    .chart-grid { grid-template-columns: 1fr; gap: 14px; }
-    .chart-canvas-wrap { height: 190px; }
-    .section-desc { max-width: 100%; }
-    .view-tabs { flex-wrap: wrap; width: 100%; }
-    .view-tab { flex: 1; text-align: center; min-width: 0; }
-  }
-
   @media (max-width: 480px) {
     .kpi-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
     .kpi-card { padding: 13px 14px; }
@@ -1181,25 +1140,6 @@
     .ledger-card { padding: 16px 16px; }
     .group-title { font-size: 14px; margin: 22px 0 12px; }
     .section-desc { font-size: 13px; }
-    .data-table th, .data-table td { padding: 8px 10px; }
-    .data-table-cards td { padding: 10px 0; }
-    .bottom-nav-item { min-height: 50px; padding: 10px 6px 8px; }
-  }
-
-  @media (max-width: 700px) {
-    .data-table-cards td { flex-wrap: wrap; }
-    .data-table-cards td::before { width: 100%; margin-bottom: 5px; }
-    .data-table-cards td input[type="text"],
-    .data-table-cards td input[type="number"],
-    .data-table-cards td select,
-    .field input,
-    .field select {
-      min-width: 0;
-      width: 100%;
-    }
-    .bottom-nav { padding: 0 6px env(safe-area-inset-bottom, 0px); }
-    .content { padding-bottom: 100px; }
-    .field-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   }
 
   @media (hover: none) {
@@ -1659,13 +1599,7 @@
 
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="brand-mark">
-        <img src="FinanceGodun.png" alt="FinancialGodun logo">
-        <div class="brand-title">
-          <strong>FinancialGodun</strong>
-          <small>v0.1</small>
-        </div>
-      </div>
+      <div class="brand-mark">FinancialGodun <small>v0.1</small></div>
       <div class="brand-sub">Personal Wealth Operating System</div>
     </div>
 
@@ -2347,10 +2281,10 @@
   // interest charged, balance unchanged) until that month — models a grace
   // period before the first amortized payment, e.g. a newly-released loan.
   // Prepayment amount for each future year (1 = 12 payments from now) is
-  // resolved from the flat annualPrepayment default (from the saved
-  // mortgage or a temporary override, e.g. the Prepayment Explorer). The
-  // lump sum is applied straight to principal on the 12th payment of that
-  // year.
+  // resolved as: a specific entry in prepaymentSchedule for that year, else
+  // the flat annualPrepayment default (from the saved mortgage or a
+  // temporary override, e.g. the Prepayment Explorer). The lump sum is
+  // applied straight to principal on the 12th payment of that year.
   function computeAmortization(mortgage, overrides) {
     const maxMonths = 600; // 50-year safety cap
     const schedule = [];
@@ -2360,6 +2294,8 @@
     let insufficientPayment = false;
     const payment = mortgage.monthlyPayment + (mortgage.extraPayment || 0);
     const defaultPrepayment = (overrides && overrides.annualPrepayment != null) ? overrides.annualPrepayment : (mortgage.annualPrepayment || 0);
+    const scheduleList = (overrides && overrides.prepaymentSchedule) ? overrides.prepaymentSchedule : (mortgage.prepaymentSchedule || []);
+    const scheduleMap = new Map(scheduleList.map(s => [s.year, s.amount]));
     // monthsUntil counts month-boundaries to the target month, but index 0
     // in this schedule already represents next month — so subtract 1 to
     // make the target month itself the first active (paid) month, not the
@@ -2396,8 +2332,10 @@
       // month). Without this shift, a Year 1 prepayment would land one
       // month later than every other Year-1-labeled figure in the app.
       if (balance > 0.01 && (i + 2 - delayMonths) % 12 === 0) {
-        if (defaultPrepayment > 0) {
-          lumpSum = Math.min(defaultPrepayment, balance);
+        const yearNumber = (i + 2 - delayMonths) / 12;
+        const yearAmount = scheduleMap.has(yearNumber) ? scheduleMap.get(yearNumber) : defaultPrepayment;
+        if (yearAmount > 0) {
+          lumpSum = Math.min(yearAmount, balance);
           balance -= lumpSum;
           totalPrepaid += lumpSum;
         }
@@ -2422,7 +2360,7 @@
   // schedule overrides), vs. paying none of them.
   function computeInterestSaved(mortgage, overrides) {
     const o = overrides || {};
-    const hasAny = mortgage.extraPayment || mortgage.annualPrepayment || o.annualPrepayment != null;
+    const hasAny = mortgage.extraPayment || mortgage.annualPrepayment || (mortgage.prepaymentSchedule && mortgage.prepaymentSchedule.length) || o.annualPrepayment != null;
     if (!hasAny) return 0;
     const withPrepay = computeAmortization(mortgage, o);
     const withoutPrepay = computeAmortization({ ...mortgage, extraPayment: 0, annualPrepayment: 0, prepaymentSchedule: [] });
@@ -2618,7 +2556,7 @@
   // from the amortization schedule. Each month's Living/Travel/Child uses
   // actual Ledger data where it exists, else the saved Monthly Forecast
   // override for that month, else an even split of the year's total.
-  function computeMonthlyForecast(profile, year, openingBalanceOverride) {
+  function computeMonthlyForecast(profile, year) {
     const amort = computeAmortization(profile.mortgage);
     const tenYear = computeTenYearProjection(profile);
     const yearData = tenYear[year - 1];
@@ -2636,11 +2574,10 @@
     const defaultOther = 0;
     const defaultRetirement = yearData.retirement / 12;
 
-    // Starting liquid cash for this year = the prior year's closing
-    // balance carried forward, or today's cash when this is the first
-    // forecast year. This keeps the monthly forecast aligned with the
-    // actual end-of-year balance rather than just summing annual net cash.
-    let runningBalance = openingBalanceOverride != null ? openingBalanceOverride : getLiquidCashTotal(profile);
+    // Starting liquid cash for this year = today's cash + every prior
+    // year's net cash (same running-balance logic as the 10-Year table).
+    let runningBalance = getLiquidCashTotal(profile);
+    for (let y = 1; y < year; y++) runningBalance += tenYear[y - 1].netCash;
 
     const bigExpenseOverrides = profile.monthlyBigExpenses[String(year)];
     const today = new Date();
@@ -2665,7 +2602,6 @@
       const mortgageInterest = sched ? sched.interest : 0;
       const mortgagePrincipal = sched ? sched.principal : 0;
       const mortgageLump = sched ? (sched.lumpSum || 0) : 0;
-      const prepayForMonth = (override && override.prepay != null) ? override.prepay : mortgageLump;
       // One-time costs land on their actual planned month by default, but
       // a saved override (edited directly in this table) takes precedence
       // — same pattern as Living/Travel/Child overrides above.
@@ -2673,13 +2609,13 @@
       const bigExpense = bigExpenseOverride
         ? { total: bigExpenseOverride.amount || 0, description: bigExpenseOverride.description || "" }
         : getOneTimeCostsForMonth(profile, year, i + 1);
-      const netCash = defaultIncome - resolved.living - resolved.travel - resolved.child - resolved.other - mortgageInterest - mortgagePrincipal - prepayForMonth - retirementForMonth - bigExpense.total;
+      const netCash = defaultIncome - resolved.living - resolved.travel - resolved.child - resolved.other - mortgageInterest - mortgagePrincipal - mortgageLump - retirementForMonth - bigExpense.total;
       runningBalance += netCash;
       rows.push({
         monthNum: i + 1, date, income: defaultIncome,
         living: resolved.living, travel: resolved.travel, child: resolved.child, other: resolved.other,
         isActual: resolved.isActual,
-        mortgageInterest, mortgagePrincipal, mortgageLump: prepayForMonth, retirement: retirementForMonth,
+        mortgageInterest, mortgagePrincipal, mortgageLump, retirement: retirementForMonth,
         bigExpenseAmount: bigExpense.total, bigExpenseDescription: bigExpense.description, bigExpenseIsOverride: !!bigExpenseOverride,
         netCash, runningBalance,
       });
@@ -3057,26 +2993,6 @@
     `;
   }
 
-  function getCashflowPrepayPlan(profile) {
-    const yearKeys = Object.keys(profile.monthlyBudget || {})
-      .filter(key => /^\d+$/.test(key))
-      .sort((a, b) => Number(a) - Number(b));
-    const years = (yearKeys.length ? yearKeys : ["1"]).map(yearKey => {
-      const saved = profile.monthlyBudget[String(yearKey)] || [];
-      const amount = saved.reduce((sum, month) => {
-        return sum + ((month && month.prepay != null) ? month.prepay : 0);
-      }, 0);
-      const start = new Date(new Date().getFullYear(), (Number(yearKey) - 1) * 12, 1);
-      const end = new Date(start.getFullYear(), start.getMonth() + 12, 0);
-      return {
-        label: `${start.toLocaleDateString(undefined, { month: "short", year: "numeric" })} – ${end.toLocaleDateString(undefined, { month: "short", year: "numeric" })}`,
-        amount,
-      };
-    });
-    const total = years.reduce((sum, entry) => sum + entry.amount, 0);
-    return { years, total };
-  }
-
   function mortgageHTML() {
     const m = profile.mortgage;
     const amort = computeAmortization(m);
@@ -3110,13 +3026,6 @@
 
     const warning = amort.insufficientPayment ? `<div class="warning-banner">Your monthly payment doesn't cover interest once the rate reprices to ${m.repricingRate}%. Increase the payment or lower the assumed repricing rate to see a real payoff date.</div>` : "";
     const graceNotice = inGracePeriod ? `<div class="warning-banner" style="background: rgba(201, 164, 100, 0.12); border-color: var(--brass); color: var(--brass-bright);">No payments are due yet — your balance stays flat at ${formatCurrency(m.balance)} with no interest accruing until ${new Date(m.paymentStartDate).toLocaleDateString(undefined, { year: "numeric", month: "short" })}. If your loan actually accrues interest during this grace period, let me know and I'll adjust the math.</div>` : "";
-    const prepayPlan = getCashflowPrepayPlan(profile);
-    const prepayRows = prepayPlan.years.map(entry => `
-      <tr>
-        <td data-label="Year">${entry.label}</td>
-        <td class="tnum ${entry.amount > 0 ? "negative" : ""}" data-label="Planned Prepay">${entry.amount > 0 ? formatCurrency(entry.amount) : "—"}</td>
-      </tr>
-    `).join("");
 
     return `
       <div class="section-eyebrow">02 / Debt</div>
@@ -3147,21 +3056,40 @@
             <input type="date" id="f-mortgage.paymentStartDate" data-path-date="mortgage.paymentStartDate" value="${m.paymentStartDate}">
           </div>
         </div>
-        <div class="field-hint" style="margin-top:8px;">Annual Lump-Sum Prepayment is the <strong>default</strong> amount applied every year (once every 12 payments). Original Loan Amount is optional — set it to see a % complete figure on the Goal Tracker. Leave Payment Start Date blank if you're already paying — set it only if your first payment is still in the future (e.g. a grace period on a new loan). Balance is assumed to stay flat with no interest accruing until that date.</div>
+        <div class="field-hint" style="margin-top:8px;">Annual Lump-Sum Prepayment is the <strong>default</strong> amount applied every year (once every 12 payments) — override specific years below. Original Loan Amount is optional — set it to see a % complete figure on the Goal Tracker. Leave Payment Start Date blank if you're already paying — set it only if your first payment is still in the future (e.g. a grace period on a new loan). Balance is assumed to stay flat with no interest accruing until that date.</div>
         <div class="btn-row">
           <button class="btn btn-primary" id="btnSaveMortgage" type="button">Save &amp; recalculate</button>
         </div>
       </div>
 
       <div class="ledger-card">
-        <div class="group-title">Cash Flow Prepayment Plan</div>
-        <p class="inline-note" style="margin-top:-6px; margin-bottom:14px;">This uses the Prepay values you entered in Cash Flow → Monthly Forecast and rolls them up into an annual prepayment schedule for the end of each year.</p>
+        <div class="group-title">Prepayment Schedule (year-specific overrides)</div>
+        <p class="inline-note" style="margin-top:-6px; margin-bottom:14px;">Give a specific year its own prepayment amount — e.g. a bigger lump sum in a bonus year. Years without an override here use the Annual Lump-Sum Prepayment default above.</p>
         <div class="data-table-wrap"><table class="data-table">
-          <thead><tr><th>Year</th><th>Planned Prepay</th></tr></thead>
-          <tbody>${prepayRows}</tbody>
-          <tfoot><tr><td>Total planned prepay across the forecast</td><td class="tnum negative">-${formatCurrency(prepayPlan.total)}</td></tr></tfoot>
+          <thead><tr><th>Year</th><th>Amount</th><th></th></tr></thead>
+          <tbody>
+            ${m.prepaymentSchedule.slice().sort((a, b) => a.year - b.year).map(s => `
+              <tr data-schedule-id="${s.id}">
+                <td style="text-align:left;">${calendarYearFor(s.year)} (Year ${s.year})</td>
+                <td class="tnum">${formatCurrency(s.amount)}</td>
+                <td><button class="btn btn-danger" data-remove-schedule="${s.id}" type="button" style="padding:4px 10px; font-size:10.5px;">Remove</button></td>
+              </tr>
+            `).join("") || `<tr><td colspan="3" style="text-align:center; color:var(--paper-faint);">No year-specific overrides — every year uses the default above</td></tr>`}
+          </tbody>
         </table></div>
-        <div class="inline-note" style="margin-top:12px;">If you want to finish early, keep the annual totals above in your plan and increase them whenever your cash flow allows it. The mortgage payoff date will improve as this total grows.</div>
+
+        <div class="field-grid" style="margin-top:16px;">
+          <div class="field">
+            <label for="newScheduleYear">Year</label>
+            <select id="newScheduleYear">
+              ${Array.from({ length: 10 }, (_, idx) => idx + 1).map(y => `<option value="${y}">${calendarYearFor(y)} (Year ${y})</option>`).join("")}
+            </select>
+          </div>
+          <div class="field"><label for="newScheduleAmount">Amount</label><input type="text" inputmode="decimal" id="newScheduleAmount" class="tnum" data-numfmt="1" value="1,000,000"><a href="#" class="calc-link" data-calc-target="newScheduleAmount">🧮 Calculator</a></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="btnAddSchedule" type="button">Add year override</button>
+        </div>
       </div>
 
       ${first ? `
@@ -3182,7 +3110,7 @@
 
       <div class="ledger-card">
         <div class="group-title">Prepayment Explorer</div>
-        <p class="inline-note" style="margin-top:-6px; margin-bottom:14px;">Try a different flat <strong>default</strong> amount without saving it — see the payoff date shift live. This previews the default only; your per-month Cash Flow overrides still apply on top of whatever you type here. When you're happy with a number, apply it as your new default.</p>
+        <p class="inline-note" style="margin-top:-6px; margin-bottom:14px;">Try a different flat <strong>default</strong> amount without saving it — see the payoff date shift live. This previews the default only; your year-specific overrides above still apply on top of whatever you type here. When you're happy with a number, apply it as your new default.</p>
         <div class="field-grid">
           <div class="field">
             <label for="prepayExplorerInput">Annual Lump-Sum Prepayment (try it)</label>
@@ -3221,13 +3149,12 @@
     parts.push(forecastCellHTML(r, idx, "child"));
     parts.push(forecastCellHTML(r, idx, "other"));
     parts.push('<td class="tnum" data-label="Mortgage">' + formatCurrency(r.mortgageInterest + r.mortgagePrincipal) + '</td>');
-    parts.push('<td data-label="Prepay"><input type="text" inputmode="decimal" class="tnum" data-forecast-month="' + idx + '" data-forecast-field="prepay" data-numfmt="1" value="' + formatNumberString(Math.round(r.mortgageLump)) + '" style="width:100px; background:var(--ink-raised); border:1px solid var(--stitch); color:var(--paper); padding:4px 6px; border-radius:4px; font-family:var(--font-mono); font-size:12px;"></td>');
+    parts.push('<td class="tnum ' + (r.mortgageLump > 0 ? "negative" : "") + '" data-label="Prepay">' + formatCurrency(r.mortgageLump) + '</td>');
     parts.push('<td data-label="Retirement"><input type="text" inputmode="decimal" class="tnum" data-forecast-month="' + idx + '" data-forecast-field="retirement" data-numfmt="1" value="' + formatNumberString(Math.round(r.retirement)) + '" style="width:100px; background:var(--ink-raised); border:1px solid var(--stitch); color:var(--paper); padding:4px 6px; border-radius:4px; font-family:var(--font-mono); font-size:12px;"></td>');
     parts.push('<td data-label="Big Expense Amount"><input type="text" inputmode="decimal" class="tnum" data-bigexp-month="' + idx + '" data-bigexp-field="amount" data-numfmt="1" value="' + formatNumberString(Math.round(r.bigExpenseAmount)) + '" style="width:110px; background:var(--ink-raised); border:1px solid var(--stitch); color:var(--paper); padding:4px 6px; border-radius:4px; font-family:var(--font-mono); font-size:12px;"></td>');
     parts.push('<td data-label="Big Expense Description"><input type="text" data-bigexp-month="' + idx + '" data-bigexp-field="description" value="' + escapeHtmlAttr(r.bigExpenseDescription || "") + '" placeholder="e.g. Wedding" style="width:150px; background:var(--ink-raised); border:1px solid var(--stitch); color:var(--paper); padding:4px 6px; border-radius:4px; font-family:var(--font-body); font-size:12px;"></td>');
     parts.push('<td class="tnum ' + (r.netCash >= 0 ? "positive" : "negative") + '" data-label="Net Cash">' + formatCurrency(r.netCash) + '</td>');
-    const balanceClass = r.runningBalance < 0 ? "negative" : (r.runningBalance > 0 ? "positive" : "");
-    parts.push('<td class="tnum ' + balanceClass + '" data-label="Balance" style="font-weight:600;">' + formatCurrency(r.runningBalance) + '</td>');
+    parts.push('<td class="tnum" data-label="Balance" style="color:var(--brass-bright); font-weight:600;">' + formatCurrency(r.runningBalance) + '</td>');
     parts.push('</tr>');
     return parts.join("");
   }
@@ -3285,17 +3212,9 @@
       `;
     } else if (view === "forecast") {
       const year = forecastYear || 1;
-      let openingBalance = getLiquidCashTotal(profile);
-      for (let y = 1; y < year; y++) {
-        const priorRows = computeMonthlyForecast(profile, y, openingBalance);
-        openingBalance = priorRows.length ? priorRows[priorRows.length - 1].runningBalance : openingBalance;
-      }
-      const rows = computeMonthlyForecast(profile, year, openingBalance);
+      const rows = computeMonthlyForecast(profile, year);
       const hasOverride = !!((profile.monthlyBudget[String(year)] && profile.monthlyBudget[String(year)].length) || (profile.monthlyBigExpenses[String(year)] && profile.monthlyBigExpenses[String(year)].length));
-      const closingBalance = rows.length ? rows[rows.length - 1].runningBalance : openingBalance;
-      const closingBalanceClass = closingBalance < 0 ? "negative" : (closingBalance > 0 ? "positive" : "");
       const today = new Date();
-      const balanceWarning = closingBalance < 0 ? `<div class="warning-banner" style="margin-bottom:12px;">This forecast year closes with a negative cash balance of ${formatCurrency(closingBalance)}. Consider reducing prepay or expenses, or increasing income before the year ends.</div>` : `<div class="inline-note" style="margin-bottom:12px;">This forecast year closes with a balance of ${formatCurrency(closingBalance)}.</div>`;
       tableHTML = `
         <div class="field-grid" style="margin-bottom:16px; max-width:260px;">
           <div class="field">
@@ -3312,22 +3231,13 @@
         </div>
         ${hasOverride ? `<div class="inline-note" style="margin-bottom:12px;">This year has a saved custom budget below. Reset to go back to defaults.</div>` : `<div class="inline-note" style="margin-bottom:12px;">Living defaults from Settings, held flat across every year (no automatic inflation). Travel, Child, and Other start at ₱0 — this page is the source of truth for what you're actually planning to spend, not an auto-filled estimate. Type real numbers in and they save automatically.</div>`}
         <div class="inline-note" style="margin-bottom:12px;">Months marked <strong style="color:var(--brass-bright);">●</strong> use actual logged expenses from the Ledger instead — those cells aren't editable here since the Ledger is the source of truth for months you've actually logged.</div>
-        <div class="inline-note" style="margin-bottom:12px;">Retirement defaults from your saved contribution in the Retirement tab, but is editable per month here too. Prepay defaults from your mortgage's annual prepayment amount, but you can override it per month here as well. Big Expense Amount and Description default from Family Planner/Goal Tracker (baby) or nothing at all otherwise — type your own for anything those tabs don't cover.</div>
-        <div class="inline-note" style="margin-bottom:12px;">Balance starts from the prior year’s closing balance, carried into this forecast year automatically. For ${calendarYearFor(year)}, the opening balance is <strong style="color:var(--brass-bright);">${formatCurrency(openingBalance)}</strong>.</div>
-        ${balanceWarning}
-        <div class="data-table-wrap"><table class="data-table">
+        <div class="inline-note" style="margin-bottom:12px;">Retirement defaults from your saved contribution in the Retirement tab, but is editable per month here too. Big Expense Amount and Description default from Family Planner/Goal Tracker (baby) or nothing at all otherwise — type your own for anything those tabs don't cover.</div>
+        <div class="inline-note" style="margin-bottom:12px;">Balance starts from your actual current savings — <strong style="color:var(--brass-bright);">${formatCurrency(getLiquidCashTotal(profile))}</strong> across your Credit Sources today — plus every prior year's accumulated Net Cash. It's not starting from zero.</div>
+        <div class="data-table-wrap data-table-cards"><table class="data-table">
           <thead><tr><th>Month</th><th>Income</th><th>Living</th><th>Travel</th><th>Child</th><th>Other</th><th>Mortgage</th><th>Prepay</th><th>Retirement</th><th>Big Expense Amount</th><th>Big Expense Description</th><th>Net Cash</th><th>Balance</th></tr></thead>
           <tbody>
             ${rows.map((r, idx) => forecastRowHTML(r, idx)).join("")}
           </tbody>
-          <tfoot>
-            <tr>
-              <td data-label="Year-End"><strong>Year-end balance</strong></td>
-              <td colspan="11"></td>
-              <td class="tnum" data-label="Net Cash"></td>
-              <td class="tnum ${closingBalanceClass}" data-label="Balance" style="font-weight:600;">${formatCurrency(closingBalance)}</td>
-            </tr>
-          </tfoot>
         </table></div>
         <div class="btn-row">
           <button class="btn btn-primary" id="btnSaveForecastBudget" type="button">Save budget for ${calendarYearFor(year)}</button>
@@ -3724,12 +3634,7 @@
                 <td data-label="Name"><strong>${s.name}</strong></td>
                 <td data-label="Type">${CREDIT_SOURCE_TYPES[s.type] || s.type}</td>
                 <td class="tnum ${s.type === "credit_card" ? "negative" : "positive"}" data-label="Balance">${formatCurrency(s.balance)}</td>
-                <td data-label="">
-                  <div style="display:flex; gap:6px; justify-content:flex-end; flex-wrap:wrap;">
-                    <button class="btn" data-edit-source="${s.id}" type="button" style="padding:4px 10px; font-size:10.5px;">Edit</button>
-                    <button class="btn btn-danger" data-remove-source="${s.id}" type="button" style="padding:4px 10px; font-size:10.5px;">Remove</button>
-                  </div>
-                </td>
+                <td data-label=""><button class="btn btn-danger" data-remove-source="${s.id}" type="button" style="padding:4px 10px; font-size:10.5px;">Remove</button></td>
               </tr>
             `).join("") || `<tr><td colspan="4" style="text-align:center; color:var(--paper-faint);">No sources yet — add your first below</td></tr>`}
           </tbody>
@@ -3828,29 +3733,14 @@
           <tbody>
             ${avb.entries.map(e => {
               const src = profile.creditSources.find(s => s.id === e.sourceId);
-              const subitems = e.subitems || [];
-              const subitemsTotal = getExpenseSubitemsTotal(e);
-              const diff = subitemsTotal - (e.amount || 0);
-              const matches = subitems.length === 0 || diff === 0;
-              const subitemsMarkup = subitems.length > 0 ? subitems.map(item => `
-                <div style="margin-top:4px; font-size:11px; color:var(--paper-faint);">• ${escapeHtml(item.name || "Item")}: ${formatCurrency(item.amount || 0)}</div>
-              `).join("") : "";
-              const diffMarkup = subitems.length > 0 ? `<div style="margin-top:6px; font-size:11px; color:var(--paper-faint);">Difference: ${formatCurrency(diff)}</div>` : "";
-              const statusMarkup = subitems.length > 0 ? `<div style="margin-top:6px; font-size:11px; color:${matches ? "var(--sage)" : "var(--brass)"};">${matches ? "Subitems match total" : "Subitems total does not match the main amount"}</div>${diffMarkup}` : "";
               return `
               <tr data-expense-id="${e.id}">
                 <td data-label="Date">${new Date(e.date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</td>
                 <td data-label="Category">${EXPENSE_CATEGORIES[e.category] || e.category}</td>
-                <td class="tnum negative" data-label="Amount">${formatCurrency(e.amount)}${subitems.length > 0 ? `<div style="margin-top:4px; font-size:11px; color:var(--paper-faint);">Subitems total: ${formatCurrency(subitemsTotal)}</div>` : ""}</td>
+                <td class="tnum negative" data-label="Amount">${formatCurrency(e.amount)}</td>
                 <td data-label="Source">${src ? src.name : "—"}</td>
-                <td data-label="Note">${e.note || "—"}${subitemsMarkup}${statusMarkup}</td>
-                <td data-label="">
-                  <div style="display:flex; gap:6px; justify-content:flex-end; flex-wrap:wrap;">
-                    <button class="btn" data-update-expense="${e.id}" type="button" style="padding:4px 10px; font-size:10.5px;">Update</button>
-                    <button class="btn" data-add-subitem="${e.id}" type="button" style="padding:4px 10px; font-size:10.5px;">Add subitem</button>
-                    <button class="btn btn-danger" data-remove-expense="${e.id}" type="button" style="padding:4px 10px; font-size:10.5px;">Remove</button>
-                  </div>
-                </td>
+                <td data-label="Note">${e.note || "—"}</td>
+                <td data-label=""><button class="btn btn-danger" data-remove-expense="${e.id}" type="button" style="padding:4px 10px; font-size:10.5px;">Remove</button></td>
               </tr>
             `;
             }).join("") || `<tr><td colspan="6" style="text-align:center; color:var(--paper-faint);">No expenses logged this month yet</td></tr>`}
@@ -3858,10 +3748,6 @@
         </table></div>
       </div>
     `;
-  }
-
-  function getExpenseSubitemsTotal(entry) {
-    return (entry.subitems || []).reduce((sum, sub) => sum + (parseFloat(sub.amount) || 0), 0);
   }
 
   function progressBar(percent) {
@@ -4355,6 +4241,15 @@
         </div>
         <div class="schema-note">Schema v${SCHEMA_VERSION} · Stored locally in this browser only · No data leaves your device</div>
       </div>
+
+      <div class="ledger-card">
+        <div class="group-title">App Version &amp; Cache</div>
+        <p class="section-desc" style="margin-bottom:16px;">If you've deployed this app online (GitHub Pages, etc.) and just pushed an update but your browser is still showing the old version, use this to force a clean reload.</p>
+        <div class="btn-row" style="margin-top:0;">
+          <button class="btn btn-primary" id="btnForceRefresh" type="button">Force refresh app</button>
+        </div>
+        <div class="inline-note">Clears any cached app files and service workers, then reloads from scratch — your saved financial data is untouched, only stale code/cache gets cleared. Won't do much if you're just opening this file locally (browsers rarely cache local files aggressively), but matters once this is deployed to a real URL.</div>
+      </div>
     `;
   }
 
@@ -4750,35 +4645,30 @@
       showToast("Annual prepayment of " + formatCurrency(tryAmount) + " applied to your saved plan.");
     });
 
+    const addScheduleBtn = document.getElementById("btnAddSchedule");
+    if (addScheduleBtn) addScheduleBtn.addEventListener("click", () => {
+      const year = parseInt(document.getElementById("newScheduleYear").value, 10);
+      const amount = getNumValue(document.getElementById("newScheduleAmount"));
+      if (amount <= 0) { showToast("Enter an amount greater than 0."); return; }
+      profile.mortgage.prepaymentSchedule = profile.mortgage.prepaymentSchedule.filter(s => s.year !== year);
+      profile.mortgage.prepaymentSchedule.push({ id: "sched_" + Date.now(), year, amount });
+      Store.save(profile);
+      renderSections();
+      navigateToCurrentHash();
+      showToast(calendarYearFor(year) + " prepayment override saved.");
+    });
+
+    document.querySelectorAll("#section-mortgage [data-remove-schedule]").forEach(b => {
+      b.addEventListener("click", () => {
+        profile.mortgage.prepaymentSchedule = profile.mortgage.prepaymentSchedule.filter(s => s.id !== b.dataset.removeSchedule);
+        Store.save(profile);
+        renderSections();
+        navigateToCurrentHash();
+      });
+    });
   }
 
   function bindCashflowHandlers() {
-    const section = document.getElementById("section-cashflow");
-    if (section) {
-      section.addEventListener("focusin", (e) => {
-        const row = e.target && e.target.closest ? e.target.closest("tr") : null;
-        if (!row || !section.contains(row)) return;
-        section.querySelectorAll("tr").forEach(tr => {
-          tr.style.background = "";
-          tr.style.boxShadow = "";
-          tr.style.outline = "";
-        });
-        row.style.background = "rgba(232, 103, 125, 0.12)";
-        row.style.boxShadow = "inset 0 0 0 1px rgba(232, 103, 125, 0.35)";
-        row.style.outline = "1px solid rgba(232, 103, 125, 0.35)";
-      });
-
-      section.addEventListener("focusout", (e) => {
-        const row = e.target && e.target.closest ? e.target.closest("tr") : null;
-        if (!row || !section.contains(row)) return;
-        const related = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest("tr") : null;
-        if (related && related === row) return;
-        row.style.background = "";
-        row.style.boxShadow = "";
-        row.style.outline = "";
-      });
-    }
-
     document.querySelectorAll("#section-cashflow .view-tab").forEach(tab => {
       tab.addEventListener("click", () => {
         cashflowView = tab.dataset.view;
@@ -4795,7 +4685,7 @@
     });
 
     function saveForecastBudget(year) {
-      const months = Array.from({ length: 12 }, () => ({ living: 0, travel: 0, child: 0, other: 0, retirement: 0, prepay: 0 }));
+      const months = Array.from({ length: 12 }, () => ({ living: 0, travel: 0, child: 0, other: 0, retirement: 0 }));
       document.querySelectorAll("#section-cashflow [data-forecast-month]").forEach(input => {
         const idx = parseInt(input.dataset.forecastMonth, 10);
         const field = input.dataset.forecastField;
@@ -4884,25 +4774,6 @@
       showToast("Source added.");
     });
 
-    section.querySelectorAll("[data-edit-source]").forEach(b => {
-      b.addEventListener("click", () => {
-        const source = profile.creditSources.find(s => s.id === b.dataset.editSource);
-        if (!source) return;
-        const balanceText = prompt("Edit balance", String(source.balance || 0));
-        if (balanceText === null) return;
-        const balance = parseFloat(balanceText);
-        if (Number.isNaN(balance)) {
-          showToast("Please enter a valid numeric balance.");
-          return;
-        }
-        source.balance = balance;
-        Store.save(profile);
-        renderSections();
-        navigateToCurrentHash();
-        showToast("Source updated.");
-      });
-    });
-
     section.querySelectorAll("[data-remove-source]").forEach(b => {
       b.addEventListener("click", () => {
         if (!confirm("Remove this source? Its balance won't be recovered elsewhere.")) return;
@@ -4922,7 +4793,7 @@
       const note = document.getElementById("newExpenseNote").value.trim();
       if (amount <= 0) { showToast("Enter an amount greater than 0."); return; }
 
-      profile.expenseLog.push({ id: "exp_" + Date.now(), date, amount, category, sourceId: sourceId || null, note, subitems: [] });
+      profile.expenseLog.push({ id: "exp_" + Date.now(), date, amount, category, sourceId: sourceId || null, note });
 
       // Logging against a real source actually moves money: spending
       // reduces a liquid source's balance, or increases what's owed on a
@@ -4939,50 +4810,6 @@
       renderSections();
       navigateToCurrentHash();
       showToast("Expense logged.");
-    });
-
-    section.querySelectorAll("[data-update-expense]").forEach(b => {
-      b.addEventListener("click", () => {
-        const entry = profile.expenseLog.find(e => e.id === b.dataset.updateExpense);
-        if (!entry) return;
-        const amountText = prompt("Edit expense amount", String(entry.amount || 0));
-        if (amountText === null) return;
-        const amount = parseFloat(amountText);
-        if (Number.isNaN(amount) || amount <= 0) {
-          showToast("Please enter a valid amount greater than 0.");
-          return;
-        }
-        const note = prompt("Edit note", entry.note || "");
-        if (note === null) return;
-        entry.amount = amount;
-        entry.note = note.trim();
-        Store.save(profile);
-        renderSections();
-        navigateToCurrentHash();
-        showToast("Expense updated.");
-      });
-    });
-
-    section.querySelectorAll("[data-add-subitem]").forEach(b => {
-      b.addEventListener("click", () => {
-        const entry = profile.expenseLog.find(e => e.id === b.dataset.addSubitem);
-        if (!entry) return;
-        const name = prompt("Subitem name", "");
-        if (name === null) return;
-        const amountText = prompt("Subitem amount", "0");
-        if (amountText === null) return;
-        const amount = parseFloat(amountText);
-        if (Number.isNaN(amount)) {
-          showToast("Please enter a valid numeric amount.");
-          return;
-        }
-        entry.subitems = entry.subitems || [];
-        entry.subitems.push({ name: name.trim() || "Item", amount });
-        Store.save(profile);
-        renderSections();
-        navigateToCurrentHash();
-        showToast("Subitem added.");
-      });
     });
 
     section.querySelectorAll("[data-remove-expense]").forEach(b => {
@@ -5266,6 +5093,9 @@
       showToast("Data reset to defaults.");
     });
 
+    const forceRefreshBtn = document.getElementById("btnForceRefresh");
+    if (forceRefreshBtn) forceRefreshBtn.addEventListener("click", () => forceRefreshApp());
+
     document.querySelectorAll("#section-settings [data-theme-mode]").forEach(btn => {
       btn.addEventListener("click", () => {
         resetCustomBackground();
@@ -5331,6 +5161,36 @@
   /* ==========================================================
      7. JSON IMPORT / EXPORT
      ========================================================== */
+  // Clears any Cache Storage entries and service worker registrations
+  // for this origin, then reloads with a cache-busting query param so the
+  // browser is forced to refetch everything from the server instead of
+  // serving a stale cached copy. Deliberately does NOT touch localStorage
+  // — this is about stale CODE, not resetting saved financial data.
+  async function forceRefreshApp() {
+    showToast("Clearing cache and reloading...");
+    try {
+      if ("caches" in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+    } catch (e) {
+      console.error("FinancialGodun: cache clear failed.", e);
+    }
+    try {
+      if ("serviceWorker" in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.unregister()));
+      }
+    } catch (e) {
+      console.error("FinancialGodun: service worker unregister failed.", e);
+    }
+    setTimeout(() => {
+      const url = new URL(window.location.href);
+      url.searchParams.set("_refresh", Date.now());
+      window.location.href = url.toString();
+    }, 300);
+  }
+
   function exportJSON() {
     const blob = new Blob([JSON.stringify(profile, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
