@@ -2477,13 +2477,40 @@
   // Sums actual logged expenses for one specific calendar month, by
   // category. Used to let real Ledger data override budgeted assumptions
   // wherever a specific month is known (Cash Flow, Monthly Forecast).
+  // Subitems are now the source of truth for what an expense entry
+  // actually amounts to, wherever a breakdown exists — the parent
+  // entry's own amount is just the declared total for the Difference
+  // check. Falls back to the parent's amount for entries with no
+  // subitems yet, so nothing silently disappears from calculations.
+  function getEntryEffectiveAmount(entry) {
+    return (entry.subitems && entry.subitems.length > 0) ? getSubitemsTotal(entry) : entry.amount;
+  }
+
+  // Splits one entry's spending between "cash" (anything that isn't a
+  // credit card) and credit card, using each SUBITEM's own source — the
+  // parent entry no longer carries a source at all. An entry with no
+  // subitems has no source info to go on, so it counts as cash by
+  // default (same convention as an unset source always used to mean).
+  function getEntrySourceBreakdown(entry, profile) {
+    if (entry.subitems && entry.subitems.length > 0) {
+      let cash = 0, creditCard = 0;
+      entry.subitems.forEach(si => {
+        const src = si.sourceId ? profile.creditSources.find(s => s.id === si.sourceId) : null;
+        if (src && src.type === "credit_card") creditCard += si.amount;
+        else cash += si.amount;
+      });
+      return { cash, creditCard };
+    }
+    return { cash: entry.amount, creditCard: 0 };
+  }
+
   function getActualExpensesForMonth(profile, calendarYear, calendarMonthIndex) {
     const totals = { living: 0, travel: 0, child: 0, other: 0 };
     profile.expenseLog.forEach(e => {
       const d = new Date(e.date);
       if (isNaN(d) || d.getFullYear() !== calendarYear || d.getMonth() !== calendarMonthIndex) return;
       const cat = totals[e.category] != null ? e.category : "other";
-      totals[cat] += e.amount;
+      totals[cat] += getEntryEffectiveAmount(e);
     });
     return totals;
   }
@@ -2919,17 +2946,16 @@
   }
 
   // Splits this month's actual logged spending by which kind of source
-  // paid for it. "Cash" here means anything that isn't a credit card —
-  // Cash/Debit/Wallet sources, and entries with no source picked at all
-  // (nothing to suggest they were charged to a card) all count as cash.
+  // paid for it — driven entirely by subitems now, since the parent
+  // entry no longer carries a source at all. "Cash" means anything that
+  // isn't a credit card; entries with no subitems yet have no source
+  // info to go on, so they count as cash by default.
   function computeCurrentMonthExpensesBySource(profile) {
     const entries = getCurrentMonthExpenseEntries(profile);
     let total = 0, cashTotal = 0;
     entries.forEach(e => {
-      total += e.amount;
-      const src = e.sourceId ? profile.creditSources.find(s => s.id === e.sourceId) : null;
-      const isCreditCard = !!(src && src.type === "credit_card");
-      if (!isCreditCard) cashTotal += e.amount;
+      total += getEntryEffectiveAmount(e);
+      cashTotal += getEntrySourceBreakdown(e, profile).cash;
     });
     return { total, cashTotal, creditCardTotal: total - cashTotal };
   }
@@ -2942,7 +2968,7 @@
   function computeActualVsBudget(profile) {
     const entries = getCurrentMonthExpenseEntries(profile).sort((a, b) => new Date(b.date) - new Date(a.date));
     const actualByCategory = { living: 0, travel: 0, child: 0, other: 0 };
-    entries.forEach(e => { actualByCategory[e.category] = (actualByCategory[e.category] || 0) + e.amount; });
+    entries.forEach(e => { actualByCategory[e.category] = (actualByCategory[e.category] || 0) + getEntryEffectiveAmount(e); });
     const budget = {
       living: profile.expenses.living,
       travel: profile.goals.travelAnnual / 12,
@@ -3812,19 +3838,12 @@
               ${Object.entries(EXPENSE_CATEGORIES).map(([val, label]) => `<option value="${val}">${label}</option>`).join("")}
             </select>
           </div>
-          <div class="field">
-            <label for="newExpenseSource">Paid From</label>
-            <select id="newExpenseSource">
-              <option value="">Unspecified</option>
-              ${sourceOptions}
-            </select>
-          </div>
           <div class="field"><label for="newExpenseNote">Note (optional)</label><input type="text" id="newExpenseNote" placeholder="e.g. Groceries"></div>
         </div>
         <div class="btn-row">
           <button class="btn btn-primary" id="btnAddExpense" type="button">Add expense</button>
         </div>
-        <div class="inline-note">Logging against a Cash/Debit/Wallet source reduces that source's balance. Logging against a Credit Card adds to what you owe.</div>
+        <div class="inline-note">This is the overall total — which account paid for it is tagged per subitem below, not here. Add at least one subitem to have this actually affect a Credit Source's balance.</div>
       </div>
 
       <div class="chart-grid">
@@ -3838,7 +3857,6 @@
         <div class="group-title">This Month's Entries</div>
         <div class="expense-card-list">
           ${avb.entries.map(e => {
-            const src = profile.creditSources.find(s => s.id === e.sourceId);
             const subitems = e.subitems || [];
             const subitemsTotal = getSubitemsTotal(e);
             const difference = e.amount - subitemsTotal;
@@ -3854,7 +3872,7 @@
               </div>
               ${e.note ? `<div class="expense-card-note">${escapeHtml(e.note)}</div>` : ""}
               <div class="expense-card-bottom">
-                <span class="kpi-sub">${src ? src.name : "No source set"}</span>
+                <span class="kpi-sub">${subitems.length > 0 ? subitems.length + " subitem" + (subitems.length > 1 ? "s" : "") : "No subitems yet"}</span>
                 <div style="display:flex; gap:6px;">
                   <button class="btn" data-toggle-subitems="${e.id}" type="button" style="padding:5px 10px; font-size:10.5px;">${isExpanded ? "▾ Hide" : "▸"} ${subitems.length > 0 ? "Subitems (" + subitems.length + ")" : "Add subitems"}</button>
                   <button class="btn btn-danger" data-remove-expense="${e.id}" type="button" style="padding:5px 10px; font-size:10.5px;">Remove</button>
@@ -3864,18 +3882,28 @@
               <div class="expense-card-subitems">
                 ${subitems.length > 0 ? `
                 <div class="expense-subitem-list">
-                  ${subitems.map(si => `
+                  ${subitems.map(si => {
+                    const siSrc = si.sourceId ? profile.creditSources.find(s => s.id === si.sourceId) : null;
+                    return `
                     <div class="expense-subitem-row">
-                      <span>${si.label ? escapeHtml(si.label) : "—"}</span>
+                      <span>${si.label ? escapeHtml(si.label) : "—"}<br><span class="kpi-sub">${siSrc ? siSrc.name : "No source set"}</span></span>
                       <span class="tnum">${formatCurrency(si.amount)}</span>
                       <button class="btn btn-danger" data-remove-subitem="${e.id}" data-subitem-id="${si.id}" type="button" style="padding:3px 8px; font-size:10px;">Remove</button>
                     </div>
-                  `).join("")}
+                  `;
+                  }).join("")}
                 </div>
-                ` : `<div class="inline-note" style="margin-bottom:10px;">No subitems yet — break this expense down below.</div>`}
+                ` : `<div class="inline-note" style="margin-bottom:10px;">No subitems yet — break this expense down below and tag each part to the account that paid for it.</div>`}
                 <div class="field-grid" style="margin-top:10px;">
                   <div class="field"><label>Label</label><input type="text" data-new-subitem-label="${e.id}" placeholder="e.g. Rice"></div>
                   <div class="field"><label>Amount</label><input type="text" inputmode="decimal" class="tnum" data-numfmt="1" data-new-subitem-amount="${e.id}" value="0"></div>
+                  <div class="field">
+                    <label>Paid From</label>
+                    <select data-new-subitem-source="${e.id}">
+                      <option value="">Unspecified</option>
+                      ${sourceOptions}
+                    </select>
+                  </div>
                 </div>
                 <div class="btn-row">
                   <button class="btn btn-primary" data-add-subitem="${e.id}" type="button">Add subitem</button>
@@ -3884,6 +3912,7 @@
                   <div class="kpi-card"><div class="kpi-label">Subitems Total</div><div class="kpi-value tnum">${formatCurrency(subitemsTotal)}</div></div>
                   <div class="kpi-card"><div class="kpi-label">Difference</div><div class="kpi-value tnum ${difference === 0 ? "positive" : "negative"}">${formatCurrency(difference)}</div><div class="kpi-sub">${difference === 0 ? "Fully accounted for" : (difference > 0 ? "Unaccounted amount left" : "Subitems exceed the total")}</div></div>
                 </div>
+                <div class="inline-note">Logging a subitem against a Cash/Debit/Wallet source reduces that source's balance. Against a Credit Card, it adds to what you owe.</div>
               </div>
               ` : ""}
             </div>
@@ -4171,12 +4200,17 @@
 
   function buildExpenseLogReport() {
     return profile.expenseLog.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).map(e => {
-      const src = profile.creditSources.find(s => s.id === e.sourceId);
+      const subitems = e.subitems || [];
+      const sourceNames = subitems
+        .map(si => si.sourceId ? profile.creditSources.find(s => s.id === si.sourceId) : null)
+        .filter(Boolean)
+        .map(s => s.name);
+      const uniqueSourceNames = [...new Set(sourceNames)];
       return {
         date: e.date,
         category: EXPENSE_CATEGORIES[e.category] || e.category,
         amount: Math.round(e.amount),
-        source: src ? src.name : "Unspecified",
+        source: uniqueSourceNames.length === 0 ? "Unspecified" : uniqueSourceNames.join(", "),
         note: e.note || "",
       };
     });
@@ -4937,44 +4971,42 @@
       const date = document.getElementById("newExpenseDate").value || new Date().toISOString().slice(0, 10);
       const amount = getNumValue(document.getElementById("newExpenseAmount"));
       const category = document.getElementById("newExpenseCategory").value;
-      const sourceId = document.getElementById("newExpenseSource").value;
       const note = document.getElementById("newExpenseNote").value.trim();
       if (amount <= 0) { showToast("Enter an amount greater than 0."); return; }
 
-      profile.expenseLog.push({ id: "exp_" + Date.now(), date, amount, category, sourceId: sourceId || null, note, subitems: [] });
-
-      // Logging against a real source actually moves money: spending
-      // reduces a liquid source's balance, or increases what's owed on a
-      // credit card — otherwise the Ledger would just be a wishlist.
-      if (sourceId) {
-        const src = profile.creditSources.find(s => s.id === sourceId);
-        if (src) {
-          if (src.type === "credit_card") src.balance += amount;
-          else src.balance -= amount;
-        }
-      }
+      // No source at this level anymore, and therefore no balance impact
+      // yet either — that happens per-subitem, tagged to whichever
+      // account actually paid for that part.
+      profile.expenseLog.push({ id: "exp_" + Date.now(), date, amount, category, note, subitems: [] });
 
       Store.save(profile);
       renderSections();
       navigateToCurrentHash();
-      showToast("Expense logged.");
+      showToast("Expense logged. Add subitems to tag it to a Credit Source.");
     });
 
     section.querySelectorAll("[data-remove-expense]").forEach(b => {
       b.addEventListener("click", () => {
         const entry = profile.expenseLog.find(e => e.id === b.dataset.removeExpense);
-        if (entry && entry.sourceId) {
-          const src = profile.creditSources.find(s => s.id === entry.sourceId);
-          if (src) {
-            if (src.type === "credit_card") src.balance -= entry.amount;
-            else src.balance += entry.amount;
-          }
+        // Balance impact now lives entirely at the subitem level — undo
+        // every subitem's effect on its source, not a single entry-level
+        // source like before.
+        if (entry && entry.subitems) {
+          entry.subitems.forEach(si => {
+            if (!si.sourceId) return;
+            const src = profile.creditSources.find(s => s.id === si.sourceId);
+            if (src) {
+              if (src.type === "credit_card") src.balance -= si.amount;
+              else src.balance += si.amount;
+            }
+          });
         }
         profile.expenseLog = profile.expenseLog.filter(e => e.id !== b.dataset.removeExpense);
+        if (expandedExpenseId === b.dataset.removeExpense) expandedExpenseId = null;
         Store.save(profile);
         renderSections();
         navigateToCurrentHash();
-        showToast("Expense removed and balance restored.");
+        showToast("Expense removed and any tagged balances restored.");
       });
     });
 
@@ -4994,12 +5026,26 @@
         if (!entry) return;
         const labelInput = section.querySelector(`[data-new-subitem-label="${expenseId}"]`);
         const amountInput = section.querySelector(`[data-new-subitem-amount="${expenseId}"]`);
+        const sourceInput = section.querySelector(`[data-new-subitem-source="${expenseId}"]`);
         const label = labelInput ? labelInput.value.trim() : "";
         const amount = amountInput ? getNumValue(amountInput) : 0;
+        const sourceId = sourceInput ? sourceInput.value : "";
         if (!label) { showToast("Enter a label for this subitem."); return; }
         if (amount <= 0) { showToast("Enter an amount greater than 0."); return; }
         if (!entry.subitems) entry.subitems = [];
-        entry.subitems.push({ id: "sub_" + Date.now(), label, amount });
+        entry.subitems.push({ id: "sub_" + Date.now(), label, amount, sourceId: sourceId || null });
+
+        // The subitem is what actually moves money now — tagging it to a
+        // source reduces that source's balance, or adds to what's owed
+        // on a credit card.
+        if (sourceId) {
+          const src = profile.creditSources.find(s => s.id === sourceId);
+          if (src) {
+            if (src.type === "credit_card") src.balance += amount;
+            else src.balance -= amount;
+          }
+        }
+
         Store.save(profile);
         renderSections();
         navigateToCurrentHash();
@@ -5011,6 +5057,14 @@
         const expenseId = b.dataset.removeSubitem;
         const entry = profile.expenseLog.find(e => e.id === expenseId);
         if (!entry) return;
+        const subitem = (entry.subitems || []).find(si => si.id === b.dataset.subitemId);
+        if (subitem && subitem.sourceId) {
+          const src = profile.creditSources.find(s => s.id === subitem.sourceId);
+          if (src) {
+            if (src.type === "credit_card") src.balance -= subitem.amount;
+            else src.balance += subitem.amount;
+          }
+        }
         entry.subitems = (entry.subitems || []).filter(si => si.id !== b.dataset.subitemId);
         Store.save(profile);
         renderSections();
