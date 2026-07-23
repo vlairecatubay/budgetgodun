@@ -845,14 +845,27 @@
     margin-bottom: 4px;
   }
   .expense-subitem-row {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 12px;
     background: var(--ink-raised);
     border-radius: var(--radius-sm);
     font-size: 12.5px;
+  }
+  .expense-subitem-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .expense-subitem-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .expense-subitem-actions .btn {
+    min-height: 30px;
   }
   .expense-subitem-row-editing {
     display: block;
@@ -3943,11 +3956,16 @@
                     }
                     return `
                     <div class="expense-subitem-row">
-                      <span>${si.label ? escapeHtml(si.label) : "—"}<br><span class="kpi-sub">${siSrc ? siSrc.name : "No source set"}</span></span>
-                      <span class="tnum">${formatCurrency(si.amount)}</span>
-                      <div style="display:flex; gap:4px;">
-                        <button class="btn" data-edit-subitem="${si.id}" type="button" style="padding:3px 8px; font-size:10px;">Edit</button>
-                        <button class="btn btn-danger" data-remove-subitem="${e.id}" data-subitem-id="${si.id}" type="button" style="padding:3px 8px; font-size:10px;">Remove</button>
+                      <div class="expense-subitem-info">
+                        <span>${si.label ? escapeHtml(si.label) : "—"}</span>
+                        <span class="kpi-sub">${siSrc ? siSrc.name : "No source set"}</span>
+                      </div>
+                      <div class="expense-subitem-actions">
+                        <span class="tnum" style="font-weight:600;">${formatCurrency(si.amount)}</span>
+                        <div style="display:flex; gap:6px;">
+                          <button class="btn" data-edit-subitem="${si.id}" type="button" style="padding:6px 12px; font-size:11px;">Edit</button>
+                          <button class="btn btn-danger" data-remove-subitem="${e.id}" data-subitem-id="${si.id}" type="button" style="padding:6px 12px; font-size:11px;">Remove</button>
+                        </div>
                       </div>
                     </div>
                   `;
@@ -4814,6 +4832,7 @@
   let forecastYear = 1;
 
   function renderSections() {
+    const scrollY = window.scrollY;
     const content = document.getElementById("content");
     content.innerHTML = SECTIONS.map(s => {
       let inner;
@@ -4831,6 +4850,7 @@
       else inner = placeholderHTML(s);
       return `<section class="section" id="section-${s.id}">${inner}</section>`;
     }).join("");
+    window.scrollTo(0, scrollY);
 
     bindSettingsHandlers();
     bindMortgageHandlers();
