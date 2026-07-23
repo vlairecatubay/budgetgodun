@@ -854,6 +854,10 @@
     border-radius: var(--radius-sm);
     font-size: 12.5px;
   }
+  .expense-subitem-row-editing {
+    display: block;
+    padding: 12px;
+  }
 
   /* ---- Form elements ---- */
   .field-grid {
@@ -3579,6 +3583,8 @@
   const EXPENSE_CATEGORIES = { living: "Living", travel: "Travel", child: "Child", other: "Other" };
   let ledgerView = "sources";
   let expandedExpenseId = null;
+  let editingExpenseId = null;
+  let editingSubitemId = null;
 
   /* ==========================================================
      AI INSIGHTS — chat grounded in the person's real financial data,
@@ -3861,6 +3867,29 @@
             const subitemsTotal = getSubitemsTotal(e);
             const difference = e.amount - subitemsTotal;
             const isExpanded = expandedExpenseId === e.id;
+            const isEditingEntry = editingExpenseId === e.id;
+            if (isEditingEntry) {
+              return `
+              <div class="expense-card" data-expense-id="${e.id}">
+                <div class="field-grid">
+                  <div class="field"><label>Date</label><input type="date" data-edit-expense-date="${e.id}" value="${e.date}"></div>
+                  <div class="field"><label>Amount</label><input type="text" inputmode="decimal" class="tnum" id="edit-expense-amount-${e.id}" data-numfmt="1" data-edit-expense-amount="${e.id}" value="${formatNumberString(e.amount)}"><a href="#" class="calc-link" data-calc-target="edit-expense-amount-${e.id}">🧮 Calculator</a></div>
+                  <div class="field">
+                    <label>Category</label>
+                    <select data-edit-expense-category="${e.id}">
+                      ${Object.entries(EXPENSE_CATEGORIES).map(([val, label]) => `<option value="${val}" ${val === e.category ? "selected" : ""}>${label}</option>`).join("")}
+                    </select>
+                  </div>
+                  <div class="field"><label>Note</label><input type="text" data-edit-expense-note="${e.id}" value="${escapeHtmlAttr(e.note || "")}"></div>
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn-primary" data-save-expense-edit="${e.id}" type="button">Save</button>
+                  <button class="btn" data-cancel-expense-edit type="button">Cancel</button>
+                </div>
+                <div class="inline-note">Source isn't edited here — that's tagged per subitem. Cancel and use Subitems to change what paid for this.</div>
+              </div>
+            `;
+            }
             return `
             <div class="expense-card" data-expense-id="${e.id}">
               <div class="expense-card-top">
@@ -3873,8 +3902,9 @@
               ${e.note ? `<div class="expense-card-note">${escapeHtml(e.note)}</div>` : ""}
               <div class="expense-card-bottom">
                 <span class="kpi-sub">${subitems.length > 0 ? subitems.length + " subitem" + (subitems.length > 1 ? "s" : "") : "No subitems yet"}</span>
-                <div style="display:flex; gap:6px;">
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
                   <button class="btn" data-toggle-subitems="${e.id}" type="button" style="padding:5px 10px; font-size:10.5px;">${isExpanded ? "▾ Hide" : "▸"} ${subitems.length > 0 ? "Subitems (" + subitems.length + ")" : "Add subitems"}</button>
+                  <button class="btn" data-edit-expense="${e.id}" type="button" style="padding:5px 10px; font-size:10.5px;">Edit</button>
                   <button class="btn btn-danger" data-remove-expense="${e.id}" type="button" style="padding:5px 10px; font-size:10.5px;">Remove</button>
                 </div>
               </div>
@@ -3884,11 +3914,36 @@
                 <div class="expense-subitem-list">
                   ${subitems.map(si => {
                     const siSrc = si.sourceId ? profile.creditSources.find(s => s.id === si.sourceId) : null;
+                    const isEditingSubitem = editingSubitemId === si.id;
+                    if (isEditingSubitem) {
+                      return `
+                      <div class="expense-subitem-row expense-subitem-row-editing">
+                        <div class="field-grid">
+                          <div class="field"><label>Label</label><input type="text" data-edit-subitem-label="${si.id}" value="${escapeHtmlAttr(si.label || "")}"></div>
+                          <div class="field"><label>Amount</label><input type="text" inputmode="decimal" class="tnum" data-numfmt="1" data-edit-subitem-amount="${si.id}" value="${formatNumberString(si.amount)}"></div>
+                          <div class="field">
+                            <label>Paid From</label>
+                            <select data-edit-subitem-source="${si.id}">
+                              <option value="">Unspecified</option>
+                              ${profile.creditSources.map(s => `<option value="${s.id}" ${s.id === si.sourceId ? "selected" : ""}>${s.name}</option>`).join("")}
+                            </select>
+                          </div>
+                        </div>
+                        <div class="btn-row">
+                          <button class="btn btn-primary" data-save-subitem-edit="${e.id}" data-subitem-id="${si.id}" type="button">Save</button>
+                          <button class="btn" data-cancel-subitem-edit type="button">Cancel</button>
+                        </div>
+                      </div>
+                    `;
+                    }
                     return `
                     <div class="expense-subitem-row">
                       <span>${si.label ? escapeHtml(si.label) : "—"}<br><span class="kpi-sub">${siSrc ? siSrc.name : "No source set"}</span></span>
                       <span class="tnum">${formatCurrency(si.amount)}</span>
-                      <button class="btn btn-danger" data-remove-subitem="${e.id}" data-subitem-id="${si.id}" type="button" style="padding:3px 8px; font-size:10px;">Remove</button>
+                      <div style="display:flex; gap:4px;">
+                        <button class="btn" data-edit-subitem="${si.id}" type="button" style="padding:3px 8px; font-size:10px;">Edit</button>
+                        <button class="btn btn-danger" data-remove-subitem="${e.id}" data-subitem-id="${si.id}" type="button" style="padding:3px 8px; font-size:10px;">Remove</button>
+                      </div>
                     </div>
                   `;
                   }).join("")}
@@ -3912,7 +3967,7 @@
                   <div class="kpi-card"><div class="kpi-label">Subitems Total</div><div class="kpi-value tnum">${formatCurrency(subitemsTotal)}</div></div>
                   <div class="kpi-card"><div class="kpi-label">Difference</div><div class="kpi-value tnum ${difference === 0 ? "positive" : "negative"}">${formatCurrency(difference)}</div><div class="kpi-sub">${difference === 0 ? "Fully accounted for" : (difference > 0 ? "Unaccounted amount left" : "Subitems exceed the total")}</div></div>
                 </div>
-                <div class="inline-note">Logging a subitem against a Cash/Debit/Wallet source reduces that source's balance. Against a Credit Card, it adds to what you owe.</div>
+                <div class="inline-note">Logging a subitem against a Cash/Debit/Wallet source reduces that source's balance. Against a Credit Card, it adds to what you owe. Editing a subitem's amount or source reverses the old balance effect and applies the new one.</div>
               </div>
               ` : ""}
             </div>
@@ -5069,6 +5124,112 @@
         Store.save(profile);
         renderSections();
         navigateToCurrentHash();
+      });
+    });
+
+    // ---- Editing the main expense entry (date/amount/category/note —
+    // source is deliberately not editable here, that's per-subitem) ----
+    section.querySelectorAll("[data-edit-expense]").forEach(b => {
+      b.addEventListener("click", () => {
+        editingExpenseId = b.dataset.editExpense;
+        renderSections();
+        navigateToCurrentHash();
+      });
+    });
+    section.querySelectorAll("[data-cancel-expense-edit]").forEach(b => {
+      b.addEventListener("click", () => {
+        editingExpenseId = null;
+        renderSections();
+        navigateToCurrentHash();
+      });
+    });
+    section.querySelectorAll("[data-save-expense-edit]").forEach(b => {
+      b.addEventListener("click", () => {
+        const expenseId = b.dataset.saveExpenseEdit;
+        const entry = profile.expenseLog.find(e => e.id === expenseId);
+        if (!entry) return;
+        const dateInput = section.querySelector(`[data-edit-expense-date="${expenseId}"]`);
+        const amountInput = section.querySelector(`[data-edit-expense-amount="${expenseId}"]`);
+        const categoryInput = section.querySelector(`[data-edit-expense-category="${expenseId}"]`);
+        const noteInput = section.querySelector(`[data-edit-expense-note="${expenseId}"]`);
+        const amount = amountInput ? getNumValue(amountInput) : entry.amount;
+        if (amount <= 0) { showToast("Enter an amount greater than 0."); return; }
+        // No balance reconciliation needed here — the main entry doesn't
+        // carry a source, so changing its amount doesn't move any money
+        // by itself. Only subitem edits touch Credit Source balances.
+        entry.date = dateInput ? dateInput.value || entry.date : entry.date;
+        entry.amount = amount;
+        entry.category = categoryInput ? categoryInput.value : entry.category;
+        entry.note = noteInput ? noteInput.value.trim() : entry.note;
+        editingExpenseId = null;
+        Store.save(profile);
+        renderSections();
+        navigateToCurrentHash();
+        showToast("Expense updated.");
+      });
+    });
+
+    // ---- Editing a subitem (label/amount/source) — reverses whatever
+    // balance effect the OLD amount+source had, then applies the NEW
+    // one, so a source/amount change never silently leaves a stale
+    // balance change behind. ----
+    section.querySelectorAll("[data-edit-subitem]").forEach(b => {
+      b.addEventListener("click", () => {
+        editingSubitemId = b.dataset.editSubitem;
+        renderSections();
+        navigateToCurrentHash();
+      });
+    });
+    section.querySelectorAll("[data-cancel-subitem-edit]").forEach(b => {
+      b.addEventListener("click", () => {
+        editingSubitemId = null;
+        renderSections();
+        navigateToCurrentHash();
+      });
+    });
+    section.querySelectorAll("[data-save-subitem-edit]").forEach(b => {
+      b.addEventListener("click", () => {
+        const expenseId = b.dataset.saveSubitemEdit;
+        const subitemId = b.dataset.subitemId;
+        const entry = profile.expenseLog.find(e => e.id === expenseId);
+        if (!entry) return;
+        const subitem = (entry.subitems || []).find(si => si.id === subitemId);
+        if (!subitem) return;
+
+        const labelInput = section.querySelector(`[data-edit-subitem-label="${subitemId}"]`);
+        const amountInput = section.querySelector(`[data-edit-subitem-amount="${subitemId}"]`);
+        const sourceInput = section.querySelector(`[data-edit-subitem-source="${subitemId}"]`);
+        const label = labelInput ? labelInput.value.trim() : subitem.label;
+        const newAmount = amountInput ? getNumValue(amountInput) : subitem.amount;
+        const newSourceId = sourceInput ? (sourceInput.value || null) : subitem.sourceId;
+        if (!label) { showToast("Enter a label for this subitem."); return; }
+        if (newAmount <= 0) { showToast("Enter an amount greater than 0."); return; }
+
+        // Reverse the old effect first.
+        if (subitem.sourceId) {
+          const oldSrc = profile.creditSources.find(s => s.id === subitem.sourceId);
+          if (oldSrc) {
+            if (oldSrc.type === "credit_card") oldSrc.balance -= subitem.amount;
+            else oldSrc.balance += subitem.amount;
+          }
+        }
+        // Then apply the new one.
+        if (newSourceId) {
+          const newSrc = profile.creditSources.find(s => s.id === newSourceId);
+          if (newSrc) {
+            if (newSrc.type === "credit_card") newSrc.balance += newAmount;
+            else newSrc.balance -= newAmount;
+          }
+        }
+
+        subitem.label = label;
+        subitem.amount = newAmount;
+        subitem.sourceId = newSourceId;
+        editingSubitemId = null;
+        Store.save(profile);
+        renderSections();
+        navigateToCurrentHash();
+        showToast("Subitem updated.");
       });
     });
   }
